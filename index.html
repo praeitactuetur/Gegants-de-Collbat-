@@ -30,10 +30,10 @@
       font-family: 'Cinzel', serif;
     }
     .glass-panel {
-      background: rgba(24, 14, 22, 0.76);
+      background: rgba(24, 14, 22, 0.8);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(251, 191, 36, 0.35);
+      border: 1px solid rgba(251, 191, 36, 0.42);
     }
     .btn-festive {
       background: linear-gradient(135deg, #d97706 0%, #b91c1c 100%);
@@ -47,22 +47,26 @@
     .btn-festive:active {
       transform: scale(0.95);
     }
+    .touch-action-btn {
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
     /* Joystick virtual analògic */
     #joystick-base {
       position: relative;
       width: 124px;
       height: 124px;
       border-radius: 9999px;
-      background: radial-gradient(circle at 35% 35%, rgba(251, 191, 36, 0.18), rgba(20, 12, 18, 0.72));
-      border: 2px solid rgba(251, 191, 36, 0.48);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(251, 191, 36, 0.14);
+      background: radial-gradient(circle at 35% 35%, rgba(251, 191, 36, 0.2), rgba(20, 12, 18, 0.76));
+      border: 2px solid rgba(251, 191, 36, 0.52);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(251, 191, 36, 0.16);
       touch-action: none;
     }
     #joystick-ring {
       position: absolute;
       inset: 16px;
       border-radius: 9999px;
-      border: 1px dashed rgba(253, 230, 138, 0.3);
+      border: 1px dashed rgba(253, 230, 138, 0.35);
       pointer-events: none;
     }
     #joystick-knob {
@@ -82,7 +86,7 @@
     }
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-5px); }
+      50% { transform: translateY(-4px); }
     }
     .animate-float {
       animation: floatSlow 3.2s ease-in-out infinite;
@@ -95,52 +99,52 @@
   <div id="canvas-container" class="fixed inset-0 w-full h-full z-0" style="touch-action: none;"></div>
 
   <!-- ===================================================================== -->
-  <!-- PANTALLA DE PORTADA (Il·lustració artesanal en Canvas 2D)              -->
+  <!-- PANTALLA DE PORTADA (Il·lustració 2D amb En Mansuet i La Marta grans) -->
   <!-- ===================================================================== -->
-  <div id="start-screen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-3 sm:p-5 bg-gradient-to-b from-[#1a0f1d] via-[#2b1523] to-[#140a11] overflow-y-auto" style="touch-action: pan-y;">
-    <!-- Capçalera -->
-    <div class="text-center mt-1 sm:mt-2 z-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] sm:text-xs font-bold tracking-widest uppercase mb-1.5">
+  <div id="start-screen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-2.5 sm:p-4 bg-gradient-to-b from-[#1a0f1d] via-[#2b1523] to-[#140a11] overflow-hidden" style="touch-action: none;">
+    <!-- Capçalera compacta per deixar protagonisme als Gegants -->
+    <div class="text-center mt-0.5 sm:mt-1 z-10 shrink-0">
+      <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-1">
         <span>Festa Major</span>
         <span>•</span>
         <span>Als Peus de Montserrat</span>
       </div>
-      <h1 class="font-display text-3xl sm:text-5xl md:text-6xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-red-500 drop-shadow-[0_4px_14px_rgba(0,0,0,0.85)]">
+      <h1 class="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-red-500 drop-shadow-[0_4px_14px_rgba(0,0,0,0.85)] leading-tight">
         GEGANTS DE COLLBATÓ
       </h1>
-      <p class="text-amber-100/95 text-xs sm:text-sm md:text-base max-w-xl mx-auto mt-1 font-semibold">
-        Cercavila 3D per Collbató al ritme de la música
+      <p class="text-amber-100/95 text-xs sm:text-sm font-semibold">
+        Al ritme de la música
       </p>
     </div>
 
-    <!-- Il·lustració artesanal en Canvas 2D -->
-    <div class="relative my-2 flex items-center justify-center w-full max-w-2xl flex-1 min-h-[210px] max-h-[370px]">
-      <canvas id="cover-canvas" class="w-full h-full rounded-2xl border-2 border-amber-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.85)] bg-[#1f1224]"></canvas>
+    <!-- Llenç de la portada: ocupa tot l'espai central disponible -->
+    <div id="cover-wrapper" class="relative my-1.5 sm:my-2 flex items-center justify-center w-full max-w-3xl flex-1 min-h-0">
+      <canvas id="cover-canvas" class="block w-full h-full rounded-2xl border-2 border-amber-400/55 shadow-[0_20px_50px_rgba(0,0,0,0.85)] bg-[#1f1224]"></canvas>
     </div>
 
-    <!-- Guia de controls + Botó principal -->
-    <div class="w-full max-w-2xl flex flex-col items-center gap-3 mb-1 sm:mb-2 z-10">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-center text-xs">
-        <div class="glass-panel rounded-xl p-2">
+    <!-- Guia breu + Botó principal JUGAR CERCAVILA -->
+    <div class="w-full max-w-3xl flex flex-col items-center gap-2 mb-0.5 sm:mb-1 z-10 shrink-0">
+      <div class="grid grid-cols-4 gap-1.5 sm:gap-2 w-full text-center text-[11px] sm:text-xs">
+        <div class="glass-panel rounded-xl py-1.5 px-1">
           <div class="text-amber-300 font-extrabold">🕹️ JOYSTICK</div>
-          <div class="text-amber-100/80 text-[11px]">Moviment lliure i suau</div>
+          <div class="text-amber-100/80 text-[10px] hidden sm:block">Moviment suau</div>
         </div>
-        <div class="glass-panel rounded-xl p-2">
+        <div class="glass-panel rounded-xl py-1.5 px-1">
           <div class="text-amber-300 font-extrabold">⬆️ SALTAR</div>
-          <div class="text-amber-100/80 text-[11px]">Supera tanques i bancs</div>
+          <div class="text-amber-100/80 text-[10px] hidden sm:block">Simultani</div>
         </div>
-        <div class="glass-panel rounded-xl p-2">
+        <div class="glass-panel rounded-xl py-1.5 px-1">
           <div class="text-amber-300 font-extrabold">👀 CARA (V)</div>
-          <div class="text-amber-100/80 text-[11px]">Gira per veure el rostre</div>
+          <div class="text-amber-100/80 text-[10px] hidden sm:block">Gira 180°</div>
         </div>
-        <div class="glass-panel rounded-xl p-2">
+        <div class="glass-panel rounded-xl py-1.5 px-1">
           <div class="text-amber-300 font-extrabold">⇄ GEGANT (Q)</div>
-          <div class="text-amber-100/80 text-[11px]">Mansuet / Marta</div>
+          <div class="text-amber-100/80 text-[10px] hidden sm:block">Mansuet / Marta</div>
         </div>
       </div>
 
-      <button id="btn-start" type="button" class="btn-festive animate-float w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl text-white font-extrabold text-base sm:text-xl tracking-wider uppercase cursor-pointer">
-        COMENÇAR CERCAVILA
+      <button id="btn-start" type="button" class="btn-festive animate-float w-full sm:w-auto px-9 py-3 sm:py-3.5 rounded-2xl text-white font-extrabold text-base sm:text-xl tracking-wider uppercase cursor-pointer">
+        JUGAR CERCAVILA
       </button>
     </div>
   </div>
@@ -205,7 +209,7 @@
   <!-- ===================================================================== -->
   <div id="touch-controls" class="hidden fixed inset-x-0 bottom-0 z-20 p-3 sm:p-5 pointer-events-none">
     <div class="max-w-6xl mx-auto flex items-end justify-between gap-2">
-      <!-- Joystick Virtual Analògic (Moviment lliure lateral i de ritme) -->
+      <!-- Joystick Virtual Analògic -->
       <div class="flex flex-col items-center gap-1 pointer-events-auto">
         <div id="joystick-base" aria-label="Joystick de direcció i ritme">
           <div id="joystick-ring"></div>
@@ -224,48 +228,46 @@
         <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Q</kbd> Gegant</span>
       </div>
 
-      <!-- Botons tàctils ergonòmics a la cantonada inferior dreta -->
-      <div class="flex flex-col items-end gap-2.5 pointer-events-auto">
-        <!-- Fila superior: CARA i GEGANT -->
-        <div class="flex gap-2">
-          <button id="btn-face" type="button" class="glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
-            <span class="text-lg leading-none">👀</span>
-            <span id="btn-face-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">CARA</span>
+      <!-- Botons tàctils ergonòmics a la cantonada inferior dreta (Multitàctil independent) -->
+      <div class="flex flex-col items-end gap-2.5 pointer-events-auto" style="touch-action: none;">
+        <div class="flex gap-2" style="touch-action: none;">
+          <button id="btn-face" type="button" class="touch-action-btn glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
+            <span class="text-lg leading-none pointer-events-none">👀</span>
+            <span id="btn-face-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap pointer-events-none">CARA</span>
           </button>
 
-          <button id="btn-switch" type="button" class="glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
-            <span class="text-base leading-none text-amber-300 font-black">⇄</span>
-            <div class="text-left leading-tight">
+          <button id="btn-switch" type="button" class="touch-action-btn glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
+            <span class="text-base leading-none text-amber-300 font-black pointer-events-none">⇄</span>
+            <div class="text-left leading-tight pointer-events-none">
               <div class="text-[9px] uppercase tracking-wider text-amber-300 font-bold">GEGANT</div>
               <div id="btn-switch-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">La Marta</div>
             </div>
           </button>
         </div>
 
-        <!-- Fila inferior: Botó gran SALTAR -->
-        <button id="btn-jump" type="button" class="btn-festive w-36 sm:w-44 h-16 rounded-2xl flex items-center justify-center gap-2 text-white font-extrabold text-base sm:text-lg tracking-wider shadow-xl cursor-pointer">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <button id="btn-jump" type="button" class="touch-action-btn btn-festive w-36 sm:w-44 h-16 rounded-2xl flex items-center justify-center gap-2 text-white font-extrabold text-base sm:text-lg tracking-wider shadow-xl cursor-pointer">
+          <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
           </svg>
-          <span>SALTAR</span>
+          <span class="pointer-events-none">SALTAR</span>
         </button>
       </div>
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- PANTALLA FINAL: DIPLOMA DE LA PLAÇA DE L'ESGLÉSIA                     -->
+  <!-- PANTALLA FINAL: ELECCIÓ EN ARRIBAR A LA META DE LA CERCAVILA          -->
   <!-- ===================================================================== -->
   <div id="end-screen" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
     <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 text-center border-2 border-amber-400/70 shadow-[0_25px_60px_rgba(0,0,0,0.9)]">
       <div class="inline-block px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-2">
-        Arribada Triomfal a la Plaça de l'Església
+        Arribada a la Plaça de l'Església
       </div>
       <h2 class="font-display text-2xl sm:text-4xl font-black text-amber-300 mb-2">
-        DIPLOMA GEGANTER DE COLLBATÓ
+        CERCAVILA COMPLETADA!
       </h2>
       <p class="text-amber-100/90 text-sm sm:text-base mb-5">
-        Has completat la cercavila amb en <strong class="text-amber-300">Mansuet</strong> i la <strong class="text-amber-300">Marta</strong> als peus de la muntanya de Montserrat!
+        Has arribat a la meta amb en <strong class="text-amber-300">Mansuet</strong> i la <strong class="text-amber-300">Marta</strong>. Què vols fer ara?
       </p>
 
       <div class="grid grid-cols-2 gap-3 mb-6">
@@ -279,8 +281,52 @@
         </div>
       </div>
 
-      <button id="btn-restart" type="button" class="btn-festive w-full py-4 rounded-2xl text-white font-extrabold text-base sm:text-lg uppercase tracking-wider cursor-pointer">
-        TORNAR A FER LA CERCAVILA
+      <div class="flex flex-col gap-3">
+        <button id="btn-celebration" type="button" class="btn-festive w-full py-4 px-4 rounded-2xl text-white font-extrabold text-base sm:text-lg uppercase tracking-wider cursor-pointer">
+          🎉 Anar a la celebració
+        </button>
+        <button id="btn-restart" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-amber-950/85 hover:bg-amber-900/85 border border-amber-400/50 text-amber-200 font-extrabold text-sm sm:text-base tracking-wide transition active:scale-95 cursor-pointer">
+          🔄 Tornar a començar la cercavila
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- HUD DE LA SALA DE CELEBRACIÓ AMB DJ                                   -->
+  <!-- ===================================================================== -->
+  <div id="party-hud" class="hidden fixed inset-0 z-20 pointer-events-none flex flex-col justify-between p-3 sm:p-5">
+    <div class="max-w-6xl mx-auto w-full flex items-start justify-between gap-2">
+      <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-3 pointer-events-auto shadow-xl border-fuchsia-400/50">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-600 to-amber-500 border border-amber-200/70 flex items-center justify-center text-xl shadow-inner">
+          🎧
+        </div>
+        <div>
+          <div class="text-[10px] sm:text-xs uppercase tracking-widest font-extrabold text-fuchsia-300">
+            Sala de Festa Major • El Casinet
+          </div>
+          <div class="text-sm sm:text-lg font-black text-white">
+            Celebració amb DJ en Directe
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-party-mute" type="button" aria-label="Silenciar o activar la música del DJ" class="glass-panel w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:scale-95 transition pointer-events-auto cursor-pointer shadow-lg">
+        <svg id="party-sound-on" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
+        </svg>
+        <svg id="party-sound-off" class="hidden w-6 h-6 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="glass-panel rounded-2xl px-4 py-2 text-center sm:text-left text-xs sm:text-sm text-amber-100/95 font-semibold">
+        🎶 En <strong class="text-amber-300">Mansuet</strong>, la <strong class="text-amber-300">Marta</strong> i el poble ballen al ritme dels plats!
+      </div>
+      <button id="btn-party-back" type="button" class="btn-festive pointer-events-auto w-full sm:w-auto px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base uppercase tracking-wider cursor-pointer shadow-xl">
+        🔄 Tornar a la cercavila
       </button>
     </div>
   </div>
@@ -303,88 +349,115 @@
 
   <script>
     // =========================================================================
-    // 1. PORTADA IL·LUSTRADA A MANO EN CANVAS 2D
+    // 1. IL·LUSTRACIÓ ARTESANAL DE LA PORTADA (EN MANSUET I LA MARTA BEN GRANS)
     // =========================================================================
     function drawCoverIllustration() {
       const canvas = document.getElementById('cover-canvas');
-      if (!canvas) return;
+      const wrapper = document.getElementById('cover-wrapper');
+      if (!canvas || !wrapper) return;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const rect = canvas.getBoundingClientRect();
-      const W = Math.max(320, Math.floor(rect.width || 640));
-      const H = Math.max(210, Math.floor(rect.height || 340));
+      const rect = wrapper.getBoundingClientRect();
+      const W = Math.max(300, Math.floor(rect.width));
+      const H = Math.max(220, Math.floor(rect.height));
+
       canvas.width = W * dpr;
       canvas.height = H * dpr;
-
       const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Cel de capvespre mediterrani sobre Montserrat
-      const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, '#1c1033');
-      sky.addColorStop(0.42, '#6b213a');
-      sky.addColorStop(0.75, '#d97706');
-      sky.addColorStop(1, '#fde68a');
-      ctx.fillStyle = sky;
+      // Cel càlid de capvespre darrere Montserrat
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.85);
+      skyGrad.addColorStop(0, '#1e1035');
+      skyGrad.addColorStop(0.38, '#581c4f');
+      skyGrad.addColorStop(0.72, '#c2410c');
+      skyGrad.addColorStop(1, '#fbbf24');
+      ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, W, H);
 
-      // Sol ponent darrere les agulles
+      // Halo solar darrere les agulles de Montserrat
       const sunX = W * 0.5;
-      const sunY = H * 0.54;
-      const sunGlow = ctx.createRadialGradient(sunX, sunY, 8, sunX, sunY, W * 0.28);
-      sunGlow.addColorStop(0, 'rgba(254, 243, 199, 0.95)');
-      sunGlow.addColorStop(0.4, 'rgba(251, 191, 36, 0.45)');
-      sunGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      const sunY = H * 0.44;
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 8, sunX, sunY, Math.max(W, H) * 0.45);
+      sunGlow.addColorStop(0, 'rgba(254, 240, 138, 0.9)');
+      sunGlow.addColorStop(0.45, 'rgba(245, 158, 11, 0.35)');
+      sunGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
       ctx.fillStyle = sunGlow;
       ctx.fillRect(0, 0, W, H);
 
-      // Massís i agulles de Montserrat
-      ctx.fillStyle = '#3b2442';
+      // Massís de Montserrat amb agulles característiques
+      ctx.fillStyle = '#3b243f';
       ctx.beginPath();
-      ctx.moveTo(0, H * 0.72);
+      ctx.moveTo(0, H * 0.82);
+      ctx.lineTo(0, H * 0.48);
       const peaks = [
-        [0.05, 0.60], [0.12, 0.45], [0.16, 0.51], [0.21, 0.34], [0.25, 0.43],
-        [0.30, 0.27], [0.34, 0.38], [0.39, 0.22], [0.43, 0.33], [0.48, 0.25],
-        [0.53, 0.36], [0.58, 0.29], [0.63, 0.41], [0.69, 0.35], [0.75, 0.48],
-        [0.82, 0.42], [0.89, 0.55], [0.96, 0.50], [1.0, 0.64]
+        [0.06, 0.44], [0.11, 0.33], [0.16, 0.43], [0.22, 0.25],
+        [0.27, 0.39], [0.33, 0.21], [0.39, 0.35], [0.45, 0.17],
+        [0.50, 0.31], [0.55, 0.16], [0.61, 0.33], [0.67, 0.20],
+        [0.73, 0.36], [0.79, 0.24], [0.85, 0.40], [0.92, 0.32],
+        [1.00, 0.46]
       ];
       peaks.forEach(([px, py]) => ctx.lineTo(W * px, H * py));
-      ctx.lineTo(W, H * 0.78);
-      ctx.lineTo(0, H * 0.78);
+      ctx.lineTo(W, H * 0.82);
       ctx.closePath();
       ctx.fill();
 
-      // Silueta del poble i campanar de Collbató
-      ctx.fillStyle = '#241428';
-      ctx.fillRect(W * 0.06, H * 0.62, W * 0.88, H * 0.22);
-      const bellX = W * 0.78;
-      ctx.fillRect(bellX, H * 0.42, W * 0.065, H * 0.35);
+      // Vessant més proper de Collbató i silueta del campanar de Sant Corneli
+      ctx.fillStyle = '#251429';
       ctx.beginPath();
-      ctx.moveTo(bellX - 3, H * 0.42);
-      ctx.lineTo(bellX + W * 0.0325, H * 0.34);
-      ctx.lineTo(bellX + W * 0.065 + 3, H * 0.42);
+      ctx.moveTo(0, H * 0.84);
+      ctx.lineTo(0, H * 0.62);
+      ctx.quadraticCurveTo(W * 0.25, H * 0.56, W * 0.5, H * 0.61);
+      ctx.quadraticCurveTo(W * 0.78, H * 0.54, W, H * 0.60);
+      ctx.lineTo(W, H * 0.84);
       ctx.closePath();
       ctx.fill();
 
-      // Terra empedrat
-      const ground = ctx.createLinearGradient(0, H * 0.76, 0, H);
-      ground.addColorStop(0, '#3a262c');
-      ground.addColorStop(1, '#180d13');
-      ctx.fillStyle = ground;
-      ctx.fillRect(0, H * 0.76, W, H * 0.24);
+      // Campanar de l'església de Collbató a la dreta
+      const towerX = W * 0.87;
+      const towerY = H * 0.44;
+      ctx.fillStyle = '#1b0f21';
+      ctx.fillRect(towerX - 14, towerY, 28, H * 0.38);
+      ctx.beginPath();
+      ctx.moveTo(towerX - 16, towerY);
+      ctx.lineTo(towerX, towerY - 22);
+      ctx.lineTo(towerX + 16, towerY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(towerX, towerY + 14, 5, Math.PI, 0);
+      ctx.fillRect(towerX - 5, towerY + 14, 10, 12);
+      ctx.fill();
 
-      // Garlandes festives
+      // Paviment empedrat de la plaça
+      const groundY = H * 0.81;
+      const floorGrad = ctx.createLinearGradient(0, groundY, 0, H);
+      floorGrad.addColorStop(0, '#443844');
+      floorGrad.addColorStop(1, '#1e1621');
+      ctx.fillStyle = floorGrad;
+      ctx.fillRect(0, groundY, W, H - groundY);
+
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.28)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(W, groundY);
+      ctx.stroke();
+
+      // Garlandes de banderoles festives a la part superior
       ctx.strokeStyle = '#fde68a';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.moveTo(0, H * 0.06);
-      ctx.quadraticCurveTo(W * 0.5, H * 0.22, W, H * 0.06);
+      ctx.moveTo(0, H * 0.04);
+      ctx.quadraticCurveTo(W * 0.5, H * 0.18, W, H * 0.04);
       ctx.stroke();
 
       const flagColors = ['#dc2626', '#facc15', '#dc2626', '#facc15', '#ffffff'];
-      for (let i = 1; i < 18; i++) {
-        const t = i / 18;
+      for (let i = 1; i < 20; i++) {
+        const t = i / 20;
         const fx = W * t;
-        const fy = H * 0.06 + Math.sin(t * Math.PI) * (H * 0.08);
+        const fy = H * 0.04 + Math.sin(t * Math.PI) * (H * 0.07);
         ctx.fillStyle = flagColors[i % flagColors.length];
         ctx.beginPath();
         ctx.moveTo(fx - 7, fy);
@@ -394,49 +467,70 @@
         ctx.fill();
       }
 
-      const scale = Math.min(W / 640, H / 340);
+      // Escala adaptativa perquè tots dos gegants ocupin el 76% de l'alçada
+      // i mai quedin tallats ni en mòbil vertical ni en pantalla panoràmica
+      const giantHeightUnits = 232;
+      const targetHeightPx = H * 0.76;
+      const maxWidthPerGiant = W * 0.42;
+      const giantWidthUnits = 116;
+      const scale = Math.min(targetHeightPx / giantHeightUnits, maxWidthPerGiant / giantWidthUnits);
+
+      const feetY = H * 0.92;
+      const leftCenterX = W * 0.32;
+      const rightCenterX = W * 0.68;
 
       // -----------------------------------------------------------------------
-      // RETRAT D'EN MANSUET (Esquerra)
+      // RETRAT D'EN MANSUET (Esquerra - gran, nítid i complet)
       // -----------------------------------------------------------------------
       ctx.save();
-      ctx.translate(W * 0.36, H * 0.89);
+      ctx.translate(leftCenterX, feetY);
       ctx.scale(scale, scale);
 
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      // Ombra al terra
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
       ctx.beginPath();
-      ctx.ellipse(0, 4, 48, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 4, 52, 11, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Capa negra
+      // Capa negra ampla
       ctx.fillStyle = '#111318';
       ctx.beginPath();
-      ctx.moveTo(-26, -168);
-      ctx.lineTo(26, -168);
-      ctx.lineTo(54, -18);
-      ctx.lineTo(-54, -18);
+      ctx.moveTo(-27, -168);
+      ctx.lineTo(27, -168);
+      ctx.lineTo(56, -16);
+      ctx.lineTo(-56, -16);
       ctx.closePath();
       ctx.fill();
 
-      // Faldó marró oliva amb pedaç clar
+      // Faldó marró oliva amb plecs i pedaç rectangular clar
       ctx.fillStyle = '#6b5b3e';
       ctx.beginPath();
-      ctx.moveTo(-28, -95);
-      ctx.lineTo(28, -95);
-      ctx.lineTo(36, -4);
-      ctx.lineTo(-36, -4);
+      ctx.moveTo(-29, -95);
+      ctx.lineTo(29, -95);
+      ctx.lineTo(37, -4);
+      ctx.lineTo(-37, -4);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = '#c8b896';
-      ctx.fillRect(-10, -56, 20, 24);
-      ctx.strokeStyle = '#4a3d28';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(-10, -56, 20, 24);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.24)';
+      ctx.lineWidth = 1.5;
+      [-18, -6, 8, 20].forEach((px) => {
+        ctx.beginPath();
+        ctx.moveTo(px * 0.85, -94);
+        ctx.lineTo(px, -5);
+        ctx.stroke();
+      });
+
+      // Pedaç rectangular clar característic al faldó
+      ctx.fillStyle = '#d1c2a1';
+      ctx.fillRect(-11, -58, 22, 26);
+      ctx.strokeStyle = '#3f3422';
+      ctx.lineWidth = 1.3;
+      ctx.strokeRect(-11, -58, 22, 26);
 
       // Faixa vermella i armilla granat
       ctx.fillStyle = '#b91c1c';
-      ctx.fillRect(-27, -109, 54, 15);
+      ctx.fillRect(-28, -109, 56, 15);
 
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(-23, -164, 46, 55);
@@ -452,76 +546,76 @@
       ctx.closePath();
       ctx.fill();
 
-      // Cadena daurada
+      // Cadena de rellotge daurada
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.moveTo(-4, -142);
-      ctx.quadraticCurveTo(-18, -125, -16, -112);
+      ctx.moveTo(-3, -142);
+      ctx.quadraticCurveTo(-19, -125, -17, -112);
       ctx.stroke();
 
-      // Llaç negre
+      // Llaç negre al coll
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.moveTo(0, -163);
-      ctx.lineTo(-9, -168);
-      ctx.lineTo(-9, -158);
+      ctx.lineTo(-10, -168);
+      ctx.lineTo(-10, -158);
       ctx.closePath();
       ctx.moveTo(0, -163);
-      ctx.lineTo(9, -168);
-      ctx.lineTo(9, -158);
+      ctx.lineTo(10, -168);
+      ctx.lineTo(10, -158);
       ctx.closePath();
       ctx.fill();
 
       // Patilles i cabells sota la barretina
       ctx.fillStyle = '#2c1b14';
-      ctx.fillRect(-16, -193, 4, 13);
-      ctx.fillRect(12, -193, 4, 13);
+      ctx.fillRect(-16, -193, 4.5, 14);
+      ctx.fillRect(11.5, -193, 4.5, 14);
 
-      // Rostre d'en Mansuet
+      // Rostre simpàtic d'en Mansuet
       ctx.fillStyle = '#eab996';
       ctx.beginPath();
-      ctx.ellipse(0, -184, 14.5, 18.5, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -184, 15, 18.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#1e1b18';
-      ctx.fillRect(-8, -189, 5, 2.2);
-      ctx.fillRect(3, -189, 5, 2.2);
+      ctx.fillRect(-8.5, -189, 5.5, 2.2);
+      ctx.fillRect(3, -189, 5.5, 2.2);
       ctx.beginPath();
-      ctx.arc(-5.5, -185, 1.8, 0, Math.PI * 2);
-      ctx.arc(5.5, -185, 1.8, 0, Math.PI * 2);
+      ctx.arc(-5.5, -185, 1.9, 0, Math.PI * 2);
+      ctx.arc(5.5, -185, 1.9, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bigoti espès
+      // Bigoti espès i somriure amable
       ctx.beginPath();
-      ctx.moveTo(-11, -175);
-      ctx.quadraticCurveTo(0, -181, 11, -175);
-      ctx.quadraticCurveTo(0, -172, -11, -175);
+      ctx.moveTo(-12, -175);
+      ctx.quadraticCurveTo(0, -181, 12, -175);
+      ctx.quadraticCurveTo(0, -171, -12, -175);
       ctx.fill();
 
       // Barretina vermella caiguda cap a un costat
       ctx.fillStyle = '#dc2626';
       ctx.beginPath();
       ctx.moveTo(-16, -195);
-      ctx.quadraticCurveTo(-15, -222, 18, -214);
-      ctx.quadraticCurveTo(27, -203, 16, -195);
+      ctx.quadraticCurveTo(-15, -224, 19, -215);
+      ctx.quadraticCurveTo(28, -203, 16, -195);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = '#111827';
       ctx.fillRect(-16, -197, 32, 4);
 
-      // Trabuc amb pinyó/pi i Senyera
+      // Trabuc amb branca de pi i Senyera penjant
       ctx.save();
       ctx.translate(4, -104);
       ctx.rotate(-0.18);
       ctx.fillStyle = '#78350f';
       ctx.fillRect(-44, -4, 48, 9);
       ctx.fillStyle = '#334155';
-      ctx.fillRect(2, -4, 42, 7);
+      ctx.fillRect(2, -4, 44, 7.5);
       ctx.fillStyle = '#15803d';
       ctx.beginPath();
-      ctx.arc(46, -2, 11, 0, Math.PI * 2);
-      ctx.arc(53, -6, 8, 0, Math.PI * 2);
+      ctx.arc(48, -2, 11, 0, Math.PI * 2);
+      ctx.arc(55, -6, 8, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#facc15';
       ctx.fillRect(14, 3, 18, 34);
@@ -533,44 +627,51 @@
       ctx.restore();
 
       // -----------------------------------------------------------------------
-      // RETRAT DE LA MARTA (Dreta - rostre completament clar i descobert)
+      // RETRAT DE LA MARTA (Dreta - cara descoberta, clara, somrient i 2 braços)
       // -----------------------------------------------------------------------
       ctx.save();
-      ctx.translate(W * 0.64, H * 0.89);
+      ctx.translate(rightCenterX, feetY);
       ctx.scale(scale, scale);
 
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      // Ombra al terra
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
       ctx.beginPath();
-      ctx.ellipse(0, 4, 44, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 4, 48, 11, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Faldilla floral rosada
+      // Faldilla rosada amb estampat floral
       ctx.fillStyle = '#e5a4b4';
       ctx.beginPath();
-      ctx.moveTo(-24, -102);
-      ctx.lineTo(24, -102);
-      ctx.lineTo(35, -4);
-      ctx.lineTo(-35, -4);
+      ctx.moveTo(-25, -102);
+      ctx.lineTo(25, -102);
+      ctx.lineTo(36, -4);
+      ctx.lineTo(-36, -4);
       ctx.closePath();
       ctx.fill();
 
       ctx.fillStyle = '#be185d';
-      for (let fy = -88; fy <= -14; fy += 18) {
-        for (let fx = -20; fx <= 20; fx += 13) {
+      for (let fy = -90; fy <= -14; fy += 17) {
+        for (let fx = -21; fx <= 21; fx += 13) {
           ctx.beginPath();
-          ctx.arc(fx + (fy % 3), fy, 2.6, 0, Math.PI * 2);
+          ctx.arc(fx + (fy % 3), fy, 2.7, 0, Math.PI * 2);
           ctx.fill();
         }
       }
 
-      // Davantal de blonda negra
+      // Davantal de blonda negra calada
       ctx.fillStyle = 'rgba(15, 17, 23, 0.88)';
-      ctx.fillRect(-19, -100, 38, 66);
+      ctx.fillRect(-19, -100, 38, 68);
       ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 0.8;
-      ctx.strokeRect(-17, -98, 34, 62);
+      ctx.lineWidth = 0.85;
+      ctx.strokeRect(-17, -98, 34, 64);
+      for (let by = -90; by <= -38; by += 10) {
+        ctx.beginPath();
+        ctx.moveTo(-16, by);
+        ctx.lineTo(16, by);
+        ctx.stroke();
+      }
 
-      // Brusa blanca i mantellina negra sobre les espatlles
+      // Cosset blanc i mantellina de blonda negra sobre les espatlles
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.moveTo(-20, -156);
@@ -590,19 +691,20 @@
       ctx.closePath();
       ctx.fill();
 
-      // Ambdós braços i mocador blanc
+      // Ambdós braços clarament dibuixats + mocador blanc a la mà esquerra
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(-29, -152, 8, 22);
       ctx.fillRect(21, -152, 8, 22);
       ctx.fillStyle = '#f3cbb2';
-      ctx.fillRect(-28, -130, 6, 22);
-      ctx.fillRect(22, -130, 6, 22);
+      ctx.fillRect(-28, -130, 6.5, 23);
+      ctx.fillRect(22, -130, 6.5, 23);
 
+      // Mocador blanc a la mà esquerra
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
       ctx.moveTo(25, -109);
-      ctx.lineTo(35, -90);
-      ctx.lineTo(24, -84);
+      ctx.lineTo(36, -89);
+      ctx.lineTo(24, -83);
       ctx.lineTo(18, -94);
       ctx.closePath();
       ctx.fill();
@@ -611,9 +713,9 @@
       ctx.fillStyle = '#f3cbb2';
       ctx.fillRect(-6, -165, 12, 11);
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(-6, -160, 12, 3);
+      ctx.fillRect(-6.5, -160, 13, 3.2);
 
-      // Pentinat recollit amb ret darrere del cap (ABANS del rostre)
+      // Monjo i redecilla negra darrere del cap (dibuixats ABANS del rostre perquè mai tapin la cara)
       ctx.fillStyle = '#2c1b14';
       ctx.beginPath();
       ctx.arc(0, -184, 16.5, Math.PI * 0.92, Math.PI * 2.08);
@@ -622,16 +724,16 @@
       ctx.arc(-13.5, -177, 5.2, 0, Math.PI * 2);
       ctx.arc(13.5, -177, 5.2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 0.9;
+      ctx.strokeStyle = '#111827';
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.arc(0, -185, 14.5, Math.PI * 1.1, Math.PI * 1.9);
+      ctx.arc(0, -185, 15.2, Math.PI * 1.08, Math.PI * 1.92);
       ctx.stroke();
 
-      // Rostre completament descobert, lluminós i sonrosat
+      // Rostre 100% descobert, clar, lluminós i somrient
       ctx.fillStyle = '#f8d5be';
       ctx.beginPath();
-      ctx.ellipse(0, -178, 13.8, 17, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -178, 14, 17, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#d4a387';
       ctx.lineWidth = 0.8;
@@ -648,7 +750,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Celles, ulls, nas, galtes rosades i somriure
+      // Celles, ulls expressius, nas, galtes rosades i somriure
       ctx.strokeStyle = '#2c1b14';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -660,13 +762,13 @@
 
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.ellipse(-5.5, -180, 2.6, 1.8, 0, 0, Math.PI * 2);
-      ctx.ellipse(5.5, -180, 2.6, 1.8, 0, 0, Math.PI * 2);
+      ctx.ellipse(-5.5, -180, 2.7, 1.9, 0, 0, Math.PI * 2);
+      ctx.ellipse(5.5, -180, 2.7, 1.9, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#1e1b18';
       ctx.beginPath();
-      ctx.arc(-5.5, -180, 1.5, 0, Math.PI * 2);
-      ctx.arc(5.5, -180, 1.5, 0, Math.PI * 2);
+      ctx.arc(-5.5, -180, 1.55, 0, Math.PI * 2);
+      ctx.arc(5.5, -180, 1.55, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.strokeStyle = '#c99376';
@@ -677,31 +779,40 @@
       ctx.lineTo(1.2, -174.5);
       ctx.stroke();
 
-      ctx.fillStyle = 'rgba(244, 63, 94, 0.34)';
+      ctx.fillStyle = 'rgba(244, 63, 94, 0.38)';
       ctx.beginPath();
-      ctx.ellipse(-8.2, -174.5, 3.2, 2, 0, 0, Math.PI * 2);
-      ctx.ellipse(8.2, -174.5, 3.2, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(-8.2, -174.5, 3.3, 2.1, 0, 0, Math.PI * 2);
+      ctx.ellipse(8.2, -174.5, 3.3, 2.1, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#be123c';
       ctx.beginPath();
-      ctx.ellipse(0, -169.5, 3.6, 1.7, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -169.5, 3.8, 1.8, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
     }
 
+    // Dibuix immediat i observador de mida perquè la portada mai quedi buida ni retallada
     drawCoverIllustration();
+    requestAnimationFrame(drawCoverIllustration);
     window.addEventListener('resize', drawCoverIllustration);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => drawCoverIllustration());
+      const cw = document.getElementById('cover-wrapper');
+      if (cw) ro.observe(cw);
+    }
 
     // =========================================================================
     // 2. SISTEMA D'ÀUDIO WEB AUDIO API: DUES GRALLES HARMONITZADES I TABAL
+    //    + SESSIÓ FESTIVA DE DJ PER A LA CELEBRACIÓ
     // =========================================================================
     class GrallaTabalAudioEngine {
       constructor() {
         this.ctx = null;
         this.muted = false;
         this.playing = false;
+        this.mode = 'cercavila'; // 'cercavila' | 'dj'
         this.timer = null;
         this.step = 0;
       }
@@ -719,6 +830,41 @@
       toggleMute() {
         this.muted = !this.muted;
         return this.muted;
+      }
+
+      playGrallaVoice(freq, durationSec, isSecondVoice) {
+        if (this.muted || !this.ctx || !freq) return;
+        const t = this.ctx.currentTime;
+
+        const oscMain = this.ctx.createOscillator();
+        const oscHarm = this.ctx.createOscillator();
+        const filter = this.ctx.createBiquadFilter();
+        const gain = this.ctx.createGain();
+
+        oscMain.type = 'sawtooth';
+        oscHarm.type = 'triangle';
+        oscMain.frequency.setValueAtTime(freq, t);
+        oscHarm.frequency.setValueAtTime(freq * 2, t);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(isSecondVoice ? 1150 : 1380, t);
+        filter.Q.setValueAtTime(2.4, t);
+
+        const peak = isSecondVoice ? 0.032 : 0.048;
+        gain.gain.setValueAtTime(0.0008, t);
+        gain.gain.linearRampToValueAtTime(peak, t + 0.025);
+        gain.gain.setValueAtTime(peak * 0.85, t + Math.max(0.04, durationSec - 0.04));
+        gain.gain.exponentialRampToValueAtTime(0.0008, t + durationSec + 0.02);
+
+        oscMain.connect(filter);
+        oscHarm.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        oscMain.start(t);
+        oscHarm.start(t);
+        oscMain.stop(t + durationSec + 0.03);
+        oscHarm.stop(t + durationSec + 0.03);
       }
 
       playTabal(kind) {
@@ -756,54 +902,103 @@
         osc.stop(t + 0.2);
       }
 
-      playGrallaVoice(freq, dur, isSecondVoice) {
+      playDjKick() {
         if (this.muted || !this.ctx) return;
         const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(145, t);
+        osc.frequency.exponentialRampToValueAtTime(42, t + 0.16);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.18, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.23);
+      }
 
-        const reed1 = this.ctx.createOscillator();
-        const reed2 = this.ctx.createOscillator();
-        const body = this.ctx.createOscillator();
-        const bandpass = this.ctx.createBiquadFilter();
-        const lowpass = this.ctx.createBiquadFilter();
+      playDjHat(openHat) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const bufferSize = Math.floor(this.ctx.sampleRate * (openHat ? 0.14 : 0.045));
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const hp = this.ctx.createBiquadFilter();
+        hp.type = 'highpass';
+        hp.frequency.setValueAtTime(6800, t);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(openHat ? 0.042 : 0.026, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + (openHat ? 0.13 : 0.04));
+
+        noise.connect(hp);
+        hp.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t);
+      }
+
+      playDjBass(freq, dur) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const lp = this.ctx.createBiquadFilter();
         const gain = this.ctx.createGain();
 
-        reed1.type = 'sawtooth';
-        reed1.frequency.setValueAtTime(freq, t);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
 
-        reed2.type = 'sawtooth';
-        reed2.frequency.setValueAtTime(freq * (isSecondVoice ? 0.9985 : 1.0018), t);
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(420, t);
+        lp.frequency.exponentialRampToValueAtTime(160, t + dur);
 
-        body.type = 'triangle';
-        body.frequency.setValueAtTime(freq, t);
-
-        bandpass.type = 'peaking';
-        bandpass.frequency.setValueAtTime(960, t);
-        bandpass.Q.setValueAtTime(1.8, t);
-        bandpass.gain.setValueAtTime(4.2, t);
-
-        lowpass.type = 'lowpass';
-        lowpass.frequency.setValueAtTime(isSecondVoice ? 1300 : 1550, t);
-        lowpass.Q.setValueAtTime(0.9, t);
-
-        const peak = isSecondVoice ? 0.032 : 0.048;
         gain.gain.setValueAtTime(0.001, t);
-        gain.gain.linearRampToValueAtTime(peak, t + 0.028);
-        gain.gain.setValueAtTime(peak * 0.86, t + Math.max(0.04, dur - 0.05));
+        gain.gain.linearRampToValueAtTime(0.085, t + 0.015);
         gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
 
-        reed1.connect(bandpass);
-        reed2.connect(bandpass);
-        body.connect(bandpass);
-        bandpass.connect(lowpass);
-        lowpass.connect(gain);
+        osc.connect(lp);
+        lp.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.02);
+      }
+
+      playDjLead(freq, dur) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const lp = this.ctx.createBiquadFilter();
+        const gain = this.ctx.createGain();
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(freq, t);
+        osc2.type = 'square';
+        osc2.frequency.setValueAtTime(freq * 1.004, t);
+
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(2200, t);
+        lp.frequency.exponentialRampToValueAtTime(850, t + dur);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.042, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc1.connect(lp);
+        osc2.connect(lp);
+        lp.connect(gain);
         gain.connect(this.ctx.destination);
 
-        reed1.start(t);
-        reed2.start(t);
-        body.start(t);
-        reed1.stop(t + dur + 0.03);
-        reed2.stop(t + dur + 0.03);
-        body.stop(t + dur + 0.03);
+        osc1.start(t);
+        osc2.start(t);
+        osc1.stop(t + dur + 0.02);
+        osc2.stop(t + dur + 0.02);
       }
 
       playSfx(type) {
@@ -857,6 +1052,7 @@
       start() {
         this.stop();
         this.init();
+        this.mode = 'cercavila';
         this.playing = true;
         this.step = 0;
 
@@ -917,7 +1113,7 @@
         let hold = 0;
 
         const tick = () => {
-          if (!this.playing) return;
+          if (!this.playing || this.mode !== 'cercavila') return;
 
           const beatPos = this.step % 8;
           if (beatPos === 0 || beatPos === 4) {
@@ -946,6 +1142,49 @@
         this.timer = setInterval(tick, sixteenthMs);
       }
 
+      startDjSet() {
+        this.stop();
+        this.init();
+        this.mode = 'dj';
+        this.playing = true;
+        this.step = 0;
+
+        const stepMs = 119;
+        const bassPattern = [
+          110.00, 0, 110.00, 220.00, 110.00, 0, 130.81, 146.83,
+          87.31,  0, 87.31,  174.61, 87.31,  0, 110.00, 130.81,
+          130.81, 0, 130.81, 261.63, 130.81, 0, 146.83, 164.81,
+          98.00,  0, 98.00,  196.00, 98.00,  0, 123.47, 146.83
+        ];
+        const leadPattern = [
+          440.00, 0, 523.25, 0, 659.25, 587.33, 523.25, 0,
+          440.00, 0, 349.23, 0, 440.00, 523.25, 587.33, 0,
+          523.25, 0, 659.25, 0, 783.99, 659.25, 587.33, 523.25,
+          587.33, 0, 493.88, 0, 392.00, 493.88, 587.33, 0
+        ];
+
+        const tickDj = () => {
+          if (!this.playing || this.mode !== 'dj') return;
+          const idx = this.step % 32;
+          const beat = this.step % 4;
+
+          if (beat === 0) this.playDjKick();
+          if (beat === 2) this.playDjHat(true);
+          if (beat === 1 || beat === 3) this.playDjHat(false);
+
+          const bf = bassPattern[idx];
+          if (bf > 0) this.playDjBass(bf, (stepMs / 1000) * 1.4);
+
+          const lf = leadPattern[idx];
+          if (lf > 0) this.playDjLead(lf, (stepMs / 1000) * 1.85);
+
+          this.step++;
+        };
+
+        tickDj();
+        this.timer = setInterval(tickDj, stepMs);
+      }
+
       stop() {
         this.playing = false;
         if (this.timer) {
@@ -958,13 +1197,14 @@
     const audio = new GrallaTabalAudioEngine();
 
     // =========================================================================
-    // 3. JOYSTICK VIRTUAL ANALÒGIC + ENTRADA DE TECLAT SUAU
+    // 3. JOYSTICK VIRTUAL ANALÒGIC MULTITÀCTIL REAL + ENTRADA DE TECLAT SUAU
     // =========================================================================
     const input = {
-      joyX: 0,       // [-1..1] control analògic lateral
-      joyY: 0,       // [-1..1] control analògic de ritme (amunt accelera, avall frena)
+      joyX: 0,
+      joyY: 0,
       joyActive: false,
       joyPointerId: null,
+      joyTouchId: null,
       keys: {
         left: false,
         right: false,
@@ -999,7 +1239,6 @@
       const nx = dx / MAX_JOY_RADIUS;
       const ny = dy / MAX_JOY_RADIUS;
 
-      // Zona morta suau al centre perquè el gegant camini recte sense vibracions
       const deadzone = 0.08;
       input.joyX = Math.abs(nx) < deadzone ? 0 : (nx - Math.sign(nx) * deadzone) / (1 - deadzone);
       input.joyY = Math.abs(ny) < deadzone ? 0 : (ny - Math.sign(ny) * deadzone) / (1 - deadzone);
@@ -1010,6 +1249,7 @@
     function resetJoystick() {
       input.joyActive = false;
       input.joyPointerId = null;
+      input.joyTouchId = null;
       input.joyX = 0;
       input.joyY = 0;
       joyKnob.style.transition = 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1)';
@@ -1018,6 +1258,8 @@
 
     joyBase.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      e.stopPropagation();
+      if (input.joyActive) return;
       input.joyActive = true;
       input.joyPointerId = e.pointerId;
       joyKnob.style.transition = 'none';
@@ -1025,29 +1267,97 @@
         try { joyBase.setPointerCapture(e.pointerId); } catch (_) {}
       }
       handleJoystickMove(e.clientX, e.clientY);
-    });
+    }, { passive: false });
 
     joyBase.addEventListener('pointermove', (e) => {
       if (!input.joyActive || e.pointerId !== input.joyPointerId) return;
       e.preventDefault();
+      e.stopPropagation();
       handleJoystickMove(e.clientX, e.clientY);
-    });
+    }, { passive: false });
 
     joyBase.addEventListener('pointerup', (e) => {
-      if (e.pointerId === input.joyPointerId) resetJoystick();
-    });
+      if (e.pointerId === input.joyPointerId) {
+        e.preventDefault();
+        resetJoystick();
+      }
+    }, { passive: false });
 
     joyBase.addEventListener('pointercancel', (e) => {
-      if (e.pointerId === input.joyPointerId) resetJoystick();
+      if (e.pointerId === input.joyPointerId) {
+        resetJoystick();
+      }
     });
+
+    joyBase.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (input.joyTouchId !== null) return;
+      const t = e.changedTouches[0];
+      if (!t) return;
+      input.joyActive = true;
+      input.joyTouchId = t.identifier;
+      joyKnob.style.transition = 'none';
+      handleJoystickMove(t.clientX, t.clientY);
+    }, { passive: false });
+
+    joyBase.addEventListener('touchmove', (e) => {
+      if (input.joyTouchId === null) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === input.joyTouchId) {
+          e.preventDefault();
+          e.stopPropagation();
+          handleJoystickMove(t.clientX, t.clientY);
+          break;
+        }
+      }
+    }, { passive: false });
+
+    function handleTouchEndOrCancel(e) {
+      if (input.joyTouchId === null) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === input.joyTouchId) {
+          e.preventDefault();
+          resetJoystick();
+          break;
+        }
+      }
+    }
+    joyBase.addEventListener('touchend', handleTouchEndOrCancel, { passive: false });
+    joyBase.addEventListener('touchcancel', handleTouchEndOrCancel, { passive: false });
+
+    function bindMultitouchActionButton(btnEl, actionFn) {
+      let lastTriggerAt = 0;
+      const fire = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        const now = performance.now();
+        if (now - lastTriggerAt < 90) return;
+        lastTriggerAt = now;
+        actionFn();
+      };
+
+      btnEl.addEventListener('pointerdown', fire, { passive: false });
+      btnEl.addEventListener('touchstart', fire, { passive: false });
+      btnEl.addEventListener('click', (e) => {
+        if (e.detail !== 0) return;
+        fire(e);
+      });
+    }
 
     // =========================================================================
     // 4. MOTOR 3D THREE.JS: COLLBATÓ, MONTSERRAT I ELS GEGANTS
+    //    + SALA DE CELEBRACIÓ AMB CABINA DE DJ I PISTA DE BALL
     // =========================================================================
     let worldReady = false;
     let scene, camera, renderer;
     let mansuet3D, marta3D;
     let montserratGroup;
+    let paradeGroup, partyGroup;
+    let partyObjects = null;
     const STREET_HALF_WIDTH = 4.2;
     const COURSE_LENGTH = 540;
     const obstacles = [];
@@ -1057,6 +1367,7 @@
     const confettiParticles = [];
 
     const game = {
+      mode: 'parade', // 'parade' | 'party'
       running: false,
       activeGiant: 'mansuet',
       facingFront: false,
@@ -1142,11 +1453,6 @@
       }
       g.fillStyle = '#111319';
       g.fillRect(92, 16, 72, 168);
-      ctxLineBlonda(g);
-      return new THREE.CanvasTexture(c);
-    }
-
-    function ctxLineBlonda(g) {
       g.strokeStyle = '#94a3b8';
       g.lineWidth = 2;
       for (let ly = 26; ly < 180; ly += 14) {
@@ -1155,6 +1461,7 @@
         g.lineTo(160, ly);
         g.stroke();
       }
+      return new THREE.CanvasTexture(c);
     }
 
     function buildMansuet3D() {
@@ -1396,7 +1703,6 @@
       mantellina.scale.set(1.05, 1, 0.95);
       upper.add(mantellina);
 
-      // Ambdós braços articulats de la Marta
       const sleeveMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 });
       const skinMat = new THREE.MeshStandardMaterial({ color: 0xf3cbb2, roughness: 0.55 });
 
@@ -1508,14 +1814,14 @@
       road.rotation.x = -Math.PI / 2;
       road.position.set(0, 0, -COURSE_LENGTH / 2 + 15);
       road.receiveShadow = true;
-      scene.add(road);
+      paradeGroup.add(road);
 
       const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.85 });
       [-7.3, 7.3].forEach((sx) => {
         const sw = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.22, COURSE_LENGTH + 90), sidewalkMat);
         sw.position.set(sx, 0.11, -COURSE_LENGTH / 2 + 15);
         sw.receiveShadow = true;
-        scene.add(sw);
+        paradeGroup.add(sw);
       });
 
       const wallColors = [0xfef3c7, 0xfde68a, 0xfed7aa, 0xfecdd3, 0xe0e7ff];
@@ -1530,7 +1836,7 @@
           house.position.set(hx, h / 2, z);
           house.castShadow = true;
           house.receiveShadow = true;
-          scene.add(house);
+          paradeGroup.add(house);
 
           const balcX = hx > 0 ? hx - 3.35 : hx + 3.35;
           const balcony = new THREE.Mesh(
@@ -1538,7 +1844,7 @@
             new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 })
           );
           balcony.position.set(balcX, 4.3, z);
-          scene.add(balcony);
+          paradeGroup.add(balcony);
 
           const bannerColor = (Math.abs(z) / 14) % 2 === 0 ? 0xdc2626 : 0xfacc15;
           const drape = new THREE.Mesh(
@@ -1546,7 +1852,7 @@
             new THREE.MeshStandardMaterial({ color: bannerColor, roughness: 0.7 })
           );
           drape.position.set(hx > 0 ? balcX - 0.35 : balcX + 0.35, 3.9, z);
-          scene.add(drape);
+          paradeGroup.add(drape);
         });
       }
 
@@ -1574,7 +1880,7 @@
         trim.position.set(0, 5.65, 0);
         archGroup.add(topBeam, trim);
 
-        scene.add(archGroup);
+        paradeGroup.add(archGroup);
         arches.push({ z: ap.z, passed: false, group: archGroup });
       });
 
@@ -1616,7 +1922,7 @@
           armPivot.add(arm, hanky);
 
           person.add(torso, head, armPivot);
-          scene.add(person);
+          paradeGroup.add(person);
           crowdPeople.push({
             group: person,
             armPivot,
@@ -1627,10 +1933,298 @@
       }
     }
 
-    // Obstacles i col·leccionables distribuïts lliurement per tota l'amplada de la calçada
+    function buildCelebrationHall() {
+      const group = new THREE.Group();
+
+      const hallFloor = new THREE.Mesh(
+        new THREE.PlaneGeometry(34, 34),
+        new THREE.MeshStandardMaterial({ color: 0x26171d, roughness: 0.65 })
+      );
+      hallFloor.rotation.x = -Math.PI / 2;
+      hallFloor.receiveShadow = true;
+      group.add(hallFloor);
+
+      const danceTiles = [];
+      const tilePalette = [0xf59e0b, 0xec4899, 0x8b5cf6, 0x06b6d4, 0xef4444];
+      for (let gx = -3; gx <= 3; gx++) {
+        for (let gz = -2; gz <= 3; gz++) {
+          const tileMat = new THREE.MeshStandardMaterial({
+            color: tilePalette[Math.abs(gx * 3 + gz) % tilePalette.length],
+            emissive: tilePalette[Math.abs(gx * 3 + gz) % tilePalette.length],
+            emissiveIntensity: 0.35,
+            roughness: 0.25
+          });
+          const tile = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.06, 1.42), tileMat);
+          tile.position.set(gx * 1.5, 0.03, gz * 1.5);
+          group.add(tile);
+          danceTiles.push({ mat: tileMat, phase: gx * 0.7 + gz * 0.9 });
+        }
+      }
+
+      const wallMat = new THREE.MeshStandardMaterial({ color: 0x3b2329, roughness: 0.85 });
+      const backWall = new THREE.Mesh(new THREE.BoxGeometry(34, 12, 0.8), wallMat);
+      backWall.position.set(0, 6, -12);
+      const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.8, 12, 34), wallMat);
+      leftWall.position.set(-15, 6, 0);
+      const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.8, 12, 34), wallMat);
+      rightWall.position.set(15, 6, 0);
+      const ceiling = new THREE.Mesh(
+        new THREE.PlaneGeometry(34, 34),
+        new THREE.MeshStandardMaterial({ color: 0x160d18, roughness: 0.9 })
+      );
+      ceiling.rotation.x = Math.PI / 2;
+      ceiling.position.y = 11.5;
+      group.add(backWall, leftWall, rightWall, ceiling);
+
+      const flagColors = [0xdc2626, 0xfacc15, 0xec4899, 0x38bdf8, 0xffffff];
+      for (let i = -10; i <= 10; i += 1.4) {
+        const flag = new THREE.Mesh(
+          new THREE.ConeGeometry(0.24, 0.45, 3),
+          new THREE.MeshStandardMaterial({ color: flagColors[Math.abs(Math.round(i)) % flagColors.length] })
+        );
+        flag.rotation.x = Math.PI;
+        flag.position.set(i, 8.6 - Math.cos((i / 10) * (Math.PI / 2)) * 1.1, -4.5);
+        group.add(flag);
+      }
+
+      const discoBall = new THREE.Mesh(
+        new THREE.SphereGeometry(0.85, 18, 18),
+        new THREE.MeshStandardMaterial({
+          color: 0xf8fafc,
+          emissive: 0xfde68a,
+          emissiveIntensity: 0.45,
+          metalness: 0.95,
+          roughness: 0.1
+        })
+      );
+      discoBall.position.set(0, 8.4, 0.5);
+      const discoRod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 3.2, 8),
+        new THREE.MeshStandardMaterial({ color: 0x94a3b8 })
+      );
+      discoRod.position.set(0, 10.0, 0.5);
+      group.add(discoBall, discoRod);
+
+      const stage = new THREE.Mesh(
+        new THREE.BoxGeometry(11, 0.8, 4.2),
+        new THREE.MeshStandardMaterial({ color: 0x1e1b2e, roughness: 0.6 })
+      );
+      stage.position.set(0, 0.4, -8.8);
+      group.add(stage);
+
+      const speakerMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+      const coneMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.35 });
+      [-4.4, 4.4].forEach((sx) => {
+        const cab = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.8, 1.2), speakerMat);
+        cab.position.set(sx, 2.2, -8.5);
+        const woofer1 = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.1, 16), coneMat);
+        woofer1.rotation.x = Math.PI / 2;
+        woofer1.position.set(sx, 1.6, -7.88);
+        const woofer2 = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.1, 16), coneMat);
+        woofer2.rotation.x = Math.PI / 2;
+        woofer2.position.set(sx, 2.75, -7.88);
+        group.add(cab, woofer1, woofer2);
+      });
+
+      const booth = new THREE.Mesh(
+        new THREE.BoxGeometry(4.4, 1.15, 1.35),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
+      );
+      booth.position.set(0, 1.38, -8.1);
+      const ledFront = new THREE.Mesh(
+        new THREE.BoxGeometry(4.1, 0.68, 0.08),
+        new THREE.MeshStandardMaterial({
+          color: 0xec4899,
+          emissive: 0xd946ef,
+          emissiveIntensity: 0.75
+        })
+      );
+      ledFront.position.set(0, 1.38, -7.41);
+      group.add(booth, ledFront);
+
+      const turntableLeft = new THREE.Group();
+      turntableLeft.position.set(-1.15, 1.98, -8.1);
+      const baseL = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.1, 0.8), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+      const discL = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.03, 20), new THREE.MeshStandardMaterial({ color: 0x090d16 }));
+      discL.position.y = 0.06;
+      const labelL = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.035, 14), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+      labelL.position.y = 0.062;
+      const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.04, 0.04), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+      stripeL.position.set(0.16, 0.065, 0);
+      discL.add(labelL, stripeL);
+      turntableLeft.add(baseL, discL);
+
+      const turntableRight = new THREE.Group();
+      turntableRight.position.set(1.15, 1.98, -8.1);
+      const baseR = baseL.clone();
+      const discR = discL.clone();
+      turntableRight.add(baseR, discR);
+
+      const mixer = new THREE.Mesh(
+        new THREE.BoxGeometry(0.9, 0.12, 0.78),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b })
+      );
+      mixer.position.set(0, 1.99, -8.1);
+      group.add(turntableLeft, turntableRight, mixer);
+
+      const djGroup = new THREE.Group();
+      djGroup.position.set(0, 0.8, -8.85);
+
+      const djTorso = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.32, 0.36, 1.15, 12),
+        new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 })
+      );
+      djTorso.position.y = 1.1;
+
+      const djHead = new THREE.Mesh(
+        new THREE.SphereGeometry(0.26, 14, 14),
+        new THREE.MeshStandardMaterial({ color: 0xf1c29b, roughness: 0.55 })
+      );
+      djHead.position.y = 1.92;
+
+      const djCap = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.25, 0.27, 0.18, 12),
+        new THREE.MeshStandardMaterial({ color: 0x111827 })
+      );
+      djCap.position.y = 2.08;
+
+      const hpBand = new THREE.Mesh(
+        new THREE.TorusGeometry(0.28, 0.03, 8, 16, Math.PI),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b })
+      );
+      hpBand.position.y = 1.95;
+      const cupL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 12), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
+      cupL.rotation.z = Math.PI / 2;
+      cupL.position.set(-0.28, 1.92, 0);
+      const cupR = cupL.clone();
+      cupR.position.x = 0.28;
+
+      const djArmL = new THREE.Group();
+      djArmL.position.set(-0.4, 1.55, 0);
+      const armMeshL = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.07, 0.72, 10),
+        new THREE.MeshStandardMaterial({ color: 0x7c3aed })
+      );
+      armMeshL.position.set(-0.1, -0.26, 0.25);
+      armMeshL.rotation.x = -0.85;
+      djArmL.add(armMeshL);
+
+      const djArmR = new THREE.Group();
+      djArmR.position.set(0.4, 1.55, 0);
+      const armMeshR = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.07, 0.72, 10),
+        new THREE.MeshStandardMaterial({ color: 0x7c3aed })
+      );
+      armMeshR.position.set(0.1, 0.24, 0.18);
+      armMeshR.rotation.x = -2.35;
+      djArmR.add(armMeshR);
+
+      djGroup.add(djTorso, djHead, djCap, hpBand, cupL, cupR, djArmL, djArmR);
+      group.add(djGroup);
+
+      const beams = [];
+      const beamSpecs = [
+        { x: -5.5, color: 0xec4899 },
+        { x: 0, color: 0xfbbf24 },
+        { x: 5.5, color: 0x38bdf8 }
+      ];
+      beamSpecs.forEach((bs, idx) => {
+        const beamPivot = new THREE.Group();
+        beamPivot.position.set(bs.x, 10.6, -5.5);
+        const cone = new THREE.Mesh(
+          new THREE.ConeGeometry(2.4, 12.5, 16, 1, true),
+          new THREE.MeshBasicMaterial({
+            color: bs.color,
+            transparent: true,
+            opacity: 0.16,
+            side: THREE.DoubleSide,
+            depthWrite: false
+          })
+        );
+        cone.position.y = -6.2;
+        beamPivot.add(cone);
+        group.add(beamPivot);
+        beams.push({ pivot: beamPivot, phase: idx * 2.1 });
+      });
+
+      const dancers = [];
+      const dancerCoords = [
+        [-4.2, -2.5], [-4.8, 0.8], [-3.8, 3.2], [-2.2, 4.2],
+        [4.2, -2.5],  [4.8, 0.8],  [3.8, 3.2],  [2.2, 4.2],
+        [-3.2, -4.6], [3.2, -4.6], [-5.5, -1.2], [5.5, -1.2]
+      ];
+      const clothPalette = [0xef4444, 0x3b82f6, 0x10b981, 0xf59e0b, 0xec4899, 0x8b5cf6];
+
+      dancerCoords.forEach(([dx, dz], idx) => {
+        const isChild = idx % 3 === 1;
+        const dGroup = new THREE.Group();
+        dGroup.position.set(dx, 0, dz);
+        dGroup.scale.setScalar(isChild ? 0.7 : 1.0);
+        dGroup.lookAt(0, 0, 0.5);
+
+        const col = clothPalette[idx % clothPalette.length];
+        const torso = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.22, 0.26, 0.96, 10),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.7 })
+        );
+        torso.position.y = 0.76;
+
+        const head = new THREE.Mesh(
+          new THREE.SphereGeometry(0.19, 10, 10),
+          new THREE.MeshStandardMaterial({ color: 0xf1c29b, roughness: 0.6 })
+        );
+        head.position.y = 1.44;
+
+        const armL = new THREE.Group();
+        armL.position.set(-0.26, 1.15, 0);
+        const aMeshL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.055, 0.05, 0.52, 8),
+          new THREE.MeshStandardMaterial({ color: col })
+        );
+        aMeshL.position.set(-0.08, 0.22, 0.08);
+        aMeshL.rotation.z = 0.45;
+        armL.add(aMeshL);
+
+        const armR = new THREE.Group();
+        armR.position.set(0.26, 1.15, 0);
+        const aMeshR = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.055, 0.05, 0.52, 8),
+          new THREE.MeshStandardMaterial({ color: col })
+        );
+        aMeshR.position.set(0.08, 0.22, 0.08);
+        aMeshR.rotation.z = -0.45;
+        armR.add(aMeshR);
+
+        dGroup.add(torso, head, armL, armR);
+        group.add(dGroup);
+        dancers.push({
+          group: dGroup,
+          armL,
+          armR,
+          baseX: dx,
+          baseZ: dz,
+          phase: idx * 0.65
+        });
+      });
+
+      return {
+        group,
+        discoBall,
+        discL,
+        discR,
+        djGroup,
+        djArmL,
+        djArmR,
+        ledFront,
+        danceTiles,
+        beams,
+        dancers
+      };
+    }
+
     function populateCourse() {
-      obstacles.forEach((o) => scene.remove(o.mesh));
-      pickups.forEach((p) => scene.remove(p.mesh));
+      obstacles.forEach((o) => paradeGroup.remove(o.mesh));
+      pickups.forEach((p) => paradeGroup.remove(p.mesh));
       obstacles.length = 0;
       pickups.length = 0;
       arches.forEach((a) => { a.passed = false; });
@@ -1658,7 +2252,6 @@
       for (let z = -34; z > -COURSE_LENGTH + 25; z -= 21) {
         if (arches.some((a) => Math.abs(a.z - z) < 12)) continue;
 
-        // Posició X contínua per tot el carrer
         const obsX = (Math.random() * 2 - 1) * 3.1;
         const kindRoll = Math.random();
         const obsGroup = new THREE.Group();
@@ -1666,7 +2259,6 @@
         let halfW = 0.9;
 
         if (kindRoll < 0.36) {
-          // Banc de pedra
           halfW = 0.88;
           const seat = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.14, 0.65), benchMat);
           seat.position.y = 0.52;
@@ -1678,7 +2270,6 @@
           leg2.position.x = 0.7;
           obsGroup.add(seat, back, leg1, leg2);
         } else if (kindRoll < 0.72) {
-          // Tanca de fusta festiva
           halfW = 0.92;
           const bar1 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.22, 0.14), fenceWoodMat);
           bar1.position.y = 0.78;
@@ -1690,7 +2281,6 @@
           postR.position.x = 0.82;
           obsGroup.add(bar1, bar2, postL, postR);
         } else {
-          // Jardinera florida
           halfW = 0.65;
           const pot = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.58, 0.7), planterMat);
           pot.position.y = 0.29;
@@ -1700,10 +2290,9 @@
           obsGroup.add(pot, bush);
         }
 
-        scene.add(obsGroup);
+        paradeGroup.add(obsGroup);
         obstacles.push({ x: obsX, halfW, z, mesh: obsGroup, hit: false });
 
-        // Col·leccionable en una zona lliure de la calçada
         let pickX = obsX > 0 ? obsX - 2.6 : obsX + 2.6;
         pickX = Math.max(-3.6, Math.min(3.6, pickX));
         const isScarf = Math.random() > 0.55;
@@ -1724,7 +2313,7 @@
           pickGroup.add(headNote, stem, flag);
         }
 
-        scene.add(pickGroup);
+        paradeGroup.add(pickGroup);
         pickups.push({ x: pickX, z: z - 4, mesh: pickGroup, collected: false, isScarf });
       }
     }
@@ -1758,6 +2347,7 @@
     const touchEl = document.getElementById('touch-controls');
     const startScreenEl = document.getElementById('start-screen');
     const endScreenEl = document.getElementById('end-screen');
+    const partyHudEl = document.getElementById('party-hud');
     const toastEl = document.getElementById('banner-toast');
     let toastTimeout = null;
 
@@ -1828,7 +2418,44 @@
       document.getElementById('final-items').textContent = game.items;
       hudEl.classList.add('hidden');
       touchEl.classList.add('hidden');
+      partyHudEl.classList.add('hidden');
       endScreenEl.classList.remove('hidden');
+    }
+
+    function enterCelebration() {
+      if (!worldReady && window.THREE) {
+        window.__init3DWorld();
+      }
+      if (!worldReady) return;
+
+      game.mode = 'party';
+      game.running = false;
+      resetJoystick();
+
+      paradeGroup.visible = false;
+      montserratGroup.visible = false;
+      partyGroup.visible = true;
+
+      scene.background = new THREE.Color(0x160d18);
+      scene.fog = new THREE.FogExp2(0x160d18, 0.016);
+
+      mansuet3D.root.visible = true;
+      marta3D.root.visible = true;
+      mansuet3D.root.position.set(-1.35, 0, 0.4);
+      marta3D.root.position.set(1.35, 0, 0.4);
+      mansuet3D.root.rotation.set(0, 0.25, 0);
+      marta3D.root.rotation.set(0, -0.25, 0);
+
+      endScreenEl.classList.add('hidden');
+      hudEl.classList.add('hidden');
+      touchEl.classList.add('hidden');
+      partyHudEl.classList.remove('hidden');
+
+      document.getElementById('party-sound-on').classList.toggle('hidden', audio.muted);
+      document.getElementById('party-sound-off').classList.toggle('hidden', !audio.muted);
+      audio.startDjSet();
+
+      spawnConfettiBurst(0, 0.5, 0.4, 48);
     }
 
     function startGame() {
@@ -1840,6 +2467,7 @@
         return;
       }
 
+      game.mode = 'parade';
       game.running = true;
       game.activeGiant = 'mansuet';
       game.facingFront = false;
@@ -1859,6 +2487,15 @@
       game.walkPhase = 0;
       game.lastZone = -1;
 
+      paradeGroup.visible = true;
+      montserratGroup.visible = true;
+      partyGroup.visible = false;
+      scene.background = new THREE.Color(0xd97742);
+      scene.fog = new THREE.FogExp2(0xd97742, 0.0085);
+
+      mansuet3D.root.position.set(0, 0, 0);
+      marta3D.root.position.set(0, 0, 0);
+
       resetJoystick();
       updateGiantVisibility();
       updateFaceButtonUI();
@@ -1866,14 +2503,17 @@
 
       startScreenEl.classList.add('hidden');
       endScreenEl.classList.add('hidden');
+      partyHudEl.classList.add('hidden');
       hudEl.classList.remove('hidden');
       touchEl.classList.remove('hidden');
+
+      document.getElementById('icon-sound-on').classList.toggle('hidden', audio.muted);
+      document.getElementById('icon-sound-off').classList.toggle('hidden', !audio.muted);
 
       audio.start();
       showBanner('1. Nucli Antic de Collbató');
     }
 
-    // Controls de teclat continus (WASD / Fletxes)
     window.addEventListener('keydown', (e) => {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
         input.keys.left = true;
@@ -1904,20 +2544,27 @@
 
     document.getElementById('btn-start').addEventListener('click', startGame);
     document.getElementById('btn-restart').addEventListener('click', startGame);
-    document.getElementById('btn-jump').addEventListener('click', jumpGiant);
-    document.getElementById('btn-switch').addEventListener('click', switchGiant);
-    document.getElementById('btn-face').addEventListener('click', toggleGiantFaceView);
+    document.getElementById('btn-celebration').addEventListener('click', enterCelebration);
+    document.getElementById('btn-party-back').addEventListener('click', startGame);
+    bindMultitouchActionButton(document.getElementById('btn-jump'), jumpGiant);
+    bindMultitouchActionButton(document.getElementById('btn-switch'), switchGiant);
+    bindMultitouchActionButton(document.getElementById('btn-face'), toggleGiantFaceView);
 
-    document.getElementById('btn-mute').addEventListener('click', () => {
+    function handleGlobalMuteToggle() {
       const muted = audio.toggleMute();
       document.getElementById('icon-sound-on').classList.toggle('hidden', muted);
       document.getElementById('icon-sound-off').classList.toggle('hidden', !muted);
-    });
+      document.getElementById('party-sound-on').classList.toggle('hidden', muted);
+      document.getElementById('party-sound-off').classList.toggle('hidden', !muted);
+    }
+
+    document.getElementById('btn-mute').addEventListener('click', handleGlobalMuteToggle);
+    document.getElementById('btn-party-mute').addEventListener('click', handleGlobalMuteToggle);
 
     // =========================================================================
-    // 6. BUCLE D'ANIMACIÓ 3D AMB FÍSICA D'INÈRCIA I BALANCEIG DE GEGANTER
+    // 6. BUCLE PRINCIPAL D'ANIMACIÓ I INICIALITZACIÓ 3D
     // =========================================================================
-    let lastTime = performance.now();
+    let lastTime = 0;
 
     function animate(now) {
       requestAnimationFrame(animate);
@@ -1927,255 +2574,16 @@
       lastTime = now;
       game.time += dt;
 
-      if (game.running) {
-        // Combinació suau de joystick analògic i teclat
-        const keyX = (input.keys.right ? 1 : 0) - (input.keys.left ? 1 : 0);
-        const keyY = (input.keys.down ? 1 : 0) - (input.keys.up ? 1 : 0);
-        const steerX = Math.max(-1, Math.min(1, input.joyX + keyX));
-        const throttleY = Math.max(-1, Math.min(1, input.joyY + keyY));
+      if (game.mode === 'party' && partyObjects) {
+        const beat = game.time * 6.6;
 
-        // Eix vertical del joystick regula el ritme d'avanç (amunt = més ràpid, avall = més pausat)
-        const targetForwardSpeed = game.baseSpeed * (1 - throttleY * 0.36) * (game.hurtTimer > 0 ? 0.55 : 1);
-        game.currentSpeed += (targetForwardSpeed - game.currentSpeed) * Math.min(1, dt * 6.5);
-        game.z -= game.currentSpeed * dt;
-        game.score += game.currentSpeed * dt * 2.5;
+        partyObjects.discoBall.rotation.y += dt * 1.1;
+        partyObjects.discL.rotation.y += dt * 5.2;
+        partyObjects.discR.rotation.y -= dt * 5.2;
 
-        // Eix horitzontal del joystick amb acceleració i frenada orgànica (inèrcia)
-        const maxLatSpeed = 8.4;
-        const targetVx = steerX * maxLatSpeed;
-        const latAccel = Math.abs(steerX) > 0.02 ? 10.5 : 8.5;
-        game.vx += (targetVx - game.vx) * Math.min(1, dt * latAccel);
-        game.x += game.vx * dt;
+        partyObjects.djGroup.position.y = 0.8 + Math.abs(Math.sin(beat)) * 0.08;
+        partyObjects.djArmL.rotation.z = Math.sin(beat * 2) * 0.25;
+        partyObjects.djArmR.rotation.z = Math.cos(beat) * 0.35;
+        partyObjects.ledFront.material.emissiveIntensity = 0.45 + Math.abs(Math.sin(beat)) * 0.55;
 
-        // Límits suaus a les vores de la calçada
-        if (game.x < -STREET_HALF_WIDTH) {
-          game.x = -STREET_HALF_WIDTH;
-          if (game.vx < 0) game.vx *= -0.25;
-        } else if (game.x > STREET_HALF_WIDTH) {
-          game.x = STREET_HALF_WIDTH;
-          if (game.vx > 0) game.vx *= -0.25;
-        }
-
-        if (game.hurtTimer > 0) game.hurtTimer = Math.max(0, game.hurtTimer - dt);
-        if (game.spinTimer > 0) game.spinTimer = Math.max(0, game.spinTimer - dt);
-
-        // Salt i gravetat
-        if (game.y > 0 || game.vy > 0) {
-          game.y += game.vy * dt;
-          game.vy -= 29 * dt;
-          if (game.y <= 0) {
-            game.y = 0;
-            game.vy = 0;
-          }
-        }
-
-        // Progrés i canvi de tram
-        const progressRatio = Math.min(1, Math.abs(game.z) / COURSE_LENGTH);
-        const zoneIdx = progressRatio < 0.34 ? 0 : progressRatio < 0.68 ? 1 : 2;
-        if (zoneIdx !== game.lastZone) {
-          game.lastZone = zoneIdx;
-          const zoneTitles = [
-            '1. Nucli Antic',
-            '2. Carrer de les Coves',
-            '3. Plaça de l\'Església'
-          ];
-          document.getElementById('hud-zone').textContent = zoneTitles[zoneIdx];
-          if (zoneIdx > 0) showBanner(`Tram ${zoneTitles[zoneIdx]}`);
-        }
-
-        const pct = Math.floor(progressRatio * 100);
-        document.getElementById('hud-progress-bar').style.width = `${pct}%`;
-        document.getElementById('hud-progress-text').textContent = `${pct}%`;
-        document.getElementById('hud-score').textContent = Math.floor(game.score);
-
-        // Pas de geganter i balanceig proporcional a la velocitat real
-        const speedNorm = game.currentSpeed / game.baseSpeed;
-        game.walkPhase += dt * (9.5 * speedNorm + Math.abs(game.vx) * 0.45);
-
-        const activeModel = game.activeGiant === 'mansuet' ? mansuet3D : marta3D;
-        activeModel.root.position.set(game.x, game.y, game.z);
-
-        // Orientació suau (yaw) amb gir lleuger en desplaçar-se lateralment + vista frontal (V)
-        const baseTargetYaw = game.facingFront ? 0 : Math.PI;
-        const turnLeanYaw = game.facingFront ? game.vx * 0.045 : -game.vx * 0.045;
-        game.currentYaw += (baseTargetYaw + turnLeanYaw - game.currentYaw) * Math.min(1, dt * 8.5);
-        const spinProgress = game.spinTimer > 0 ? (1 - game.spinTimer / 0.85) * Math.PI * 2 : 0;
-        activeModel.root.rotation.y = game.currentYaw + spinProgress;
-
-        // Inclinació orgànica (roll) i balanceig de faldó i cos
-        const targetRoll = -game.vx * 0.018;
-        game.currentRoll += (targetRoll - game.currentRoll) * Math.min(1, dt * 9);
-        const bob = game.y === 0 ? Math.abs(Math.sin(game.walkPhase)) * 0.095 * speedNorm : 0;
-
-        activeModel.skirtPivot.position.y = (game.activeGiant === 'mansuet' ? 0.28 : 0.26) + bob;
-        activeModel.skirtPivot.rotation.z = game.currentRoll + Math.sin(game.walkPhase) * 0.032;
-        activeModel.upper.rotation.z = game.currentRoll * 0.75 + Math.cos(game.walkPhase) * 0.028;
-
-        // Moviment natural de cames i braços
-        const limbAmp = Math.min(1.25, speedNorm + Math.abs(game.vx) * 0.04);
-        activeModel.leftLeg.rotation.x = Math.sin(game.walkPhase) * 0.52 * limbAmp;
-        activeModel.rightLeg.rotation.x = -Math.sin(game.walkPhase) * 0.52 * limbAmp;
-        activeModel.leftArm.rotation.x = -Math.sin(game.walkPhase) * 0.26 * limbAmp;
-        activeModel.rightArm.rotation.x = Math.sin(game.walkPhase) * 0.26 * limbAmp;
-
-        // Oneig suau del mocador blanc de la Marta
-        if (game.activeGiant === 'marta' && marta3D.hanky) {
-          marta3D.hanky.rotation.z = Math.sin(game.walkPhase * 1.1) * 0.22 - game.vx * 0.04;
-        }
-
-        // Col·lisions amb obstacles (distància contínua per tot l'ample del carrer)
-        for (let i = 0; i < obstacles.length; i++) {
-          const obs = obstacles[i];
-          if (!obs.hit && Math.abs(obs.x - game.x) < (obs.halfW + 0.45) && Math.abs(obs.z - game.z) < 0.85) {
-            if (game.y < 0.82) {
-              obs.hit = true;
-              game.hurtTimer = 0.65;
-              game.score = Math.max(0, game.score - 40);
-              audio.playSfx('hit');
-              showBanner('Compte amb el mobiliari del carrer!');
-            }
-          }
-        }
-
-        // Recollida de notes musicals i mocadors vermells
-        for (let i = 0; i < pickups.length; i++) {
-          const pk = pickups[i];
-          if (!pk.collected) {
-            pk.mesh.rotation.y += dt * 2.8;
-            pk.mesh.position.y = 1.35 + Math.sin(game.time * 4 + i) * 0.16;
-            if (Math.abs(pk.x - game.x) < 1.15 && Math.abs(pk.z - game.z) < 1.2) {
-              pk.collected = true;
-              pk.mesh.visible = false;
-              game.items += 1;
-              game.score += pk.isScarf ? 75 : 50;
-              document.getElementById('hud-items').textContent = game.items;
-              audio.playSfx('pickup');
-              spawnConfettiBurst(pk.mesh.position.x, pk.mesh.position.y, pk.mesh.position.z, 8);
-            }
-          }
-        }
-
-        // Pas pels 3 Arcs de Festa Major
-        for (let i = 0; i < arches.length; i++) {
-          const arch = arches[i];
-          if (!arch.passed && game.z <= arch.z) {
-            arch.passed = true;
-            game.spinTimer = 0.85;
-            game.score += 150;
-            audio.playSfx('arch');
-            spawnConfettiBurst(game.x, game.y, game.z, 26);
-            showBanner('Baldufa de Festa Major! +150 punts');
-          }
-        }
-
-        if (Math.abs(game.z) >= COURSE_LENGTH) {
-          finishCercavila();
-        }
-      }
-
-      // Animació del públic a les voreres
-      for (let i = 0; i < crowdPeople.length; i++) {
-        const p = crowdPeople[i];
-        if (Math.abs(p.group.position.z - game.z) < 42) {
-          p.group.position.y = p.baseY + Math.abs(Math.sin(game.time * 5.2 + p.phase)) * 0.14;
-          p.armPivot.rotation.z = Math.sin(game.time * 7.5 + p.phase) * 0.35;
-        }
-      }
-
-      // Confeti
-      for (let i = confettiParticles.length - 1; i >= 0; i--) {
-        const cp = confettiParticles[i];
-        cp.life -= dt;
-        cp.mesh.position.x += cp.vx * dt;
-        cp.mesh.position.y += cp.vy * dt;
-        cp.mesh.position.z += cp.vz * dt;
-        cp.vy -= 9.5 * dt;
-        cp.mesh.rotation.x += dt * 6;
-        cp.mesh.rotation.y += dt * 5;
-        if (cp.life <= 0) {
-          scene.remove(cp.mesh);
-          confettiParticles.splice(i, 1);
-        }
-      }
-
-      if (montserratGroup) {
-        montserratGroup.position.z = game.z - 145;
-      }
-
-      // Càmera cinematogràfica seguint el gegant amb amortiment suau
-      const shakeX = game.hurtTimer > 0 ? Math.sin(game.time * 55) * 0.22 : 0;
-      const camDistZ = game.facingFront ? 7.2 : 9.2;
-      const camHeightY = game.facingFront ? 4.45 : 5.2;
-      camera.position.x += (game.x * 0.62 + shakeX - camera.position.x) * Math.min(1, dt * 7.5);
-      camera.position.y += (camHeightY + game.y * 0.35 - camera.position.y) * Math.min(1, dt * 6);
-      camera.position.z = game.z + camDistZ;
-      camera.lookAt(
-        game.x * (game.facingFront ? 0.88 : 0.45),
-        (game.facingFront ? 2.75 : 2.35) + game.y * 0.25,
-        game.z - (game.facingFront ? 2 : 12)
-      );
-
-      renderer.render(scene, camera);
-    }
-
-    window.__init3DWorld = function () {
-      if (worldReady || !window.THREE) return;
-      const container = document.getElementById('canvas-container');
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xd97742);
-      scene.fog = new THREE.FogExp2(0xd97742, 0.0085);
-
-      camera = new THREE.PerspectiveCamera(56, window.innerWidth / window.innerHeight, 0.1, 260);
-      camera.position.set(0, 5.2, 9.2);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      container.innerHTML = '';
-      container.appendChild(renderer.domElement);
-
-      const hemi = new THREE.HemisphereLight(0xfffbeb, 0x4c1d3d, 0.9);
-      scene.add(hemi);
-
-      const sun = new THREE.DirectionalLight(0xffedd5, 1.15);
-      sun.position.set(22, 38, 25);
-      sun.castShadow = true;
-      sun.shadow.mapSize.width = 1024;
-      sun.shadow.mapSize.height = 1024;
-      scene.add(sun);
-
-      montserratGroup = buildMontserratHorizon();
-      montserratGroup.position.set(0, 0, -145);
-      scene.add(montserratGroup);
-
-      buildEnvironment();
-
-      mansuet3D = buildMansuet3D();
-      marta3D = buildMarta3D();
-      marta3D.root.visible = false;
-      scene.add(mansuet3D.root, marta3D.root);
-
-      window.addEventListener('resize', () => {
-        if (!renderer || !camera) return;
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      worldReady = true;
-    };
-
-    window.addEventListener('load', () => {
-      drawCoverIllustration();
-      if (window.THREE) {
-        window.__init3DWorld();
-      }
-      lastTime = performance.now();
-      requestAnimationFrame(animate);
-    });
-  </script>
-</body>
-</html>
-```
+        for (let i = 0; i < partyObjects.dan
