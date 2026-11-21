@@ -14,7 +14,7 @@
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
-      touch-action: manipulation;
+      -webkit-touch-callout: none;
     }
     html, body {
       margin: 0;
@@ -24,12 +24,13 @@
       overflow: hidden;
       background-color: #160c14;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      touch-action: none;
     }
     .font-display {
       font-family: 'Cinzel', serif;
     }
     .glass-panel {
-      background: rgba(24, 14, 22, 0.78);
+      background: rgba(24, 14, 22, 0.76);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(251, 191, 36, 0.35);
@@ -38,18 +39,50 @@
       background: linear-gradient(135deg, #d97706 0%, #b91c1c 100%);
       border: 2px solid #fde68a;
       box-shadow: 0 10px 25px -5px rgba(185, 28, 28, 0.65), 0 0 20px rgba(245, 158, 11, 0.4);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      transition: transform 0.14s ease, filter 0.14s ease;
     }
     .btn-festive:hover {
-      transform: translateY(-2px) scale(1.02);
       filter: brightness(1.08);
     }
     .btn-festive:active {
-      transform: translateY(1px) scale(0.97);
+      transform: scale(0.95);
+    }
+    /* Joystick virtual analògic */
+    #joystick-base {
+      position: relative;
+      width: 124px;
+      height: 124px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 35% 35%, rgba(251, 191, 36, 0.18), rgba(20, 12, 18, 0.72));
+      border: 2px solid rgba(251, 191, 36, 0.48);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(251, 191, 36, 0.14);
+      touch-action: none;
+    }
+    #joystick-ring {
+      position: absolute;
+      inset: 16px;
+      border-radius: 9999px;
+      border: 1px dashed rgba(253, 230, 138, 0.3);
+      pointer-events: none;
+    }
+    #joystick-knob {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      left: 50%;
+      top: 50%;
+      margin-left: -26px;
+      margin-top: -26px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, #fde68a, #d97706 65%, #991b1b 100%);
+      border: 2px solid #fef3c7;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+      pointer-events: none;
+      will-change: transform;
     }
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-5px); }
     }
     .animate-float {
       animation: floatSlow 3.2s ease-in-out infinite;
@@ -59,12 +92,12 @@
 <body class="relative w-screen h-screen overflow-hidden text-amber-50">
 
   <!-- Contenidor del món 3D -->
-  <div id="canvas-container" class="fixed inset-0 w-full h-full z-0"></div>
+  <div id="canvas-container" class="fixed inset-0 w-full h-full z-0" style="touch-action: none;"></div>
 
   <!-- ===================================================================== -->
-  <!-- PANTALLA DE PORTADA (100% funcional abans i durant la càrrega 3D)    -->
+  <!-- PANTALLA DE PORTADA (Il·lustració artesanal en Canvas 2D)              -->
   <!-- ===================================================================== -->
-  <div id="start-screen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-3 sm:p-5 bg-gradient-to-b from-[#1a0f1d] via-[#2b1523] to-[#140a11] overflow-y-auto">
+  <div id="start-screen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-3 sm:p-5 bg-gradient-to-b from-[#1a0f1d] via-[#2b1523] to-[#140a11] overflow-y-auto" style="touch-action: pan-y;">
     <!-- Capçalera -->
     <div class="text-center mt-1 sm:mt-2 z-10">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] sm:text-xs font-bold tracking-widest uppercase mb-1.5">
@@ -75,8 +108,8 @@
       <h1 class="font-display text-3xl sm:text-5xl md:text-6xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-red-500 drop-shadow-[0_4px_14px_rgba(0,0,0,0.85)]">
         GEGANTS DE COLLBATÓ
       </h1>
-      <p class="text-amber-100/90 text-xs sm:text-sm md:text-base max-w-xl mx-auto mt-1 font-medium">
-        Acompanya en <strong class="text-amber-300">Mansuet</strong> i la <strong class="text-amber-300">Marta</strong> pels carrers de Collbató fins a la Plaça de l'Església al ritme de la música.
+      <p class="text-amber-100/95 text-xs sm:text-sm md:text-base max-w-xl mx-auto mt-1 font-semibold">
+        Cercavila 3D per Collbató al ritme de la música
       </p>
     </div>
 
@@ -89,42 +122,42 @@
     <div class="w-full max-w-2xl flex flex-col items-center gap-3 mb-1 sm:mb-2 z-10">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-center text-xs">
         <div class="glass-panel rounded-xl p-2">
-          <div class="text-amber-300 font-extrabold">◀ ▶ / A - D</div>
-          <div class="text-amber-100/80 text-[11px]">Canvia de carril</div>
+          <div class="text-amber-300 font-extrabold">🕹️ JOYSTICK</div>
+          <div class="text-amber-100/80 text-[11px]">Moviment lliure i suau</div>
         </div>
         <div class="glass-panel rounded-xl p-2">
-          <div class="text-amber-300 font-extrabold">ESPAI / W</div>
-          <div class="text-amber-100/80 text-[11px]">Salta tanques i bancs</div>
+          <div class="text-amber-300 font-extrabold">⬆️ SALTAR</div>
+          <div class="text-amber-100/80 text-[11px]">Supera tanques i bancs</div>
         </div>
         <div class="glass-panel rounded-xl p-2">
-          <div class="text-amber-300 font-extrabold">👀 TECLA V</div>
-          <div class="text-amber-100/80 text-[11px]">Gira per veure la cara</div>
+          <div class="text-amber-300 font-extrabold">👀 CARA (V)</div>
+          <div class="text-amber-100/80 text-[11px]">Gira per veure el rostre</div>
         </div>
         <div class="glass-panel rounded-xl p-2">
-          <div class="text-amber-300 font-extrabold">TECLA Q</div>
+          <div class="text-amber-300 font-extrabold">⇄ GEGANT (Q)</div>
           <div class="text-amber-100/80 text-[11px]">Mansuet / Marta</div>
         </div>
       </div>
 
       <button id="btn-start" type="button" class="btn-festive animate-float w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl text-white font-extrabold text-base sm:text-xl tracking-wider uppercase cursor-pointer">
-        COMENÇAR LA CERCAVILA
+        COMENÇAR CERCAVILA
       </button>
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- HUD DURANT LA PARTIDA                                                 -->
+  <!-- HUD SUPERIOR DURANT LA PARTIDA                                        -->
   <!-- ===================================================================== -->
   <div id="hud" class="hidden fixed inset-x-0 top-0 z-20 p-3 sm:p-4 pointer-events-none flex flex-col gap-2">
     <div class="flex items-start justify-between gap-2 max-w-6xl mx-auto w-full">
       <!-- Tram i Gegant actiu -->
-      <div class="glass-panel rounded-2xl px-3.5 py-2.5 flex items-center gap-3 pointer-events-auto shadow-lg">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-700 to-amber-600 border border-amber-300/60 flex items-center justify-center text-xl shadow-inner">
+      <div class="glass-panel rounded-2xl px-3.5 py-2 flex items-center gap-2.5 pointer-events-auto shadow-lg">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-700 to-amber-600 border border-amber-300/60 flex items-center justify-center text-lg shadow-inner">
           👑
         </div>
         <div>
-          <div id="hud-zone" class="text-[11px] uppercase tracking-wider font-extrabold text-amber-300">
-            1. Nucli Antic de Collbató
+          <div id="hud-zone" class="text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold text-amber-300">
+            1. Nucli Antic
           </div>
           <div class="flex items-center gap-2">
             <span id="hud-giant-name" class="text-sm sm:text-base font-extrabold text-white">En Mansuet</span>
@@ -135,15 +168,15 @@
 
       <!-- Puntuació, Col·leccionables i So -->
       <div class="flex items-center gap-2 pointer-events-auto">
-        <div class="glass-panel rounded-2xl px-3.5 py-2 text-right shadow-lg">
-          <div class="text-[10px] uppercase tracking-wider text-amber-300/90 font-bold">Punts Festa Major</div>
-          <div class="flex items-center justify-end gap-3">
+        <div class="glass-panel rounded-2xl px-3 py-1.5 text-right shadow-lg">
+          <div class="text-[10px] uppercase tracking-wider text-amber-300/90 font-bold">Punts</div>
+          <div class="flex items-center justify-end gap-2.5">
             <span class="text-xs sm:text-sm font-bold text-red-300">🧣 <span id="hud-items">0</span></span>
             <span id="hud-score" class="text-base sm:text-xl font-black text-amber-300">0</span>
           </div>
         </div>
 
-        <button id="btn-mute" type="button" aria-label="Silenciar o activar les gralles" class="glass-panel w-12 h-12 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:scale-95 transition cursor-pointer shadow-lg">
+        <button id="btn-mute" type="button" aria-label="Silenciar o activar les gralles" class="glass-panel w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:scale-95 transition cursor-pointer shadow-lg">
           <svg id="icon-sound-on" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
           </svg>
@@ -154,63 +187,67 @@
       </div>
     </div>
 
-    <!-- Barra de progrés del recorregut cap a l'Església -->
+    <!-- Barra de progrés del recorregut cap a la Plaça de l'Església -->
     <div class="max-w-xl mx-auto w-full px-2">
-      <div class="w-full h-2.5 bg-black/55 rounded-full overflow-hidden border border-amber-400/35 p-0.5">
+      <div class="w-full h-2 bg-black/55 rounded-full overflow-hidden border border-amber-400/35 p-0.5">
         <div id="hud-progress-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-red-600 via-amber-400 to-yellow-200 transition-all duration-150"></div>
       </div>
     </div>
 
     <!-- Missatge flotant d'avís -->
-    <div id="banner-toast" class="mx-auto mt-1 px-4 py-1.5 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-200 text-xs sm:text-sm font-extrabold tracking-wide shadow-xl opacity-0 transition-opacity duration-300">
-      Tram 1: Nucli Antic de Collbató
+    <div id="banner-toast" class="mx-auto mt-0.5 px-4 py-1 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-200 text-xs sm:text-sm font-extrabold tracking-wide shadow-xl opacity-0 transition-opacity duration-300">
+      1. Nucli Antic de Collbató
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- CONTROLS INFERIORS (TÀCTILS + BOTONS D'ACCIÓ)                         -->
+  <!-- CONTROLS INFERIORS: JOYSTICK ANALÒGIC ESQUERRA + BOTONS DRETA         -->
   <!-- ===================================================================== -->
   <div id="touch-controls" class="hidden fixed inset-x-0 bottom-0 z-20 p-3 sm:p-5 pointer-events-none">
     <div class="max-w-6xl mx-auto flex items-end justify-between gap-2">
-      <!-- Fletxes Esquerra / Dreta -->
-      <div class="flex gap-2.5 pointer-events-auto">
-        <button id="btn-left" type="button" aria-label="Carril esquerre" class="glass-panel w-16 h-16 sm:w-20 sm:h-16 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/45 active:scale-95 shadow-xl transition cursor-pointer">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button id="btn-right" type="button" aria-label="Carril dret" class="glass-panel w-16 h-16 sm:w-20 sm:h-16 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/45 active:scale-95 shadow-xl transition cursor-pointer">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+      <!-- Joystick Virtual Analògic (Moviment lliure lateral i de ritme) -->
+      <div class="flex flex-col items-center gap-1 pointer-events-auto">
+        <div id="joystick-base" aria-label="Joystick de direcció i ritme">
+          <div id="joystick-ring"></div>
+          <div id="joystick-knob"></div>
+        </div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-200/80 bg-black/45 px-2 py-0.5 rounded-full">
+          Direcció / Ritme
+        </span>
       </div>
 
       <!-- Recordatori tecles en escriptori -->
-      <div class="hidden lg:flex glass-panel rounded-xl px-4 py-2 text-xs text-amber-200/90 gap-3 font-semibold">
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">A / D</kbd> Carril</span>
+      <div class="hidden lg:flex glass-panel rounded-xl px-4 py-2 text-xs text-amber-200/90 gap-3 font-semibold mb-2">
+        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">WASD / Fletxes</kbd> Direcció i ritme</span>
         <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Espai</kbd> Saltar</span>
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">V</kbd> Veure cara</span>
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Q</kbd> Canviar gegant</span>
+        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">V</kbd> Cara</span>
+        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Q</kbd> Gegant</span>
       </div>
 
-      <!-- Botons Veure cara, Canviar Gegant i Saltar -->
-      <div class="flex gap-2 sm:gap-2.5 pointer-events-auto">
-        <button id="btn-face" type="button" class="glass-panel px-3 sm:px-4 h-16 rounded-2xl flex flex-col items-center justify-center text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
-          <span class="text-lg leading-none mb-0.5">👀</span>
-          <span id="btn-face-label" class="text-[11px] sm:text-xs font-extrabold text-white whitespace-nowrap">Veure cara</span>
-        </button>
+      <!-- Botons tàctils ergonòmics a la cantonada inferior dreta -->
+      <div class="flex flex-col items-end gap-2.5 pointer-events-auto">
+        <!-- Fila superior: CARA i GEGANT -->
+        <div class="flex gap-2">
+          <button id="btn-face" type="button" class="glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
+            <span class="text-lg leading-none">👀</span>
+            <span id="btn-face-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">CARA</span>
+          </button>
 
-        <button id="btn-switch" type="button" class="glass-panel px-3 sm:px-4 h-16 rounded-2xl flex flex-col items-center justify-center text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition cursor-pointer">
-          <span class="text-[10px] uppercase tracking-wider text-amber-300 font-bold">Canviar (Q)</span>
-          <span id="btn-switch-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">La Marta</span>
-        </button>
+          <button id="btn-switch" type="button" class="glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
+            <span class="text-base leading-none text-amber-300 font-black">⇄</span>
+            <div class="text-left leading-tight">
+              <div class="text-[9px] uppercase tracking-wider text-amber-300 font-bold">GEGANT</div>
+              <div id="btn-switch-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">La Marta</div>
+            </div>
+          </button>
+        </div>
 
-        <button id="btn-jump" type="button" class="btn-festive w-16 sm:w-20 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-extrabold shadow-xl cursor-pointer">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+        <!-- Fila inferior: Botó gran SALTAR -->
+        <button id="btn-jump" type="button" class="btn-festive w-36 sm:w-44 h-16 rounded-2xl flex items-center justify-center gap-2 text-white font-extrabold text-base sm:text-lg tracking-wider shadow-xl cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
           </svg>
-          <span class="text-[10px] uppercase tracking-wider">Saltar</span>
+          <span>SALTAR</span>
         </button>
       </div>
     </div>
@@ -266,7 +303,7 @@
 
   <script>
     // =========================================================================
-    // 1. PORTADA ARTÍSTICA EN CANVAS 2D (100% INDEPENDENT DEL MOTOR 3D)
+    // 1. PORTADA IL·LUSTRADA A MANO EN CANVAS 2D
     // =========================================================================
     function drawCoverIllustration() {
       const canvas = document.getElementById('cover-canvas');
@@ -319,7 +356,6 @@
       // Silueta del poble i campanar de Collbató
       ctx.fillStyle = '#241428';
       ctx.fillRect(W * 0.06, H * 0.62, W * 0.88, H * 0.22);
-      // Campanar de Sant Corneli de Collbató
       const bellX = W * 0.78;
       ctx.fillRect(bellX, H * 0.42, W * 0.065, H * 0.35);
       ctx.beginPath();
@@ -329,14 +365,14 @@
       ctx.closePath();
       ctx.fill();
 
-      // Terra empedrat de la plaça
+      // Terra empedrat
       const ground = ctx.createLinearGradient(0, H * 0.76, 0, H);
       ground.addColorStop(0, '#3a262c');
       ground.addColorStop(1, '#180d13');
       ctx.fillStyle = ground;
       ctx.fillRect(0, H * 0.76, W, H * 0.24);
 
-      // Garlandes de Festa Major superiors
+      // Garlandes festives
       ctx.strokeStyle = '#fde68a';
       ctx.lineWidth = 1.6;
       ctx.beginPath();
@@ -361,19 +397,18 @@
       const scale = Math.min(W / 640, H / 340);
 
       // -----------------------------------------------------------------------
-      // DIBUIX D'EN MANSUET (El Trabucaire de Collbató) - Esquerra
+      // RETRAT D'EN MANSUET (Esquerra)
       // -----------------------------------------------------------------------
       ctx.save();
       ctx.translate(W * 0.36, H * 0.89);
       ctx.scale(scale, scale);
 
-      // Ombra a terra
       ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.beginPath();
       ctx.ellipse(0, 4, 48, 10, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Capa negra ampla
+      // Capa negra
       ctx.fillStyle = '#111318';
       ctx.beginPath();
       ctx.moveTo(-26, -168);
@@ -383,7 +418,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Faldó marró oliva amb plecs
+      // Faldó marró oliva amb pedaç clar
       ctx.fillStyle = '#6b5b3e';
       ctx.beginPath();
       ctx.moveTo(-28, -95);
@@ -393,18 +428,16 @@
       ctx.closePath();
       ctx.fill();
 
-      // Pedaç rectangular clar al davant del faldó
       ctx.fillStyle = '#c8b896';
       ctx.fillRect(-10, -56, 20, 24);
       ctx.strokeStyle = '#4a3d28';
       ctx.lineWidth = 1.2;
       ctx.strokeRect(-10, -56, 20, 24);
 
-      // Faixa vermella
+      // Faixa vermella i armilla granat
       ctx.fillStyle = '#b91c1c';
       ctx.fillRect(-27, -109, 54, 15);
 
-      // Camisa blanca i armilla granat
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(-23, -164, 46, 55);
       ctx.fillStyle = '#7f1d1d';
@@ -419,7 +452,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Cadena daurada de rellotge sobre l'armilla
+      // Cadena daurada
       ctx.strokeStyle = '#fbbf24';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -427,7 +460,7 @@
       ctx.quadraticCurveTo(-18, -125, -16, -112);
       ctx.stroke();
 
-      // Llaç negre al coll
+      // Llaç negre
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.moveTo(0, -163);
@@ -440,13 +473,17 @@
       ctx.closePath();
       ctx.fill();
 
-      // Cap i rostre d'en Mansuet
-      ctx.fillStyle = '#e7b897';
+      // Patilles i cabells sota la barretina
+      ctx.fillStyle = '#2c1b14';
+      ctx.fillRect(-16, -193, 4, 13);
+      ctx.fillRect(12, -193, 4, 13);
+
+      // Rostre d'en Mansuet
+      ctx.fillStyle = '#eab996';
       ctx.beginPath();
-      ctx.ellipse(0, -184, 15, 19, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -184, 14.5, 18.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Ulls, celles i bigoti espès
       ctx.fillStyle = '#1e1b18';
       ctx.fillRect(-8, -189, 5, 2.2);
       ctx.fillRect(3, -189, 5, 2.2);
@@ -454,40 +491,38 @@
       ctx.arc(-5.5, -185, 1.8, 0, Math.PI * 2);
       ctx.arc(5.5, -185, 1.8, 0, Math.PI * 2);
       ctx.fill();
-      // Bigoti
+
+      // Bigoti espès
       ctx.beginPath();
       ctx.moveTo(-11, -175);
       ctx.quadraticCurveTo(0, -181, 11, -175);
-      ctx.quadraticCurveTo(0, -173, -11, -175);
+      ctx.quadraticCurveTo(0, -172, -11, -175);
       ctx.fill();
 
-      // Barretina vermella amb rivet negre
+      // Barretina vermella caiguda cap a un costat
       ctx.fillStyle = '#dc2626';
       ctx.beginPath();
       ctx.moveTo(-16, -195);
-      ctx.quadraticCurveTo(-14, -222, 16, -216);
-      ctx.quadraticCurveTo(24, -206, 16, -195);
+      ctx.quadraticCurveTo(-15, -222, 18, -214);
+      ctx.quadraticCurveTo(27, -203, 16, -195);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = '#111827';
       ctx.fillRect(-16, -197, 32, 4);
 
-      // Trabuc creuat amb branques de pi i Senyera
+      // Trabuc amb pinyó/pi i Senyera
       ctx.save();
       ctx.translate(4, -104);
       ctx.rotate(-0.18);
-      // Culata i canó
       ctx.fillStyle = '#78350f';
       ctx.fillRect(-44, -4, 48, 9);
       ctx.fillStyle = '#334155';
       ctx.fillRect(2, -4, 42, 7);
-      // Branques de pi verd a la boca del trabuc
       ctx.fillStyle = '#15803d';
       ctx.beginPath();
       ctx.arc(46, -2, 11, 0, Math.PI * 2);
       ctx.arc(53, -6, 8, 0, Math.PI * 2);
       ctx.fill();
-      // Drap de la Senyera penjant
       ctx.fillStyle = '#facc15';
       ctx.fillRect(14, 3, 18, 34);
       ctx.fillStyle = '#dc2626';
@@ -498,19 +533,18 @@
       ctx.restore();
 
       // -----------------------------------------------------------------------
-      // DIBUIX DE LA MARTA (La Pubilla de Collbató) - Dreta
+      // RETRAT DE LA MARTA (Dreta - rostre completament clar i descobert)
       // -----------------------------------------------------------------------
       ctx.save();
       ctx.translate(W * 0.64, H * 0.89);
       ctx.scale(scale, scale);
 
-      // Ombra a terra
       ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.beginPath();
       ctx.ellipse(0, 4, 44, 10, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Faldilla llarga rosada amb estampat floral
+      // Faldilla floral rosada
       ctx.fillStyle = '#e5a4b4';
       ctx.beginPath();
       ctx.moveTo(-24, -102);
@@ -520,7 +554,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // Motius florals a la faldilla
       ctx.fillStyle = '#be185d';
       for (let fy = -88; fy <= -14; fy += 18) {
         for (let fx = -20; fx <= 20; fx += 13) {
@@ -530,14 +563,14 @@
         }
       }
 
-      // Davantal de punta negra (blonda)
+      // Davantal de blonda negra
       ctx.fillStyle = 'rgba(15, 17, 23, 0.88)';
       ctx.fillRect(-19, -100, 38, 66);
       ctx.strokeStyle = '#94a3b8';
       ctx.lineWidth = 0.8;
       ctx.strokeRect(-17, -98, 34, 62);
 
-      // Brusa blanca i mantellina negra creuada
+      // Brusa blanca i mantellina negra sobre les espatlles
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.moveTo(-20, -156);
@@ -547,7 +580,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // Mantellina negra sobre les espatlles
       ctx.fillStyle = '#111318';
       ctx.beginPath();
       ctx.moveTo(-23, -156);
@@ -558,7 +590,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Ambdós braços de la Marta
+      // Ambdós braços i mocador blanc
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(-29, -152, 8, 22);
       ctx.fillRect(21, -152, 8, 22);
@@ -566,7 +598,6 @@
       ctx.fillRect(-28, -130, 6, 22);
       ctx.fillRect(22, -130, 6, 22);
 
-      // Mocador blanc a la mà esquerra (dreta de l'espectador)
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
       ctx.moveTo(25, -109);
@@ -576,30 +607,28 @@
       ctx.closePath();
       ctx.fill();
 
-      // Coll i cinta negra
+      // Coll amb cinta negra
       ctx.fillStyle = '#f3cbb2';
       ctx.fillRect(-6, -165, 12, 11);
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(-6, -160, 12, 3);
 
-      // Pentinat recollit amb ret darrere del cap (dibuixat ABANS de la cara perquè no la tapi)
+      // Pentinat recollit amb ret darrere del cap (ABANS del rostre)
       ctx.fillStyle = '#2c1b14';
       ctx.beginPath();
       ctx.arc(0, -184, 16.5, Math.PI * 0.92, Math.PI * 2.08);
       ctx.fill();
-      // Monyos laterals i ret posterior
       ctx.beginPath();
       ctx.arc(-13.5, -177, 5.2, 0, Math.PI * 2);
       ctx.arc(13.5, -177, 5.2, 0, Math.PI * 2);
       ctx.fill();
-      // Detall de la malla del ret sobre els cabells superiors
       ctx.strokeStyle = '#78350f';
       ctx.lineWidth = 0.9;
       ctx.beginPath();
       ctx.arc(0, -185, 14.5, Math.PI * 1.1, Math.PI * 1.9);
       ctx.stroke();
 
-      // Rostre completament descobert i lluminós de la Marta
+      // Rostre completament descobert, lluminós i sonrosat
       ctx.fillStyle = '#f8d5be';
       ctx.beginPath();
       ctx.ellipse(0, -178, 13.8, 17, 0, 0, Math.PI * 2);
@@ -608,7 +637,7 @@
       ctx.lineWidth = 0.8;
       ctx.stroke();
 
-      // Serrell / clenxa suau al front sense tapar la cara
+      // Clenxa suau al front
       ctx.fillStyle = '#2c1b14';
       ctx.beginPath();
       ctx.moveTo(-13.5, -183);
@@ -619,7 +648,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Celles fines, ulls expressius amb brillantor, nas i llavis
+      // Celles, ulls, nas, galtes rosades i somriure
       ctx.strokeStyle = '#2c1b14';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -629,7 +658,6 @@
       ctx.quadraticCurveTo(5.5, -185, 8.5, -183.5);
       ctx.stroke();
 
-      // Blanc dels ulls i iris
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.ellipse(-5.5, -180, 2.6, 1.8, 0, 0, Math.PI * 2);
@@ -641,7 +669,6 @@
       ctx.arc(5.5, -180, 1.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nas delicat
       ctx.strokeStyle = '#c99376';
       ctx.lineWidth = 1.1;
       ctx.beginPath();
@@ -650,7 +677,6 @@
       ctx.lineTo(1.2, -174.5);
       ctx.stroke();
 
-      // Galtes sonrosades i somriure
       ctx.fillStyle = 'rgba(244, 63, 94, 0.34)';
       ctx.beginPath();
       ctx.ellipse(-8.2, -174.5, 3.2, 2, 0, 0, Math.PI * 2);
@@ -669,7 +695,7 @@
     window.addEventListener('resize', drawCoverIllustration);
 
     // =========================================================================
-    // 2. SISTEMA D'ÀUDIO WEB AUDIO API: TOC DE CERCAVILA A DUES GRALLES I TABAL
+    // 2. SISTEMA D'ÀUDIO WEB AUDIO API: DUES GRALLES HARMONITZADES I TABAL
     // =========================================================================
     class GrallaTabalAudioEngine {
       constructor() {
@@ -695,7 +721,6 @@
         return this.muted;
       }
 
-      // Tabal tradicional amb cops greus (bombo) i redobles suaus de caixa
       playTabal(kind) {
         if (this.muted || !this.ctx) return;
         const t = this.ctx.currentTime;
@@ -731,7 +756,6 @@
         osc.stop(t + 0.2);
       }
 
-      // Timbre càlid de gralla (doble canya suavitzada amb filtre pas baix perquè no sigui estrident)
       playGrallaVoice(freq, dur, isSecondVoice) {
         if (this.muted || !this.ctx) return;
         const t = this.ctx.currentTime;
@@ -743,26 +767,22 @@
         const lowpass = this.ctx.createBiquadFilter();
         const gain = this.ctx.createGain();
 
-        // Lleugera desafinació orgànica entre canyes
         reed1.type = 'sawtooth';
         reed1.frequency.setValueAtTime(freq, t);
 
         reed2.type = 'sawtooth';
         reed2.frequency.setValueAtTime(freq * (isSecondVoice ? 0.9985 : 1.0018), t);
 
-        // Cos càlid fonamental
         body.type = 'triangle';
         body.frequency.setValueAtTime(freq, t);
 
-        // Formant nasal suau de fusta d'alzina
         bandpass.type = 'peaking';
-        bandpass.frequency.setValueAtTime(980, t);
+        bandpass.frequency.setValueAtTime(960, t);
         bandpass.Q.setValueAtTime(1.8, t);
-        bandpass.gain.setValueAtTime(4.5, t);
+        bandpass.gain.setValueAtTime(4.2, t);
 
-        // Filtre pas baix que arrodoneix els aguts per a una escolta agradable
         lowpass.type = 'lowpass';
-        lowpass.frequency.setValueAtTime(isSecondVoice ? 1320 : 1580, t);
+        lowpass.frequency.setValueAtTime(isSecondVoice ? 1300 : 1550, t);
         lowpass.Q.setValueAtTime(0.9, t);
 
         const peak = isSecondVoice ? 0.032 : 0.048;
@@ -840,61 +860,56 @@
         this.playing = true;
         this.step = 0;
 
-        // Toc tradicional de cercavila a dues gralles en Sol Major (harmonitzat en terceres i sixtes)
         const cercavilaMelody = [
-          // Frase A: Alegre i saltadora (Cercavila de Collbató)
-          { f1: 392.00, f2: 293.66, d: 2 }, // Sol4 - Re4
-          { f1: 493.88, f2: 392.00, d: 1 }, // Si4 - Sol4
-          { f1: 587.33, f2: 493.88, d: 1 }, // Re5 - Si4
-          { f1: 659.25, f2: 523.25, d: 2 }, // Mi5 - Do5
-          { f1: 587.33, f2: 493.88, d: 2 }, // Re5 - Si4
+          { f1: 392.00, f2: 293.66, d: 2 },
+          { f1: 493.88, f2: 392.00, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 1 },
+          { f1: 659.25, f2: 523.25, d: 2 },
+          { f1: 587.33, f2: 493.88, d: 2 },
 
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 587.33, f2: 493.88, d: 1 }, // Re5 - Si4
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 493.88, f2: 392.00, d: 1 }, // Si4 - Sol4
-          { f1: 440.00, f2: 369.99, d: 3 }, // La4 - Fa#4
-          { f1: 392.00, f2: 293.66, d: 1 }, // Sol4 - Re4
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 1 },
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 493.88, f2: 392.00, d: 1 },
+          { f1: 440.00, f2: 369.99, d: 3 },
+          { f1: 392.00, f2: 293.66, d: 1 },
 
-          // Frase A2: Resposta festiva
-          { f1: 440.00, f2: 369.99, d: 2 }, // La4 - Fa#4
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 659.25, f2: 523.25, d: 1 }, // Mi5 - Do5
-          { f1: 587.33, f2: 493.88, d: 2 }, // Re5 - Si4
-          { f1: 493.88, f2: 392.00, d: 2 }, // Si4 - Sol4
+          { f1: 440.00, f2: 369.99, d: 2 },
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 659.25, f2: 523.25, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 2 },
+          { f1: 493.88, f2: 392.00, d: 2 },
 
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 493.88, f2: 392.00, d: 1 }, // Si4 - Sol4
-          { f1: 440.00, f2: 369.99, d: 1 }, // La4 - Fa#4
-          { f1: 369.99, f2: 293.66, d: 1 }, // Fa#4 - Re4
-          { f1: 392.00, f2: 293.66, d: 4 }, // Sol4 - Re4
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 493.88, f2: 392.00, d: 1 },
+          { f1: 440.00, f2: 369.99, d: 1 },
+          { f1: 369.99, f2: 293.66, d: 1 },
+          { f1: 392.00, f2: 293.66, d: 4 },
 
-          // Frase B: Pujada lluminosa (Toc de plaça)
-          { f1: 587.33, f2: 493.88, d: 2 }, // Re5 - Si4
-          { f1: 659.25, f2: 523.25, d: 1 }, // Mi5 - Do5
-          { f1: 739.99, f2: 587.33, d: 1 }, // Fa#5 - Re5
-          { f1: 783.99, f2: 659.25, d: 2 }, // Sol5 - Mi5
-          { f1: 659.25, f2: 523.25, d: 2 }, // Mi5 - Do5
+          { f1: 587.33, f2: 493.88, d: 2 },
+          { f1: 659.25, f2: 523.25, d: 1 },
+          { f1: 739.99, f2: 587.33, d: 1 },
+          { f1: 783.99, f2: 659.25, d: 2 },
+          { f1: 659.25, f2: 523.25, d: 2 },
 
-          { f1: 587.33, f2: 493.88, d: 2 }, // Re5 - Si4
-          { f1: 659.25, f2: 523.25, d: 1 }, // Mi5 - Do5
-          { f1: 587.33, f2: 493.88, d: 1 }, // Re5 - Si4
-          { f1: 523.25, f2: 440.00, d: 2 }, // Do5 - La4
-          { f1: 493.88, f2: 392.00, d: 2 }, // Si4 - Sol4
+          { f1: 587.33, f2: 493.88, d: 2 },
+          { f1: 659.25, f2: 523.25, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 1 },
+          { f1: 523.25, f2: 440.00, d: 2 },
+          { f1: 493.88, f2: 392.00, d: 2 },
 
-          // Frase B2: Tornada i cadència de gralles
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 587.33, f2: 493.88, d: 1 }, // Re5 - Si4
-          { f1: 659.25, f2: 523.25, d: 1 }, // Mi5 - Do5
-          { f1: 587.33, f2: 493.88, d: 1 }, // Re5 - Si4
-          { f1: 493.88, f2: 392.00, d: 2 }, // Si4 - Sol4
-          { f1: 440.00, f2: 369.99, d: 2 }, // La4 - Fa#4
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 1 },
+          { f1: 659.25, f2: 523.25, d: 1 },
+          { f1: 587.33, f2: 493.88, d: 1 },
+          { f1: 493.88, f2: 392.00, d: 2 },
+          { f1: 440.00, f2: 369.99, d: 2 },
 
-          { f1: 493.88, f2: 392.00, d: 1 }, // Si4 - Sol4
-          { f1: 523.25, f2: 440.00, d: 1 }, // Do5 - La4
-          { f1: 440.00, f2: 369.99, d: 1 }, // La4 - Fa#4
-          { f1: 369.99, f2: 293.66, d: 1 }, // Fa#4 - Re4
-          { f1: 392.00, f2: 293.66, d: 4 }  // Sol4 - Re4
+          { f1: 493.88, f2: 392.00, d: 1 },
+          { f1: 523.25, f2: 440.00, d: 1 },
+          { f1: 440.00, f2: 369.99, d: 1 },
+          { f1: 369.99, f2: 293.66, d: 1 },
+          { f1: 392.00, f2: 293.66, d: 4 }
         ];
 
         const sixteenthMs = 195;
@@ -904,7 +919,6 @@
         const tick = () => {
           if (!this.playing) return;
 
-          // Patró rítmic de tabal de cercavila amb redoble suau al final de compàs
           const beatPos = this.step % 8;
           if (beatPos === 0 || beatPos === 4) {
             this.playTabal('heavy');
@@ -944,14 +958,98 @@
     const audio = new GrallaTabalAudioEngine();
 
     // =========================================================================
-    // 3. MOTOR 3D THREE.JS: COLLBATÓ, MONTSERRAT I ELS GEGANTS
+    // 3. JOYSTICK VIRTUAL ANALÒGIC + ENTRADA DE TECLAT SUAU
+    // =========================================================================
+    const input = {
+      joyX: 0,       // [-1..1] control analògic lateral
+      joyY: 0,       // [-1..1] control analògic de ritme (amunt accelera, avall frena)
+      joyActive: false,
+      joyPointerId: null,
+      keys: {
+        left: false,
+        right: false,
+        up: false,
+        down: false
+      }
+    };
+
+    const joyBase = document.getElementById('joystick-base');
+    const joyKnob = document.getElementById('joystick-knob');
+    const MAX_JOY_RADIUS = 38;
+
+    function updateJoystickVisual(nx, ny) {
+      const px = nx * MAX_JOY_RADIUS;
+      const py = ny * MAX_JOY_RADIUS;
+      joyKnob.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+    }
+
+    function handleJoystickMove(clientX, clientY) {
+      const rect = joyBase.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      let dx = clientX - cx;
+      let dy = clientY - cy;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist > MAX_JOY_RADIUS) {
+        dx = (dx / dist) * MAX_JOY_RADIUS;
+        dy = (dy / dist) * MAX_JOY_RADIUS;
+      }
+
+      const nx = dx / MAX_JOY_RADIUS;
+      const ny = dy / MAX_JOY_RADIUS;
+
+      // Zona morta suau al centre perquè el gegant camini recte sense vibracions
+      const deadzone = 0.08;
+      input.joyX = Math.abs(nx) < deadzone ? 0 : (nx - Math.sign(nx) * deadzone) / (1 - deadzone);
+      input.joyY = Math.abs(ny) < deadzone ? 0 : (ny - Math.sign(ny) * deadzone) / (1 - deadzone);
+
+      updateJoystickVisual(nx, ny);
+    }
+
+    function resetJoystick() {
+      input.joyActive = false;
+      input.joyPointerId = null;
+      input.joyX = 0;
+      input.joyY = 0;
+      joyKnob.style.transition = 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1)';
+      updateJoystickVisual(0, 0);
+    }
+
+    joyBase.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      input.joyActive = true;
+      input.joyPointerId = e.pointerId;
+      joyKnob.style.transition = 'none';
+      if (joyBase.setPointerCapture) {
+        try { joyBase.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      handleJoystickMove(e.clientX, e.clientY);
+    });
+
+    joyBase.addEventListener('pointermove', (e) => {
+      if (!input.joyActive || e.pointerId !== input.joyPointerId) return;
+      e.preventDefault();
+      handleJoystickMove(e.clientX, e.clientY);
+    });
+
+    joyBase.addEventListener('pointerup', (e) => {
+      if (e.pointerId === input.joyPointerId) resetJoystick();
+    });
+
+    joyBase.addEventListener('pointercancel', (e) => {
+      if (e.pointerId === input.joyPointerId) resetJoystick();
+    });
+
+    // =========================================================================
+    // 4. MOTOR 3D THREE.JS: COLLBATÓ, MONTSERRAT I ELS GEGANTS
     // =========================================================================
     let worldReady = false;
     let scene, camera, renderer;
     let mansuet3D, marta3D;
     let montserratGroup;
-    const LANES = [-2.7, 0, 2.7];
-    const COURSE_LENGTH = 540; // 3 trams de 180m: Nucli Antic, Carrer de les Coves, Plaça de l'Església
+    const STREET_HALF_WIDTH = 4.2;
+    const COURSE_LENGTH = 540;
     const obstacles = [];
     const pickups = [];
     const arches = [];
@@ -963,12 +1061,14 @@
       activeGiant: 'mansuet',
       facingFront: false,
       currentYaw: Math.PI,
-      lane: 1,
+      currentRoll: 0,
       x: 0,
+      vx: 0,
       y: 0,
       vy: 0,
       z: 0,
-      speed: 20,
+      baseSpeed: 18.5,
+      currentSpeed: 18.5,
       score: 0,
       items: 0,
       spinTimer: 0,
@@ -978,7 +1078,6 @@
       lastZone: -1
     };
 
-    // Textures procedurales lleugeres
     function makeCobbleTexture() {
       const c = document.createElement('canvas');
       c.width = 256;
@@ -1010,12 +1109,10 @@
       const g = c.getContext('2d');
       g.fillStyle = '#6b5b3e';
       g.fillRect(0, 0, 256, 256);
-      // Plecs verticals
       for (let i = 0; i < 16; i++) {
         g.fillStyle = i % 2 === 0 ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.06)';
         g.fillRect(i * 16, 0, 8, 256);
       }
-      // Pedaç rectangular clar característic al davant (angle central = 128)
       g.fillStyle = '#cfc09e';
       g.fillRect(108, 108, 40, 56);
       g.strokeStyle = '#3f3422';
@@ -1031,7 +1128,6 @@
       const g = c.getContext('2d');
       g.fillStyle = '#e5a4b4';
       g.fillRect(0, 0, 256, 256);
-      // Estampat floral rosat i carmesí
       for (let y = 16; y < 256; y += 28) {
         for (let x = 16; x < 256; x += 28) {
           g.fillStyle = '#be185d';
@@ -1044,9 +1140,13 @@
           g.fill();
         }
       }
-      // Davantal de punta negra (blonda) al davant (centre = 128)
       g.fillStyle = '#111319';
       g.fillRect(92, 16, 72, 168);
+      ctxLineBlonda(g);
+      return new THREE.CanvasTexture(c);
+    }
+
+    function ctxLineBlonda(g) {
       g.strokeStyle = '#94a3b8';
       g.lineWidth = 2;
       for (let ly = 26; ly < 180; ly += 14) {
@@ -1055,14 +1155,11 @@
         g.lineTo(160, ly);
         g.stroke();
       }
-      return new THREE.CanvasTexture(c);
     }
 
-    // Construcció del Gegant en Mansuet (Trabucaire de Collbató)
     function buildMansuet3D() {
       const root = new THREE.Group();
 
-      // Cames del portador amb espardenyes
       const legMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
       const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
       const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.1, 0.55, 10), legMat);
@@ -1080,7 +1177,6 @@
       skirtPivot.position.y = 0.28;
       root.add(skirtPivot);
 
-      // Faldó marró oliva amb pedaç clar
       const skirtTex = makeMansuetSkirtTexture();
       const skirtGeo = new THREE.CylinderGeometry(0.56, 0.82, 2.05, 24, 1, false);
       skirtGeo.rotateY(-Math.PI / 2);
@@ -1096,7 +1192,6 @@
       upper.position.y = 2.05;
       skirtPivot.add(upper);
 
-      // Faixa vermella
       const sash = new THREE.Mesh(
         new THREE.CylinderGeometry(0.55, 0.57, 0.34, 20),
         new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.7 })
@@ -1104,7 +1199,6 @@
       sash.position.y = 0.16;
       upper.add(sash);
 
-      // Tors amb armilla granat i camisa blanca
       const vest = new THREE.Mesh(
         new THREE.CylinderGeometry(0.48, 0.55, 1.08, 20),
         new THREE.MeshStandardMaterial({ color: 0x7f1d1d, roughness: 0.65 })
@@ -1113,7 +1207,6 @@
       vest.castShadow = true;
       upper.add(vest);
 
-      // Pit de camisa blanca i llaç negre
       const shirt = new THREE.Mesh(
         new THREE.BoxGeometry(0.32, 0.56, 0.14),
         new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 })
@@ -1128,7 +1221,6 @@
       tie.position.set(0, 1.35, 0.51);
       upper.add(tie);
 
-      // Cadena daurada de rellotge
       const chainCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0.02, 1.08, 0.51),
         new THREE.Vector3(-0.22, 0.82, 0.53),
@@ -1140,7 +1232,6 @@
       );
       upper.add(chain);
 
-      // Capa negra ampla sobre les espatlles i l'esquena
       const capeGeo = new THREE.CylinderGeometry(0.54, 0.94, 2.38, 22, 1, true, Math.PI * 0.68, Math.PI * 1.64);
       const cape = new THREE.Mesh(
         capeGeo,
@@ -1150,7 +1241,6 @@
       cape.castShadow = true;
       upper.add(cape);
 
-      // Braços
       const sleeveMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.7 });
       const skinMat = new THREE.MeshStandardMaterial({ color: 0xe7b897, roughness: 0.55 });
 
@@ -1173,7 +1263,6 @@
       rightArm.add(rSleeve, rHand);
       upper.add(leftArm, rightArm);
 
-      // Trabuc amb branques de pi i Senyera
       const trabucGroup = new THREE.Group();
       trabucGroup.position.set(0.05, 0.62, 0.56);
       trabucGroup.rotation.set(0.08, 0.14, 0.22);
@@ -1190,14 +1279,12 @@
       barrel.rotation.z = -Math.PI / 2;
       barrel.position.x = 0.35;
 
-      // Branques de pi verd a la boca del trabuc
       const pineMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.85 });
       const pine1 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18, 0), pineMat);
       pine1.position.set(0.76, 0.04, 0);
       const pine2 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.14, 0), pineMat);
       pine2.position.set(0.86, -0.02, 0.05);
 
-      // Drap de la Senyera penjant del canó
       const flagTexC = document.createElement('canvas');
       flagTexC.width = 64;
       flagTexC.height = 128;
@@ -1215,7 +1302,6 @@
       trabucGroup.add(stock, barrel, pine1, pine2, senyera);
       upper.add(trabucGroup);
 
-      // Coll, cap, bigoti i barretina vermella
       const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.22, 12), skinMat);
       neck.position.y = 1.48;
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 18, 18), skinMat);
@@ -1223,7 +1309,6 @@
       head.position.y = 1.82;
       head.castShadow = true;
 
-      // Ulls, celles i bigoti espès
       const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18, roughness: 0.6 });
       const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.032, 8, 8), darkMat);
       eyeL.position.set(-0.1, 1.85, 0.28);
@@ -1242,7 +1327,6 @@
       const mustache = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.055, 0.06), darkMat);
       mustache.position.set(0, 1.71, 0.29);
 
-      // Barretina vermella amb rivet negre
       const barretinaMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.85 });
       const barretinaBase = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.32, 0.24, 16), barretinaMat);
       barretinaBase.position.y = 2.08;
@@ -1261,11 +1345,9 @@
       return { root, skirtPivot, upper, leftLeg, rightLeg, leftArm, rightArm };
     }
 
-    // Construcció de la Geganta Marta (Pubilla de Collbató) amb ELS DOS BRAÇOS
     function buildMarta3D() {
       const root = new THREE.Group();
 
-      // Cames del portador
       const legMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
       const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
       const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.52, 10), legMat);
@@ -1283,7 +1365,6 @@
       skirtPivot.position.y = 0.26;
       root.add(skirtPivot);
 
-      // Faldilla floral rosada amb davantal de blonda negra al davant
       const martaSkirtTex = makeMartaSkirtTexture();
       const skirtGeo = new THREE.CylinderGeometry(0.46, 0.76, 1.95, 24, 1, false);
       skirtGeo.rotateY(-Math.PI / 2);
@@ -1299,7 +1380,6 @@
       upper.position.y = 1.95;
       skirtPivot.add(upper);
 
-      // Cosset / brusa blanca i mantellina negra
       const blouse = new THREE.Mesh(
         new THREE.CylinderGeometry(0.38, 0.45, 0.98, 20),
         new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 })
@@ -1316,11 +1396,10 @@
       mantellina.scale.set(1.05, 1, 0.95);
       upper.add(mantellina);
 
-      // AMBDÓS BRAÇOS ARTICULATS I ANIMATS DE LA MARTA
+      // Ambdós braços articulats de la Marta
       const sleeveMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 });
       const skinMat = new THREE.MeshStandardMaterial({ color: 0xf3cbb2, roughness: 0.55 });
 
-      // Braç dret de la Marta (costat X = -0.45 mirant de cara)
       const rightArm = new THREE.Group();
       rightArm.position.set(-0.45, 0.9, 0.04);
       const rPuff = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), sleeveMat);
@@ -1332,7 +1411,6 @@
       rHand.position.set(-0.08, -0.63, 0.12);
       rightArm.add(rPuff, rForearm, rHand);
 
-      // Braç esquerre de la Marta (costat X = +0.45 mirant de cara) amb el MOCADOR BLANC
       const leftArm = new THREE.Group();
       leftArm.position.set(0.45, 0.9, 0.04);
       const lPuff = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), sleeveMat);
@@ -1343,7 +1421,6 @@
       const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), skinMat);
       lHand.position.set(0.08, -0.63, 0.15);
 
-      // Mocador blanc de punta a la mà esquerra
       const hanky = new THREE.Mesh(
         new THREE.ConeGeometry(0.15, 0.42, 4),
         new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6, side: THREE.DoubleSide })
@@ -1354,7 +1431,6 @@
 
       upper.add(rightArm, leftArm);
 
-      // Coll amb cinta negra i cap de la Marta
       const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.2, 12), skinMat);
       neck.position.y = 1.08;
       const choker = new THREE.Mesh(
@@ -1368,7 +1444,6 @@
       head.position.y = 1.42;
       head.castShadow = true;
 
-      // Ulls, galtes sonrosades i llavis
       const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18 });
       const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), darkMat);
       eyeL.position.set(-0.09, 1.44, 0.26);
@@ -1389,7 +1464,6 @@
       lips.scale.set(1.3, 0.6, 0.5);
       lips.position.set(0, 1.31, 0.27);
 
-      // Cabells recollits amb monyo i ret
       const hairMat = new THREE.MeshStandardMaterial({ color: 0x271a14, roughness: 0.75 });
       const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.305, 16, 16), hairMat);
       hairCap.position.set(0, 1.46, -0.04);
@@ -1402,10 +1476,9 @@
 
       upper.add(neck, choker, head, eyeL, eyeR, blushL, blushR, lips, hairCap, bunL, bunR, backBun);
 
-      return { root, skirtPivot, upper, leftLeg, rightLeg, leftArm, rightArm };
+      return { root, skirtPivot, upper, leftLeg, rightLeg, leftArm, rightArm, hanky };
     }
 
-    // Muntanya de Montserrat a l'horitzó
     function buildMontserratHorizon() {
       const group = new THREE.Group();
       const rockMat = new THREE.MeshStandardMaterial({ color: 0x6b5b6e, roughness: 0.92 });
@@ -1426,12 +1499,10 @@
       return group;
     }
 
-    // Construcció dels carrers de Collbató, cases, arcs i públic
     function buildEnvironment() {
-      // Calçada principal empedrada
       const roadTex = makeCobbleTexture();
       const road = new THREE.Mesh(
-        new THREE.PlaneGeometry(10.5, COURSE_LENGTH + 90),
+        new THREE.PlaneGeometry(10.8, COURSE_LENGTH + 90),
         new THREE.MeshStandardMaterial({ map: roadTex, roughness: 0.88 })
       );
       road.rotation.x = -Math.PI / 2;
@@ -1439,19 +1510,17 @@
       road.receiveShadow = true;
       scene.add(road);
 
-      // Voreres esquerra i dreta
       const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.85 });
-      [-7.2, 7.2].forEach((sx) => {
+      [-7.3, 7.3].forEach((sx) => {
         const sw = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.22, COURSE_LENGTH + 90), sidewalkMat);
         sw.position.set(sx, 0.11, -COURSE_LENGTH / 2 + 15);
         sw.receiveShadow = true;
         scene.add(sw);
       });
 
-      // Cases mediterrànies de Collbató amb balcons al llarg dels 3 trams
       const wallColors = [0xfef3c7, 0xfde68a, 0xfed7aa, 0xfecdd3, 0xe0e7ff];
       for (let z = 12; z > -COURSE_LENGTH - 25; z -= 14) {
-        [-12.2, 12.2].forEach((hx, sideIdx) => {
+        [-12.3, 12.3].forEach((hx, sideIdx) => {
           const h = 8.5 + (Math.abs(z + sideIdx * 5) % 4) * 1.4;
           const color = wallColors[Math.abs(Math.floor(z / 14) + sideIdx) % wallColors.length];
           const house = new THREE.Mesh(
@@ -1463,7 +1532,6 @@
           house.receiveShadow = true;
           scene.add(house);
 
-          // Balcó amb colgadura festiva vermella i groga
           const balcX = hx > 0 ? hx - 3.35 : hx + 3.35;
           const balcony = new THREE.Mesh(
             new THREE.BoxGeometry(0.7, 0.9, 3.2),
@@ -1482,11 +1550,10 @@
         });
       }
 
-      // 3 Arcs de Festa Major (un al final de cada tram)
       const archPositions = [
-        { z: -175, label: 'Arc del Nucli Antic' },
-        { z: -355, label: 'Arc del Carrer de les Coves' },
-        { z: -530, label: 'Plaça de l\'Església' }
+        { z: -175 },
+        { z: -355 },
+        { z: -530 }
       ];
       archPositions.forEach((ap) => {
         const archGroup = new THREE.Group();
@@ -1495,15 +1562,15 @@
         const pillarMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.6 });
         const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.5, roughness: 0.3 });
 
-        [-4.9, 4.9].forEach((px) => {
+        [-5.0, 5.0].forEach((px) => {
           const p = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 6.4, 12), pillarMat);
           p.position.set(px, 3.2, 0);
           archGroup.add(p);
         });
 
-        const topBeam = new THREE.Mesh(new THREE.BoxGeometry(10.6, 1.1, 0.65), pillarMat);
+        const topBeam = new THREE.Mesh(new THREE.BoxGeometry(10.8, 1.1, 0.65), pillarMat);
         topBeam.position.set(0, 6.2, 0);
-        const trim = new THREE.Mesh(new THREE.BoxGeometry(10.8, 0.25, 0.72), goldMat);
+        const trim = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.25, 0.72), goldMat);
         trim.position.set(0, 5.65, 0);
         archGroup.add(topBeam, trim);
 
@@ -1511,10 +1578,9 @@
         arches.push({ z: ap.z, passed: false, group: archGroup });
       });
 
-      // Públic animat a les voreres (adults i canalla amb mocadors vermells)
       const shirtPalette = [0x2563eb, 0xdc2626, 0x16a34a, 0xd97706, 0x7c3aed, 0x0d9488];
       for (let z = -8; z > -COURSE_LENGTH - 10; z -= 6.5) {
-        [-6.3, 6.3].forEach((sideX, idx) => {
+        [-6.4, 6.4].forEach((sideX, idx) => {
           const isChild = (Math.abs(Math.floor(z)) + idx) % 3 === 0;
           const personScale = isChild ? 0.68 : 1.0;
           const person = new THREE.Group();
@@ -1535,7 +1601,6 @@
           );
           head.position.y = 1.42;
 
-          // Braç dret aixecat amb mocador vermell de Festa Major
           const armPivot = new THREE.Group();
           armPivot.position.set(0.24, 1.12, 0);
           const arm = new THREE.Mesh(
@@ -1562,7 +1627,7 @@
       }
     }
 
-    // Poble d'obstacles (tanques i bancs) i col·leccionables (notes i mocadors)
+    // Obstacles i col·leccionables distribuïts lliurement per tota l'amplada de la calçada
     function populateCourse() {
       obstacles.forEach((o) => scene.remove(o.mesh));
       pickups.forEach((p) => scene.remove(p.mesh));
@@ -1573,6 +1638,8 @@
       const fenceWoodMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.75 });
       const stripeMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.6 });
       const benchMat = new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.85 });
+      const planterMat = new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.8 });
+      const flowerMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.8 });
 
       const noteMat = new THREE.MeshStandardMaterial({
         color: 0xfbbf24,
@@ -1589,15 +1656,18 @@
       });
 
       for (let z = -34; z > -COURSE_LENGTH + 25; z -= 21) {
-        // Evitem posar obstacles just a sobre dels arcs
         if (arches.some((a) => Math.abs(a.z - z) < 12)) continue;
 
-        const obsLane = Math.floor(Math.random() * 3);
-        const isBench = Math.random() > 0.5;
+        // Posició X contínua per tot el carrer
+        const obsX = (Math.random() * 2 - 1) * 3.1;
+        const kindRoll = Math.random();
         const obsGroup = new THREE.Group();
-        obsGroup.position.set(LANES[obsLane], 0, z);
+        obsGroup.position.set(obsX, 0, z);
+        let halfW = 0.9;
 
-        if (isBench) {
+        if (kindRoll < 0.36) {
+          // Banc de pedra
+          halfW = 0.88;
           const seat = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.14, 0.65), benchMat);
           seat.position.y = 0.52;
           const back = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.45, 0.12), benchMat);
@@ -1607,8 +1677,9 @@
           const leg2 = leg1.clone();
           leg2.position.x = 0.7;
           obsGroup.add(seat, back, leg1, leg2);
-        } else {
-          // Tanca baixa de Festa Major
+        } else if (kindRoll < 0.72) {
+          // Tanca de fusta festiva
+          halfW = 0.92;
           const bar1 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.22, 0.14), fenceWoodMat);
           bar1.position.y = 0.78;
           const bar2 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.18, 0.14), stripeMat);
@@ -1618,17 +1689,26 @@
           const postR = postL.clone();
           postR.position.x = 0.82;
           obsGroup.add(bar1, bar2, postL, postR);
+        } else {
+          // Jardinera florida
+          halfW = 0.65;
+          const pot = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.58, 0.7), planterMat);
+          pot.position.y = 0.29;
+          const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.45, 1), flowerMat);
+          bush.scale.set(1.25, 0.75, 0.8);
+          bush.position.y = 0.68;
+          obsGroup.add(pot, bush);
         }
 
         scene.add(obsGroup);
-        obstacles.push({ lane: obsLane, z, mesh: obsGroup, hit: false });
+        obstacles.push({ x: obsX, halfW, z, mesh: obsGroup, hit: false });
 
-        // Col·leccionable en un altre carril lliure
-        const freeLanes = [0, 1, 2].filter((l) => l !== obsLane);
-        const pickLane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+        // Col·leccionable en una zona lliure de la calçada
+        let pickX = obsX > 0 ? obsX - 2.6 : obsX + 2.6;
+        pickX = Math.max(-3.6, Math.min(3.6, pickX));
         const isScarf = Math.random() > 0.55;
         const pickGroup = new THREE.Group();
-        pickGroup.position.set(LANES[pickLane], 1.35, z - 4);
+        pickGroup.position.set(pickX, 1.35, z - 4);
 
         if (isScarf) {
           const scarf = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.65, 4), scarfMat);
@@ -1645,7 +1725,7 @@
         }
 
         scene.add(pickGroup);
-        pickups.push({ lane: pickLane, z: z - 4, mesh: pickGroup, collected: false, isScarf });
+        pickups.push({ x: pickX, z: z - 4, mesh: pickGroup, collected: false, isScarf });
       }
     }
 
@@ -1672,7 +1752,7 @@
     }
 
     // =========================================================================
-    // 4. ACTUALITZACIÓ D'INTERFÍCIE I CONTROLS
+    // 5. ACTUALITZACIÓ D'INTERFÍCIE I CONTROLS
     // =========================================================================
     const hudEl = document.getElementById('hud');
     const touchEl = document.getElementById('touch-controls');
@@ -1703,10 +1783,10 @@
       const btnFace = document.getElementById('btn-face');
       const label = document.getElementById('btn-face-label');
       if (game.facingFront) {
-        label.textContent = 'Vista normal';
+        label.textContent = 'NORMAL';
         btnFace.classList.add('bg-amber-500/35', 'border-amber-300');
       } else {
-        label.textContent = 'Veure cara';
+        label.textContent = 'CARA';
         btnFace.classList.remove('bg-amber-500/35', 'border-amber-300');
       }
     }
@@ -1723,15 +1803,10 @@
       );
     }
 
-    function moveLane(dir) {
-      if (!game.running) return;
-      game.lane = Math.max(0, Math.min(2, game.lane + dir));
-    }
-
     function jumpGiant() {
       if (!game.running) return;
       if (game.y <= 0.02) {
-        game.vy = 11.6;
+        game.vy = 11.8;
         audio.playSfx('jump');
       }
     }
@@ -1740,12 +1815,13 @@
       if (!game.running) return;
       game.activeGiant = game.activeGiant === 'mansuet' ? 'marta' : 'mansuet';
       updateGiantVisibility();
-      spawnConfettiBurst(game.x, game.y, game.z, 16);
+      spawnConfettiBurst(game.x, game.y, game.z, 18);
       audio.playSfx('pickup');
     }
 
     function finishCercavila() {
       game.running = false;
+      resetJoystick();
       audio.playSfx('arch');
       spawnConfettiBurst(game.x, game.y, game.z, 45);
       document.getElementById('final-score').textContent = Math.floor(game.score);
@@ -1768,12 +1844,14 @@
       game.activeGiant = 'mansuet';
       game.facingFront = false;
       game.currentYaw = Math.PI;
-      game.lane = 1;
+      game.currentRoll = 0;
       game.x = 0;
+      game.vx = 0;
       game.y = 0;
       game.vy = 0;
       game.z = 0;
-      game.speed = 20;
+      game.baseSpeed = 18.5;
+      game.currentSpeed = 18.5;
       game.score = 0;
       game.items = 0;
       game.spinTimer = 0;
@@ -1781,6 +1859,7 @@
       game.walkPhase = 0;
       game.lastZone = -1;
 
+      resetJoystick();
       updateGiantVisibility();
       updateFaceButtonUI();
       populateCourse();
@@ -1794,13 +1873,17 @@
       showBanner('1. Nucli Antic de Collbató');
     }
 
-    // Controls de teclat
+    // Controls de teclat continus (WASD / Fletxes)
     window.addEventListener('keydown', (e) => {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
-        moveLane(-1);
+        input.keys.left = true;
       } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
-        moveLane(1);
-      } else if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        input.keys.right = true;
+      } else if (e.code === 'ArrowUp' || e.code === 'KeyW') {
+        input.keys.up = true;
+      } else if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        input.keys.down = true;
+      } else if (e.code === 'Space') {
         if (game.running) {
           e.preventDefault();
           jumpGiant();
@@ -1812,32 +1895,15 @@
       }
     });
 
-    // Gestos tàctils (lliscar sobre la pantalla)
-    let touchStartX = 0;
-    let touchStartY = 0;
-    window.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') input.keys.left = false;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') input.keys.right = false;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') input.keys.up = false;
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') input.keys.down = false;
+    });
 
-    window.addEventListener('touchend', (e) => {
-      if (!game.running || e.changedTouches.length === 0) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
-        moveLane(dx > 0 ? 1 : -1);
-      } else if (dy < -42 && Math.abs(dy) > Math.abs(dx)) {
-        jumpGiant();
-      }
-    }, { passive: true });
-
-    // Botons de la interfície
     document.getElementById('btn-start').addEventListener('click', startGame);
     document.getElementById('btn-restart').addEventListener('click', startGame);
-    document.getElementById('btn-left').addEventListener('click', () => moveLane(-1));
-    document.getElementById('btn-right').addEventListener('click', () => moveLane(1));
     document.getElementById('btn-jump').addEventListener('click', jumpGiant);
     document.getElementById('btn-switch').addEventListener('click', switchGiant);
     document.getElementById('btn-face').addEventListener('click', toggleGiantFaceView);
@@ -1849,7 +1915,7 @@
     });
 
     // =========================================================================
-    // 5. INICIALITZACIÓ I BUCLE D'ANIMACIÓ 3D
+    // 6. BUCLE D'ANIMACIÓ 3D AMB FÍSICA D'INÈRCIA I BALANCEIG DE GEGANTER
     // =========================================================================
     let lastTime = performance.now();
 
@@ -1862,19 +1928,36 @@
       game.time += dt;
 
       if (game.running) {
-        // Avanç constant cap a Montserrat
-        const currentSpeed = game.hurtTimer > 0 ? game.speed * 0.55 : game.speed;
-        game.z -= currentSpeed * dt;
-        game.score += currentSpeed * dt * 2.5;
+        // Combinació suau de joystick analògic i teclat
+        const keyX = (input.keys.right ? 1 : 0) - (input.keys.left ? 1 : 0);
+        const keyY = (input.keys.down ? 1 : 0) - (input.keys.up ? 1 : 0);
+        const steerX = Math.max(-1, Math.min(1, input.joyX + keyX));
+        const throttleY = Math.max(-1, Math.min(1, input.joyY + keyY));
+
+        // Eix vertical del joystick regula el ritme d'avanç (amunt = més ràpid, avall = més pausat)
+        const targetForwardSpeed = game.baseSpeed * (1 - throttleY * 0.36) * (game.hurtTimer > 0 ? 0.55 : 1);
+        game.currentSpeed += (targetForwardSpeed - game.currentSpeed) * Math.min(1, dt * 6.5);
+        game.z -= game.currentSpeed * dt;
+        game.score += game.currentSpeed * dt * 2.5;
+
+        // Eix horitzontal del joystick amb acceleració i frenada orgànica (inèrcia)
+        const maxLatSpeed = 8.4;
+        const targetVx = steerX * maxLatSpeed;
+        const latAccel = Math.abs(steerX) > 0.02 ? 10.5 : 8.5;
+        game.vx += (targetVx - game.vx) * Math.min(1, dt * latAccel);
+        game.x += game.vx * dt;
+
+        // Límits suaus a les vores de la calçada
+        if (game.x < -STREET_HALF_WIDTH) {
+          game.x = -STREET_HALF_WIDTH;
+          if (game.vx < 0) game.vx *= -0.25;
+        } else if (game.x > STREET_HALF_WIDTH) {
+          game.x = STREET_HALF_WIDTH;
+          if (game.vx > 0) game.vx *= -0.25;
+        }
 
         if (game.hurtTimer > 0) game.hurtTimer = Math.max(0, game.hurtTimer - dt);
         if (game.spinTimer > 0) game.spinTimer = Math.max(0, game.spinTimer - dt);
-
-        // Moviment lateral entre carrils
-        const targetX = LANES[game.lane];
-        const prevX = game.x;
-        game.x += (targetX - game.x) * Math.min(1, dt * 13);
-        const lateralVel = (game.x - prevX) / Math.max(0.001, dt);
 
         // Salt i gravetat
         if (game.y > 0 || game.vy > 0) {
@@ -1886,13 +1969,13 @@
           }
         }
 
-        // Progrés i canvi de tram (Nucli Antic -> Carrer de les Coves -> Plaça de l'Església)
+        // Progrés i canvi de tram
         const progressRatio = Math.min(1, Math.abs(game.z) / COURSE_LENGTH);
         const zoneIdx = progressRatio < 0.34 ? 0 : progressRatio < 0.68 ? 1 : 2;
         if (zoneIdx !== game.lastZone) {
           game.lastZone = zoneIdx;
           const zoneTitles = [
-            '1. Nucli Antic de Collbató',
+            '1. Nucli Antic',
             '2. Carrer de les Coves',
             '3. Plaça de l\'Església'
           ];
@@ -1905,32 +1988,45 @@
         document.getElementById('hud-progress-text').textContent = `${pct}%`;
         document.getElementById('hud-score').textContent = Math.floor(game.score);
 
-        // Animació del gegant actiu
-        game.walkPhase += dt * 11;
+        // Pas de geganter i balanceig proporcional a la velocitat real
+        const speedNorm = game.currentSpeed / game.baseSpeed;
+        game.walkPhase += dt * (9.5 * speedNorm + Math.abs(game.vx) * 0.45);
+
         const activeModel = game.activeGiant === 'mansuet' ? mansuet3D : marta3D;
         activeModel.root.position.set(game.x, game.y, game.z);
 
-        // Gir suau de 180 graus quan premem 'Veure cara' (V) + baldufes als arcs
-        const targetYaw = game.facingFront ? 0 : Math.PI;
-        game.currentYaw += (targetYaw - game.currentYaw) * Math.min(1, dt * 8.5);
+        // Orientació suau (yaw) amb gir lleuger en desplaçar-se lateralment + vista frontal (V)
+        const baseTargetYaw = game.facingFront ? 0 : Math.PI;
+        const turnLeanYaw = game.facingFront ? game.vx * 0.045 : -game.vx * 0.045;
+        game.currentYaw += (baseTargetYaw + turnLeanYaw - game.currentYaw) * Math.min(1, dt * 8.5);
         const spinProgress = game.spinTimer > 0 ? (1 - game.spinTimer / 0.85) * Math.PI * 2 : 0;
         activeModel.root.rotation.y = game.currentYaw + spinProgress;
 
-        // Balanceig de cames, faldó i braços
-        const bob = game.y === 0 ? Math.abs(Math.sin(game.walkPhase)) * 0.1 : 0;
-        activeModel.skirtPivot.position.y = 0.27 + bob;
-        activeModel.skirtPivot.rotation.z = -lateralVel * 0.022 + Math.sin(game.walkPhase) * 0.032;
-        activeModel.upper.rotation.z = Math.cos(game.walkPhase) * 0.028;
+        // Inclinació orgànica (roll) i balanceig de faldó i cos
+        const targetRoll = -game.vx * 0.018;
+        game.currentRoll += (targetRoll - game.currentRoll) * Math.min(1, dt * 9);
+        const bob = game.y === 0 ? Math.abs(Math.sin(game.walkPhase)) * 0.095 * speedNorm : 0;
 
-        activeModel.leftLeg.rotation.x = Math.sin(game.walkPhase) * 0.55;
-        activeModel.rightLeg.rotation.x = -Math.sin(game.walkPhase) * 0.55;
-        activeModel.leftArm.rotation.x = -Math.sin(game.walkPhase) * 0.25;
-        activeModel.rightArm.rotation.x = Math.sin(game.walkPhase) * 0.25;
+        activeModel.skirtPivot.position.y = (game.activeGiant === 'mansuet' ? 0.28 : 0.26) + bob;
+        activeModel.skirtPivot.rotation.z = game.currentRoll + Math.sin(game.walkPhase) * 0.032;
+        activeModel.upper.rotation.z = game.currentRoll * 0.75 + Math.cos(game.walkPhase) * 0.028;
 
-        // Col·lisions amb obstacles
+        // Moviment natural de cames i braços
+        const limbAmp = Math.min(1.25, speedNorm + Math.abs(game.vx) * 0.04);
+        activeModel.leftLeg.rotation.x = Math.sin(game.walkPhase) * 0.52 * limbAmp;
+        activeModel.rightLeg.rotation.x = -Math.sin(game.walkPhase) * 0.52 * limbAmp;
+        activeModel.leftArm.rotation.x = -Math.sin(game.walkPhase) * 0.26 * limbAmp;
+        activeModel.rightArm.rotation.x = Math.sin(game.walkPhase) * 0.26 * limbAmp;
+
+        // Oneig suau del mocador blanc de la Marta
+        if (game.activeGiant === 'marta' && marta3D.hanky) {
+          marta3D.hanky.rotation.z = Math.sin(game.walkPhase * 1.1) * 0.22 - game.vx * 0.04;
+        }
+
+        // Col·lisions amb obstacles (distància contínua per tot l'ample del carrer)
         for (let i = 0; i < obstacles.length; i++) {
           const obs = obstacles[i];
-          if (!obs.hit && obs.lane === game.lane && Math.abs(obs.z - game.z) < 0.95) {
+          if (!obs.hit && Math.abs(obs.x - game.x) < (obs.halfW + 0.45) && Math.abs(obs.z - game.z) < 0.85) {
             if (game.y < 0.82) {
               obs.hit = true;
               game.hurtTimer = 0.65;
@@ -1947,7 +2043,7 @@
           if (!pk.collected) {
             pk.mesh.rotation.y += dt * 2.8;
             pk.mesh.position.y = 1.35 + Math.sin(game.time * 4 + i) * 0.16;
-            if (pk.lane === game.lane && Math.abs(pk.z - game.z) < 1.25) {
+            if (Math.abs(pk.x - game.x) < 1.15 && Math.abs(pk.z - game.z) < 1.2) {
               pk.collected = true;
               pk.mesh.visible = false;
               game.items += 1;
@@ -1959,7 +2055,7 @@
           }
         }
 
-        // Pas pels 3 Arcs de Festa Major (baldufa automàtica + confeti)
+        // Pas pels 3 Arcs de Festa Major
         for (let i = 0; i < arches.length; i++) {
           const arch = arches[i];
           if (!arch.passed && game.z <= arch.z) {
@@ -1972,7 +2068,6 @@
           }
         }
 
-        // Arribada a la Plaça de l'Església
         if (Math.abs(game.z) >= COURSE_LENGTH) {
           finishCercavila();
         }
@@ -1987,7 +2082,7 @@
         }
       }
 
-      // Partícules de confeti
+      // Confeti
       for (let i = confettiParticles.length - 1; i >= 0; i--) {
         const cp = confettiParticles[i];
         cp.life -= dt;
@@ -2003,20 +2098,19 @@
         }
       }
 
-      // Montserrat acompanya l'horitzó
       if (montserratGroup) {
         montserratGroup.position.z = game.z - 145;
       }
 
-      // Càmera seguint el gegant (s'acosta quan mirem la cara de front)
+      // Càmera cinematogràfica seguint el gegant amb amortiment suau
       const shakeX = game.hurtTimer > 0 ? Math.sin(game.time * 55) * 0.22 : 0;
-      const camDistZ = game.facingFront ? 7.3 : 9.2;
+      const camDistZ = game.facingFront ? 7.2 : 9.2;
       const camHeightY = game.facingFront ? 4.45 : 5.2;
-      camera.position.x += (game.x * 0.55 + shakeX - camera.position.x) * Math.min(1, dt * 8);
+      camera.position.x += (game.x * 0.62 + shakeX - camera.position.x) * Math.min(1, dt * 7.5);
       camera.position.y += (camHeightY + game.y * 0.35 - camera.position.y) * Math.min(1, dt * 6);
       camera.position.z = game.z + camDistZ;
       camera.lookAt(
-        game.x * (game.facingFront ? 0.85 : 0.35),
+        game.x * (game.facingFront ? 0.88 : 0.45),
         (game.facingFront ? 2.75 : 2.35) + game.y * 0.25,
         game.z - (game.facingFront ? 2 : 12)
       );
@@ -2042,7 +2136,6 @@
       container.innerHTML = '';
       container.appendChild(renderer.domElement);
 
-      // Il·luminació càlida de capvespre mediterrani
       const hemi = new THREE.HemisphereLight(0xfffbeb, 0x4c1d3d, 0.9);
       scene.add(hemi);
 
