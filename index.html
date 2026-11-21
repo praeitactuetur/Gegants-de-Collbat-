@@ -1,2589 +1,1341 @@
-```html
 <!DOCTYPE html>
 <html lang="ca">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Gegants de Collbató</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <title>Gegants de Collbató - Cercavila 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #160c14;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+      background: #1a0f0a; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       touch-action: none;
     }
-    .font-display {
-      font-family: 'Cinzel', serif;
+    #game-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 1;
     }
-    .glass-panel {
-      background: rgba(24, 14, 22, 0.8);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(251, 191, 36, 0.42);
+
+    /* PORTADA */
+    #cover-screen {
+      position: fixed; inset: 0; z-index: 50;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 14px 16px 18px;
+      background: radial-gradient(circle at 50% 30%, #ff9a44 0%, #c84b31 45%, #2d142c 100%);
+      color: #fff; text-align: center;
     }
-    .btn-festive {
-      background: linear-gradient(135deg, #d97706 0%, #b91c1c 100%);
-      border: 2px solid #fde68a;
-      box-shadow: 0 10px 25px -5px rgba(185, 28, 28, 0.65), 0 0 20px rgba(245, 158, 11, 0.4);
-      transition: transform 0.14s ease, filter 0.14s ease;
+    .cover-header { z-index: 2; margin-top: 2px; }
+    .cover-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.35); border: 1px solid rgba(255,215,100,0.45);
+      padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #ffe082;
     }
-    .btn-festive:hover {
-      filter: brightness(1.08);
+    .cover-title {
+      font-family: 'Cinzel', serif; font-size: clamp(24px, 6.2vw, 44px); font-weight: 900;
+      margin: 6px 0 2px; line-height: 1.05;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.55), 0 0 24px rgba(255,180,50,0.4);
+      color: #fff8e7;
     }
-    .btn-festive:active {
-      transform: scale(0.95);
+    .cover-sub {
+      margin: 0; font-size: clamp(13px, 3.4vw, 17px); font-weight: 700;
+      color: #ffd54f; text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-    .touch-action-btn {
-      touch-action: none;
-      -webkit-tap-highlight-color: transparent;
+
+    .cover-art-wrap {
+      position: relative; flex: 1; width: 100%; max-width: 540px;
+      min-height: 180px; display: flex; align-items: center; justify-content: center;
+      margin: 6px 0;
     }
-    /* Joystick virtual analògic */
-    #joystick-base {
-      position: relative;
-      width: 124px;
-      height: 124px;
-      border-radius: 9999px;
-      background: radial-gradient(circle at 35% 35%, rgba(251, 191, 36, 0.2), rgba(20, 12, 18, 0.76));
-      border: 2px solid rgba(251, 191, 36, 0.52);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(251, 191, 36, 0.16);
-      touch-action: none;
+    #cover-canvas {
+      width: 100%; height: 100%; border-radius: 20px;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,220,130,0.35);
+      background: #2b1329;
     }
-    #joystick-ring {
-      position: absolute;
-      inset: 16px;
-      border-radius: 9999px;
-      border: 1px dashed rgba(253, 230, 138, 0.35);
+
+    .cover-footer {
+      width: 100%; max-width: 540px; z-index: 60;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .controls-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    }
+    .ctrl-pill {
+      background: rgba(20, 10, 15, 0.55); border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 12px; padding: 6px 4px; font-size: 11px; line-height: 1.25;
+    }
+    .ctrl-pill strong { display: block; color: #ffd54f; font-size: 11px; }
+    .ctrl-pill span { color: #e2e8f0; font-size: 10px; }
+
+    #btn-start {
+      position: relative; z-index: 70; pointer-events: auto; touch-action: manipulation;
+      width: 100%; padding: 15px 20px; border: none; border-radius: 16px;
+      background: linear-gradient(135deg, #ffd54f 0%, #ff8f00 100%);
+      color: #231104; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(255, 143, 0, 0.5), 0 3px 0 #b25900;
+      cursor: pointer; transition: transform 0.12s ease;
+    }
+    #btn-start:active { transform: scale(0.97); }
+
+    /* HUD SUPERIOR */
+    #hud {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+      padding: 10px 12px; display: none; flex-direction: column; gap: 8px;
       pointer-events: none;
+    }
+    .hud-top {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .hud-card {
+      background: rgba(20, 14, 18, 0.72); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18); border-radius: 14px;
+      padding: 7px 12px; color: #fff; display: flex; align-items: center; gap: 10px;
+      pointer-events: auto;
+    }
+    .hud-zone { font-size: 12px; font-weight: 800; color: #ffd54f; }
+    .hud-sub { font-size: 11px; color: #cbd5e1; display: flex; gap: 8px; }
+    .hud-score { font-size: 16px; font-weight: 800; color: #fff; }
+    .btn-icon {
+      background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+      color: #fff; border-radius: 10px; padding: 6px 10px; font-size: 14px; font-weight: 700;
+      cursor: pointer; pointer-events: auto; touch-action: manipulation;
+    }
+    .progress-bar-bg {
+      width: 100%; height: 7px; background: rgba(0,0,0,0.45);
+      border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);
+    }
+    #progress-fill {
+      width: 0%; height: 100%;
+      background: linear-gradient(90deg, #ffca28, #ff7043, #ec407a);
+      transition: width 0.15s linear;
+    }
+
+    /* CONTROLES MULTITÁCTILES INFERIORES */
+    #controls-layer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 25;
+      padding: 14px 16px 20px; display: none;
+      justify-content: space-between; align-items: flex-end;
+      pointer-events: none;
+    }
+    #joystick-zone {
+      width: 132px; height: 132px; border-radius: 50%;
+      background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.32);
+      position: relative; pointer-events: auto; touch-action: none;
+      backdrop-filter: blur(4px);
     }
     #joystick-knob {
-      position: absolute;
-      width: 52px;
-      height: 52px;
-      left: 50%;
-      top: 50%;
-      margin-left: -26px;
-      margin-top: -26px;
-      border-radius: 9999px;
-      background: radial-gradient(circle at 30% 30%, #fde68a, #d97706 65%, #991b1b 100%);
-      border: 2px solid #fef3c7;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+      width: 56px; height: 56px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffe082, #ff8f00);
+      border: 2px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      position: absolute; top: 36px; left: 36px; pointer-events: none;
+    }
+    .action-buttons {
+      display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
       pointer-events: none;
-      will-change: transform;
     }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-4px); }
+    .action-row { display: flex; gap: 10px; pointer-events: none; }
+    .act-btn {
+      pointer-events: auto; touch-action: none;
+      border: 2px solid rgba(255,255,255,0.35); border-radius: 16px;
+      background: rgba(25, 16, 22, 0.78); color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
+      padding: 11px 14px; font-size: 13px; cursor: pointer;
+      backdrop-filter: blur(6px); box-shadow: 0 6px 16px rgba(0,0,0,0.35);
     }
-    .animate-float {
-      animation: floatSlow 3.2s ease-in-out infinite;
+    .act-btn.active {
+      background: #ff8f00; color: #1f0d02; border-color: #fff;
+    }
+    #btn-jump {
+      padding: 16px 24px; font-size: 16px; border-radius: 20px;
+      background: linear-gradient(135deg, #ffd54f, #ff8f00); color: #241002;
+      border-color: #fff8e1;
+    }
+
+    /* MODAL FINAL DE CERCAVILA */
+    #finish-modal {
+      position: fixed; inset: 0; z-index: 40;
+      background: rgba(15, 8, 12, 0.82); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-box {
+      width: 100%; max-width: 420px;
+      background: linear-gradient(180deg, #2d1624 0%, #1a0d15 100%);
+      border: 2px solid #ffd54f; border-radius: 24px; padding: 24px 20px;
+      text-align: center; color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+    .modal-tag {
+      display: inline-block; background: rgba(255,213,79,0.18); color: #ffd54f;
+      padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    .modal-title {
+      font-family: 'Cinzel', serif; font-size: 26px; margin: 10px 0 8px; color: #fff8e7;
+    }
+    .modal-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.08); border-radius: 14px; padding: 10px;
+    }
+    .stat-box small { display: block; color: #cbd5e1; font-size: 11px; }
+    .stat-box strong { font-size: 20px; color: #ffd54f; }
+    .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .btn-primary {
+      padding: 14px; border-radius: 14px; border: none; font-size: 15px; font-weight: 800;
+      background: linear-gradient(135deg, #ffd54f, #ff8f00); color: #221002;
+      cursor: pointer; touch-action: manipulation;
+    }
+    .btn-secondary {
+      padding: 13px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; font-weight: 700;
+      cursor: pointer; touch-action: manipulation;
+    }
+
+    /* HUD CELEBRACIÓN DJ */
+    #dj-hud {
+      position: fixed; inset: 0; z-index: 30; pointer-events: none;
+      display: none; flex-direction: column; justify-content: space-between; padding: 14px;
+    }
+    .dj-banner {
+      background: rgba(20, 10, 35, 0.8); border: 1px solid #e040fb;
+      border-radius: 16px; padding: 10px 14px; color: #fff;
+      display: flex; justify-content: space-between; align-items: center;
+      pointer-events: auto;
+    }
+    .dj-bottom {
+      display: flex; flex-direction: column; gap: 10px; align-items: center;
+      pointer-events: auto;
+    }
+    .dj-msg {
+      background: rgba(0,0,0,0.72); border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 16px; border-radius: 999px; color: #fff; font-size: 13px; text-align: center;
     }
   </style>
 </head>
-<body class="relative w-screen h-screen overflow-hidden text-amber-50">
+<body>
 
-  <!-- Contenidor del món 3D -->
-  <div id="canvas-container" class="fixed inset-0 w-full h-full z-0" style="touch-action: none;"></div>
+  <canvas id="game-canvas"></canvas>
 
-  <!-- ===================================================================== -->
-  <!-- PANTALLA DE PORTADA (Il·lustració 2D amb En Mansuet i La Marta grans) -->
-  <!-- ===================================================================== -->
-  <div id="start-screen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-2.5 sm:p-4 bg-gradient-to-b from-[#1a0f1d] via-[#2b1523] to-[#140a11] overflow-hidden" style="touch-action: none;">
-    <!-- Capçalera compacta per deixar protagonisme als Gegants -->
-    <div class="text-center mt-0.5 sm:mt-1 z-10 shrink-0">
-      <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-1">
-        <span>Festa Major</span>
-        <span>•</span>
-        <span>Als Peus de Montserrat</span>
-      </div>
-      <h1 class="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-red-500 drop-shadow-[0_4px_14px_rgba(0,0,0,0.85)] leading-tight">
-        GEGANTS DE COLLBATÓ
-      </h1>
-      <p class="text-amber-100/95 text-xs sm:text-sm font-semibold">
-        Al ritme de la música
-      </p>
+  <!-- PORTADA ILUSTRADA -->
+  <div id="cover-screen">
+    <div class="cover-header">
+      <div class="cover-badge">Festa Major • Als Peus de Montserrat</div>
+      <h1 class="cover-title">GEGANTS DE COLLBATÓ</h1>
+      <p class="cover-sub">Al ritme de la música</p>
     </div>
 
-    <!-- Llenç de la portada: ocupa tot l'espai central disponible -->
-    <div id="cover-wrapper" class="relative my-1.5 sm:my-2 flex items-center justify-center w-full max-w-3xl flex-1 min-h-0">
-      <canvas id="cover-canvas" class="block w-full h-full rounded-2xl border-2 border-amber-400/55 shadow-[0_20px_50px_rgba(0,0,0,0.85)] bg-[#1f1224]"></canvas>
+    <div class="cover-art-wrap" id="cover-art-wrap">
+      <canvas id="cover-canvas"></canvas>
     </div>
 
-    <!-- Guia breu + Botó principal JUGAR CERCAVILA -->
-    <div class="w-full max-w-3xl flex flex-col items-center gap-2 mb-0.5 sm:mb-1 z-10 shrink-0">
-      <div class="grid grid-cols-4 gap-1.5 sm:gap-2 w-full text-center text-[11px] sm:text-xs">
-        <div class="glass-panel rounded-xl py-1.5 px-1">
-          <div class="text-amber-300 font-extrabold">🕹️ JOYSTICK</div>
-          <div class="text-amber-100/80 text-[10px] hidden sm:block">Moviment suau</div>
-        </div>
-        <div class="glass-panel rounded-xl py-1.5 px-1">
-          <div class="text-amber-300 font-extrabold">⬆️ SALTAR</div>
-          <div class="text-amber-100/80 text-[10px] hidden sm:block">Simultani</div>
-        </div>
-        <div class="glass-panel rounded-xl py-1.5 px-1">
-          <div class="text-amber-300 font-extrabold">👀 CARA (V)</div>
-          <div class="text-amber-100/80 text-[10px] hidden sm:block">Gira 180°</div>
-        </div>
-        <div class="glass-panel rounded-xl py-1.5 px-1">
-          <div class="text-amber-300 font-extrabold">⇄ GEGANT (Q)</div>
-          <div class="text-amber-100/80 text-[10px] hidden sm:block">Mansuet / Marta</div>
-        </div>
+    <div class="cover-footer">
+      <div class="controls-grid">
+        <div class="ctrl-pill"><strong>🕹️ JOYSTICK</strong><span>Moviment suau</span></div>
+        <div class="ctrl-pill"><strong>⬆️ SALTAR</strong><span>Simultani</span></div>
+        <div class="ctrl-pill"><strong>👀 CARA (V)</strong><span>Gira 180°</span></div>
+        <div class="ctrl-pill"><strong>⇄ GEGANT (Q)</strong><span>Mansuet / Marta</span></div>
       </div>
-
-      <button id="btn-start" type="button" class="btn-festive animate-float w-full sm:w-auto px-9 py-3 sm:py-3.5 rounded-2xl text-white font-extrabold text-base sm:text-xl tracking-wider uppercase cursor-pointer">
-        JUGAR CERCAVILA
-      </button>
+      <button id="btn-start" type="button">▶ JUGAR CERCAVILA</button>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- HUD SUPERIOR DURANT LA PARTIDA                                        -->
-  <!-- ===================================================================== -->
-  <div id="hud" class="hidden fixed inset-x-0 top-0 z-20 p-3 sm:p-4 pointer-events-none flex flex-col gap-2">
-    <div class="flex items-start justify-between gap-2 max-w-6xl mx-auto w-full">
-      <!-- Tram i Gegant actiu -->
-      <div class="glass-panel rounded-2xl px-3.5 py-2 flex items-center gap-2.5 pointer-events-auto shadow-lg">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-700 to-amber-600 border border-amber-300/60 flex items-center justify-center text-lg shadow-inner">
-          👑
-        </div>
+  <!-- HUD DE JUEGO -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-card">
+        <span style="font-size:22px">👑</span>
         <div>
-          <div id="hud-zone" class="text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold text-amber-300">
-            1. Nucli Antic
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="hud-giant-name" class="text-sm sm:text-base font-extrabold text-white">En Mansuet</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-200 font-bold" id="hud-progress-text">0%</span>
+          <div class="hud-zone" id="hud-zone">1. Nucli Antic</div>
+          <div class="hud-sub">
+            <span id="hud-giant-name">En Mansuet</span>
+            <span id="hud-pct">0%</span>
           </div>
         </div>
       </div>
-
-      <!-- Puntuació, Col·leccionables i So -->
-      <div class="flex items-center gap-2 pointer-events-auto">
-        <div class="glass-panel rounded-2xl px-3 py-1.5 text-right shadow-lg">
-          <div class="text-[10px] uppercase tracking-wider text-amber-300/90 font-bold">Punts</div>
-          <div class="flex items-center justify-end gap-2.5">
-            <span class="text-xs sm:text-sm font-bold text-red-300">🧣 <span id="hud-items">0</span></span>
-            <span id="hud-score" class="text-base sm:text-xl font-black text-amber-300">0</span>
-          </div>
+      <div class="hud-card">
+        <div style="text-align:right">
+          <div style="font-size:10px;color:#cbd5e1;text-transform:uppercase">Punts</div>
+          <div class="hud-score">🧣 <span id="hud-items">0</span> · <span id="hud-score">0</span></div>
         </div>
-
-        <button id="btn-mute" type="button" aria-label="Silenciar o activar les gralles" class="glass-panel w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:scale-95 transition cursor-pointer shadow-lg">
-          <svg id="icon-sound-on" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
-          </svg>
-          <svg id="icon-sound-off" class="hidden w-6 h-6 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
-          </svg>
-        </button>
+        <button class="btn-icon" id="btn-mute" type="button">🔊</button>
       </div>
     </div>
-
-    <!-- Barra de progrés del recorregut cap a la Plaça de l'Església -->
-    <div class="max-w-xl mx-auto w-full px-2">
-      <div class="w-full h-2 bg-black/55 rounded-full overflow-hidden border border-amber-400/35 p-0.5">
-        <div id="hud-progress-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-red-600 via-amber-400 to-yellow-200 transition-all duration-150"></div>
-      </div>
-    </div>
-
-    <!-- Missatge flotant d'avís -->
-    <div id="banner-toast" class="mx-auto mt-0.5 px-4 py-1 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-200 text-xs sm:text-sm font-extrabold tracking-wide shadow-xl opacity-0 transition-opacity duration-300">
-      1. Nucli Antic de Collbató
+    <div class="progress-bar-bg">
+      <div id="progress-fill"></div>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- CONTROLS INFERIORS: JOYSTICK ANALÒGIC ESQUERRA + BOTONS DRETA         -->
-  <!-- ===================================================================== -->
-  <div id="touch-controls" class="hidden fixed inset-x-0 bottom-0 z-20 p-3 sm:p-5 pointer-events-none">
-    <div class="max-w-6xl mx-auto flex items-end justify-between gap-2">
-      <!-- Joystick Virtual Analògic -->
-      <div class="flex flex-col items-center gap-1 pointer-events-auto">
-        <div id="joystick-base" aria-label="Joystick de direcció i ritme">
-          <div id="joystick-ring"></div>
-          <div id="joystick-knob"></div>
-        </div>
-        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-200/80 bg-black/45 px-2 py-0.5 rounded-full">
-          Direcció / Ritme
-        </span>
+  <!-- CONTROLES MULTITÁCTILES -->
+  <div id="controls-layer">
+    <div id="joystick-zone" aria-label="Joystick de direcció">
+      <div id="joystick-knob"></div>
+    </div>
+    <div class="action-buttons">
+      <div class="action-row">
+        <button class="act-btn" id="btn-face" type="button">👀 CARA</button>
+        <button class="act-btn" id="btn-switch" type="button">⇄ GEGANT</button>
       </div>
-
-      <!-- Recordatori tecles en escriptori -->
-      <div class="hidden lg:flex glass-panel rounded-xl px-4 py-2 text-xs text-amber-200/90 gap-3 font-semibold mb-2">
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">WASD / Fletxes</kbd> Direcció i ritme</span>
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Espai</kbd> Saltar</span>
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">V</kbd> Cara</span>
-        <span><kbd class="px-1.5 py-0.5 bg-black/60 rounded border border-amber-400/30 text-amber-300">Q</kbd> Gegant</span>
-      </div>
-
-      <!-- Botons tàctils ergonòmics a la cantonada inferior dreta (Multitàctil independent) -->
-      <div class="flex flex-col items-end gap-2.5 pointer-events-auto" style="touch-action: none;">
-        <div class="flex gap-2" style="touch-action: none;">
-          <button id="btn-face" type="button" class="touch-action-btn glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
-            <span class="text-lg leading-none pointer-events-none">👀</span>
-            <span id="btn-face-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap pointer-events-none">CARA</span>
-          </button>
-
-          <button id="btn-switch" type="button" class="touch-action-btn glass-panel px-3.5 sm:px-4 h-14 rounded-2xl flex items-center gap-1.5 text-amber-200 hover:bg-amber-500/25 active:bg-amber-500/40 active:scale-95 shadow-xl transition border border-amber-400/50 cursor-pointer">
-            <span class="text-base leading-none text-amber-300 font-black pointer-events-none">⇄</span>
-            <div class="text-left leading-tight pointer-events-none">
-              <div class="text-[9px] uppercase tracking-wider text-amber-300 font-bold">GEGANT</div>
-              <div id="btn-switch-label" class="text-xs sm:text-sm font-extrabold text-white whitespace-nowrap">La Marta</div>
-            </div>
-          </button>
-        </div>
-
-        <button id="btn-jump" type="button" class="touch-action-btn btn-festive w-36 sm:w-44 h-16 rounded-2xl flex items-center justify-center gap-2 text-white font-extrabold text-base sm:text-lg tracking-wider shadow-xl cursor-pointer">
-          <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-          </svg>
-          <span class="pointer-events-none">SALTAR</span>
-        </button>
-      </div>
+      <button class="act-btn" id="btn-jump" type="button">⬆️ SALTAR</button>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- PANTALLA FINAL: ELECCIÓ EN ARRIBAR A LA META DE LA CERCAVILA          -->
-  <!-- ===================================================================== -->
-  <div id="end-screen" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-    <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 text-center border-2 border-amber-400/70 shadow-[0_25px_60px_rgba(0,0,0,0.9)]">
-      <div class="inline-block px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-2">
-        Arribada a la Plaça de l'Església
-      </div>
-      <h2 class="font-display text-2xl sm:text-4xl font-black text-amber-300 mb-2">
-        CERCAVILA COMPLETADA!
-      </h2>
-      <p class="text-amber-100/90 text-sm sm:text-base mb-5">
-        Has arribat a la meta amb en <strong class="text-amber-300">Mansuet</strong> i la <strong class="text-amber-300">Marta</strong>. Què vols fer ara?
+  <!-- MODAL FIN DE CERCAVILA -->
+  <div id="finish-modal">
+    <div class="modal-box">
+      <span class="modal-tag">Arribada a la Plaça de l'Església</span>
+      <h2 class="modal-title">CERCAVILA COMPLETADA!</h2>
+      <p style="font-size:14px;color:#e2e8f0;margin:0">
+        Has arribat a la meta amb en <strong>Mansuet</strong> i la <strong>Marta</strong>. Què vols fer ara?
       </p>
-
-      <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="bg-black/45 border border-amber-400/30 rounded-2xl p-3.5">
-          <div class="text-xs uppercase text-amber-300/80 font-bold">Puntuació Final</div>
-          <div id="final-score" class="text-2xl sm:text-3xl font-black text-amber-300 mt-0.5">0</div>
-        </div>
-        <div class="bg-black/45 border border-amber-400/30 rounded-2xl p-3.5">
-          <div class="text-xs uppercase text-amber-300/80 font-bold">Notes i Mocadors</div>
-          <div id="final-items" class="text-2xl sm:text-3xl font-black text-red-400 mt-0.5">0</div>
-        </div>
+      <div class="modal-stats">
+        <div class="stat-box"><small>Puntuació Final</small><strong id="final-score">0</strong></div>
+        <div class="stat-box"><small>Notes i Mocadors</small><strong id="final-items">0</strong></div>
       </div>
-
-      <div class="flex flex-col gap-3">
-        <button id="btn-celebration" type="button" class="btn-festive w-full py-4 px-4 rounded-2xl text-white font-extrabold text-base sm:text-lg uppercase tracking-wider cursor-pointer">
-          🎉 Anar a la celebració
-        </button>
-        <button id="btn-restart" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-amber-950/85 hover:bg-amber-900/85 border border-amber-400/50 text-amber-200 font-extrabold text-sm sm:text-base tracking-wide transition active:scale-95 cursor-pointer">
-          🔄 Tornar a començar la cercavila
-        </button>
+      <div class="modal-btns">
+        <button class="btn-primary" id="btn-go-party" type="button">🎉 Anar a la celebració</button>
+        <button class="btn-secondary" id="btn-restart" type="button">🔄 Tornar a començar la cercavila</button>
       </div>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- HUD DE LA SALA DE CELEBRACIÓ AMB DJ                                   -->
-  <!-- ===================================================================== -->
-  <div id="party-hud" class="hidden fixed inset-0 z-20 pointer-events-none flex flex-col justify-between p-3 sm:p-5">
-    <div class="max-w-6xl mx-auto w-full flex items-start justify-between gap-2">
-      <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-3 pointer-events-auto shadow-xl border-fuchsia-400/50">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-600 to-amber-500 border border-amber-200/70 flex items-center justify-center text-xl shadow-inner">
-          🎧
-        </div>
-        <div>
-          <div class="text-[10px] sm:text-xs uppercase tracking-widest font-extrabold text-fuchsia-300">
-            Sala de Festa Major • El Casinet
-          </div>
-          <div class="text-sm sm:text-lg font-black text-white">
-            Celebració amb DJ en Directe
-          </div>
-        </div>
+  <!-- HUD CELEBRACIÓN DJ -->
+  <div id="dj-hud">
+    <div class="dj-banner">
+      <div>
+        <div style="font-size:11px;color:#f0abfc;font-weight:700">Sala de Festa Major • El Casinet</div>
+        <div style="font-size:15px;font-weight:800">🎧 Celebració amb DJ en Directe</div>
       </div>
-
-      <button id="btn-party-mute" type="button" aria-label="Silenciar o activar la música del DJ" class="glass-panel w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-amber-200 hover:bg-amber-500/25 active:scale-95 transition pointer-events-auto cursor-pointer shadow-lg">
-        <svg id="party-sound-on" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
-        </svg>
-        <svg id="party-sound-off" class="hidden w-6 h-6 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
-        </svg>
-      </button>
+      <button class="btn-icon" id="btn-dj-mute" type="button">🔊</button>
     </div>
-
-    <div class="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div class="glass-panel rounded-2xl px-4 py-2 text-center sm:text-left text-xs sm:text-sm text-amber-100/95 font-semibold">
-        🎶 En <strong class="text-amber-300">Mansuet</strong>, la <strong class="text-amber-300">Marta</strong> i el poble ballen al ritme dels plats!
-      </div>
-      <button id="btn-party-back" type="button" class="btn-festive pointer-events-auto w-full sm:w-auto px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base uppercase tracking-wider cursor-pointer shadow-xl">
-        🔄 Tornar a la cercavila
-      </button>
+    <div class="dj-bottom">
+      <div class="dj-msg">🎶 En <strong>Mansuet</strong>, la <strong>Marta</strong> i el poble ballen al ritme dels plats!</div>
+      <button class="btn-primary" id="btn-back-parade" type="button" style="padding:12px 22px">🔄 Tornar a començar la cercavila</button>
     </div>
   </div>
 
-  <!-- Càrrega segura de Three.js amb suport automàtic -->
+  <!-- CARGA SEGURA DE THREE.JS CON TRIPLE RESPALDO -->
   <script>
-    window.__threeLoaded = false;
-    function loadThreeFallback() {
-      if (window.__threeLoaded) return;
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/three@0.128.0/build/three.min.js';
-      s.onload = function () {
-        window.__threeLoaded = true;
-        if (typeof window.__init3DWorld === 'function') window.__init3DWorld();
-      };
-      document.head.appendChild(s);
-    }
+    (function loadThree() {
+      const cdns = [
+        "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+        "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js",
+        "https://unpkg.com/three@0.128.0/build/three.min.js"
+      ];
+      let idx = 0;
+      function tryNext() {
+        if (window.THREE) { init3DWorld(); return; }
+        if (idx >= cdns.length) return;
+        const s = document.createElement("script");
+        s.src = cdns[idx++];
+        s.onload = () => { if (window.THREE) init3DWorld(); else tryNext(); };
+        s.onerror = tryNext;
+        document.head.appendChild(s);
+      }
+      tryNext();
+    })();
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="window.__threeLoaded = true;" onerror="loadThreeFallback()"></script>
 
   <script>
-    // =========================================================================
-    // 1. IL·LUSTRACIÓ ARTESANAL DE LA PORTADA (EN MANSUET I LA MARTA BEN GRANS)
-    // =========================================================================
+    /* ============================================================
+       1. DIBUJO ARTESANAL DE LA PORTADA (MANSUET, MARTA Y MONTSERRAT)
+       ============================================================ */
     function drawCoverIllustration() {
       const canvas = document.getElementById('cover-canvas');
-      const wrapper = document.getElementById('cover-wrapper');
-      if (!canvas || !wrapper) return;
-
+      const wrap = document.getElementById('cover-art-wrap');
+      if (!canvas || !wrap) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const rect = wrapper.getBoundingClientRect();
-      const W = Math.max(300, Math.floor(rect.width));
-      const H = Math.max(220, Math.floor(rect.height));
-
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
+      const rect = wrap.getBoundingClientRect();
+      const w = Math.max(280, rect.width);
+      const h = Math.max(190, rect.height);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
       const ctx = canvas.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.scale(dpr, dpr);
 
-      // Cel càlid de capvespre darrere Montserrat
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.85);
-      skyGrad.addColorStop(0, '#1e1035');
-      skyGrad.addColorStop(0.38, '#581c4f');
-      skyGrad.addColorStop(0.72, '#c2410c');
-      skyGrad.addColorStop(1, '#fbbf24');
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, W, H);
+      // Cielo atardecer
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#1e1136');
+      sky.addColorStop(0.45, '#9b2c48');
+      sky.addColorStop(0.82, '#f48c42');
+      sky.addColorStop(1, '#ffd166');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
 
-      // Halo solar darrere les agulles de Montserrat
-      const sunX = W * 0.5;
-      const sunY = H * 0.44;
-      const sunGlow = ctx.createRadialGradient(sunX, sunY, 8, sunX, sunY, Math.max(W, H) * 0.45);
-      sunGlow.addColorStop(0, 'rgba(254, 240, 138, 0.9)');
-      sunGlow.addColorStop(0.45, 'rgba(245, 158, 11, 0.35)');
-      sunGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = sunGlow;
-      ctx.fillRect(0, 0, W, H);
-
-      // Massís de Montserrat amb agulles característiques
-      ctx.fillStyle = '#3b243f';
+      // Sol dorado detrás de Montserrat
+      ctx.fillStyle = 'rgba(255, 236, 153, 0.35)';
       ctx.beginPath();
-      ctx.moveTo(0, H * 0.82);
-      ctx.lineTo(0, H * 0.48);
+      ctx.arc(w * 0.5, h * 0.44, Math.min(w, h) * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Silueta de Montserrat (agujas características)
+      ctx.fillStyle = '#3d1e38';
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.65);
       const peaks = [
-        [0.06, 0.44], [0.11, 0.33], [0.16, 0.43], [0.22, 0.25],
-        [0.27, 0.39], [0.33, 0.21], [0.39, 0.35], [0.45, 0.17],
-        [0.50, 0.31], [0.55, 0.16], [0.61, 0.33], [0.67, 0.20],
-        [0.73, 0.36], [0.79, 0.24], [0.85, 0.40], [0.92, 0.32],
-        [1.00, 0.46]
+        [0.05, 0.54], [0.12, 0.44], [0.16, 0.50], [0.22, 0.36], [0.27, 0.45],
+        [0.33, 0.28], [0.38, 0.39], [0.43, 0.24], [0.48, 0.35], [0.54, 0.22],
+        [0.59, 0.34], [0.65, 0.27], [0.71, 0.40], [0.78, 0.33], [0.85, 0.47],
+        [0.93, 0.42], [1.0, 0.56]
       ];
-      peaks.forEach(([px, py]) => ctx.lineTo(W * px, H * py));
-      ctx.lineTo(W, H * 0.82);
+      peaks.forEach(([px, py]) => ctx.lineTo(w * px, h * py));
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
       ctx.closePath();
       ctx.fill();
 
-      // Vessant més proper de Collbató i silueta del campanar de Sant Corneli
-      ctx.fillStyle = '#251429';
+      // Campanario de Sant Corneli (Collbató) a la izquierda
+      ctx.fillStyle = '#261124';
+      const tx = w * 0.14, ty = h * 0.45, tw = w * 0.065;
+      ctx.fillRect(tx, ty, tw, h * 0.4);
       ctx.beginPath();
-      ctx.moveTo(0, H * 0.84);
-      ctx.lineTo(0, H * 0.62);
-      ctx.quadraticCurveTo(W * 0.25, H * 0.56, W * 0.5, H * 0.61);
-      ctx.quadraticCurveTo(W * 0.78, H * 0.54, W, H * 0.60);
-      ctx.lineTo(W, H * 0.84);
+      ctx.moveTo(tx - 3, ty);
+      ctx.lineTo(tx + tw / 2, ty - h * 0.09);
+      ctx.lineTo(tx + tw + 3, ty);
       ctx.closePath();
       ctx.fill();
 
-      // Campanar de l'església de Collbató a la dreta
-      const towerX = W * 0.87;
-      const towerY = H * 0.44;
-      ctx.fillStyle = '#1b0f21';
-      ctx.fillRect(towerX - 14, towerY, 28, H * 0.38);
-      ctx.beginPath();
-      ctx.moveTo(towerX - 16, towerY);
-      ctx.lineTo(towerX, towerY - 22);
-      ctx.lineTo(towerX + 16, towerY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(towerX, towerY + 14, 5, Math.PI, 0);
-      ctx.fillRect(towerX - 5, towerY + 14, 10, 12);
-      ctx.fill();
+      // Suelo adoquinado de la plaza
+      ctx.fillStyle = '#23141c';
+      ctx.fillRect(0, h * 0.78, w, h * 0.22);
 
-      // Paviment empedrat de la plaça
-      const groundY = H * 0.81;
-      const floorGrad = ctx.createLinearGradient(0, groundY, 0, H);
-      floorGrad.addColorStop(0, '#443844');
-      floorGrad.addColorStop(1, '#1e1621');
-      ctx.fillStyle = floorGrad;
-      ctx.fillRect(0, groundY, W, H - groundY);
-
-      ctx.strokeStyle = 'rgba(251, 191, 36, 0.28)';
+      // Guirnaldas festivas superiores
+      const colors = ['#ffca28', '#ef5350', '#42a5f5', '#66bb6a', '#ab47bc'];
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(0, groundY);
-      ctx.lineTo(W, groundY);
+      ctx.moveTo(0, h * 0.06);
+      ctx.quadraticCurveTo(w * 0.5, h * 0.17, w, h * 0.06);
       ctx.stroke();
-
-      // Garlandes de banderoles festives a la part superior
-      ctx.strokeStyle = '#fde68a';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.moveTo(0, H * 0.04);
-      ctx.quadraticCurveTo(W * 0.5, H * 0.18, W, H * 0.04);
-      ctx.stroke();
-
-      const flagColors = ['#dc2626', '#facc15', '#dc2626', '#facc15', '#ffffff'];
-      for (let i = 1; i < 20; i++) {
-        const t = i / 20;
-        const fx = W * t;
-        const fy = H * 0.04 + Math.sin(t * Math.PI) * (H * 0.07);
-        ctx.fillStyle = flagColors[i % flagColors.length];
+      for (let i = 1; i < 16; i++) {
+        const t = i / 16;
+        const bx = w * t;
+        const by = h * 0.06 + 4 * t * (1 - t) * (h * 0.11);
+        ctx.fillStyle = colors[i % colors.length];
         ctx.beginPath();
-        ctx.moveTo(fx - 7, fy);
-        ctx.lineTo(fx + 7, fy);
-        ctx.lineTo(fx, fy + 15);
+        ctx.moveTo(bx - 6, by);
+        ctx.lineTo(bx + 6, by);
+        ctx.lineTo(bx, by + 12);
         ctx.closePath();
         ctx.fill();
       }
 
-      // Escala adaptativa perquè tots dos gegants ocupin el 76% de l'alçada
-      // i mai quedin tallats ni en mòbil vertical ni en pantalla panoràmica
-      const giantHeightUnits = 232;
-      const targetHeightPx = H * 0.76;
-      const maxWidthPerGiant = W * 0.42;
-      const giantWidthUnits = 116;
-      const scale = Math.min(targetHeightPx / giantHeightUnits, maxWidthPerGiant / giantWidthUnits);
+      const scale = Math.min(w / 420, h / 270);
 
-      const feetY = H * 0.92;
-      const leftCenterX = W * 0.32;
-      const rightCenterX = W * 0.68;
-
-      // -----------------------------------------------------------------------
-      // RETRAT D'EN MANSUET (Esquerra - gran, nítid i complet)
-      // -----------------------------------------------------------------------
+      // --- GIGANTE 1: EN MANSUET (IZQUIERDA) ---
       ctx.save();
-      ctx.translate(leftCenterX, feetY);
+      ctx.translate(w * 0.34, h * 0.96);
       ctx.scale(scale, scale);
 
-      // Ombra al terra
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+      // Faldón marrón oliva con parche rectangular claro
+      ctx.fillStyle = '#5c5337';
       ctx.beginPath();
-      ctx.ellipse(0, 4, 52, 11, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Capa negra ampla
-      ctx.fillStyle = '#111318';
-      ctx.beginPath();
-      ctx.moveTo(-27, -168);
-      ctx.lineTo(27, -168);
-      ctx.lineTo(56, -16);
-      ctx.lineTo(-56, -16);
+      ctx.moveTo(-42, 0); ctx.lineTo(-32, -105); ctx.lineTo(32, -105); ctx.lineTo(42, 0);
       ctx.closePath();
       ctx.fill();
-
-      // Faldó marró oliva amb plecs i pedaç rectangular clar
-      ctx.fillStyle = '#6b5b3e';
-      ctx.beginPath();
-      ctx.moveTo(-29, -95);
-      ctx.lineTo(29, -95);
-      ctx.lineTo(37, -4);
-      ctx.lineTo(-37, -4);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.24)';
+      // Parche rectangular claro característico
+      ctx.fillStyle = '#b8ad82';
+      ctx.fillRect(6, -54, 18, 22);
+      ctx.strokeStyle = '#3e3824';
       ctx.lineWidth = 1.5;
-      [-18, -6, 8, 20].forEach((px) => {
-        ctx.beginPath();
-        ctx.moveTo(px * 0.85, -94);
-        ctx.lineTo(px, -5);
-        ctx.stroke();
-      });
+      ctx.strokeRect(6, -54, 18, 22);
 
-      // Pedaç rectangular clar característic al faldó
-      ctx.fillStyle = '#d1c2a1';
-      ctx.fillRect(-11, -58, 22, 26);
-      ctx.strokeStyle = '#3f3422';
-      ctx.lineWidth = 1.3;
-      ctx.strokeRect(-11, -58, 22, 26);
-
-      // Faixa vermella i armilla granat
-      ctx.fillStyle = '#b91c1c';
-      ctx.fillRect(-28, -109, 56, 15);
-
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(-23, -164, 46, 55);
-      ctx.fillStyle = '#7f1d1d';
+      // Chaleco granate y camisa blanca
+      ctx.fillStyle = '#f5f5f5';
+      ctx.fillRect(-24, -148, 48, 44);
+      ctx.fillStyle = '#7b1e26';
+      ctx.fillRect(-25, -148, 19, 44);
+      ctx.fillRect(6, -148, 19, 44);
+      // Cadena dorada del reloj
+      ctx.strokeStyle = '#ffd54f';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(-24, -164);
-      ctx.lineTo(-6, -164);
-      ctx.lineTo(0, -142);
-      ctx.lineTo(6, -164);
-      ctx.lineTo(24, -164);
-      ctx.lineTo(26, -109);
-      ctx.lineTo(-26, -109);
-      ctx.closePath();
-      ctx.fill();
-
-      // Cadena de rellotge daurada
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      ctx.moveTo(-3, -142);
-      ctx.quadraticCurveTo(-19, -125, -17, -112);
+      ctx.moveTo(-8, -130); ctx.quadraticCurveTo(0, -118, 10, -128);
       ctx.stroke();
 
-      // Llaç negre al coll
-      ctx.fillStyle = '#0f172a';
+      // Capa negra sobre hombros
+      ctx.fillStyle = '#18181b';
       ctx.beginPath();
-      ctx.moveTo(0, -163);
-      ctx.lineTo(-10, -168);
-      ctx.lineTo(-10, -158);
-      ctx.closePath();
-      ctx.moveTo(0, -163);
-      ctx.lineTo(10, -168);
-      ctx.lineTo(10, -158);
+      ctx.moveTo(-36, -148); ctx.lineTo(36, -148); ctx.lineTo(46, -85); ctx.lineTo(-46, -85);
       ctx.closePath();
       ctx.fill();
 
-      // Patilles i cabells sota la barretina
-      ctx.fillStyle = '#2c1b14';
-      ctx.fillRect(-16, -193, 4.5, 14);
-      ctx.fillRect(11.5, -193, 4.5, 14);
-
-      // Rostre simpàtic d'en Mansuet
-      ctx.fillStyle = '#eab996';
+      // Cabeza y rostro de Mansuet
+      ctx.fillStyle = '#f2c19d';
       ctx.beginPath();
-      ctx.ellipse(0, -184, 15, 18.5, 0, 0, Math.PI * 2);
+      ctx.arc(0, -168, 19, 0, Math.PI * 2);
       ctx.fill();
-
-      ctx.fillStyle = '#1e1b18';
-      ctx.fillRect(-8.5, -189, 5.5, 2.2);
-      ctx.fillRect(3, -189, 5.5, 2.2);
+      // Barba y bigote castaño
+      ctx.fillStyle = '#3e2723';
       ctx.beginPath();
-      ctx.arc(-5.5, -185, 1.9, 0, Math.PI * 2);
-      ctx.arc(5.5, -185, 1.9, 0, Math.PI * 2);
+      ctx.arc(0, -164, 18, 0.15 * Math.PI, 0.85 * Math.PI);
       ctx.fill();
+      // Ojos
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath(); ctx.arc(-6, -171, 2.2, 0, Math.PI * 2); ctx.arc(6, -171, 2.2, 0, Math.PI * 2); ctx.fill();
 
-      // Bigoti espès i somriure amable
+      // Barretina vermella
+      ctx.fillStyle = '#c62828';
       ctx.beginPath();
-      ctx.moveTo(-12, -175);
-      ctx.quadraticCurveTo(0, -181, 12, -175);
-      ctx.quadraticCurveTo(0, -171, -12, -175);
-      ctx.fill();
-
-      // Barretina vermella caiguda cap a un costat
-      ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.moveTo(-16, -195);
-      ctx.quadraticCurveTo(-15, -224, 19, -215);
-      ctx.quadraticCurveTo(28, -203, 16, -195);
+      ctx.moveTo(-19, -178);
+      ctx.quadraticCurveTo(-22, -212, 8, -206);
+      ctx.quadraticCurveTo(24, -202, 19, -178);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#111827';
-      ctx.fillRect(-16, -197, 32, 4);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(-19, -181, 38, 5);
 
-      // Trabuc amb branca de pi i Senyera penjant
-      ctx.save();
-      ctx.translate(4, -104);
-      ctx.rotate(-0.18);
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(-44, -4, 48, 9);
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(2, -4, 44, 7.5);
-      ctx.fillStyle = '#15803d';
+      // Brazo y Trabuc con rama de pino y Senyera
+      ctx.strokeStyle = '#4e342e';
+      ctx.lineWidth = 7;
       ctx.beginPath();
-      ctx.arc(48, -2, 11, 0, Math.PI * 2);
-      ctx.arc(55, -6, 8, 0, Math.PI * 2);
+      ctx.moveTo(22, -135); ctx.lineTo(54, -178);
+      ctx.stroke();
+      ctx.fillStyle = '#cfd8dc';
+      ctx.beginPath();
+      ctx.moveTo(50, -175); ctx.lineTo(62, -188); ctx.lineTo(56, -193); ctx.lineTo(46, -179);
       ctx.fill();
-      ctx.fillStyle = '#facc15';
-      ctx.fillRect(14, 3, 18, 34);
-      ctx.fillStyle = '#dc2626';
-      for (let s = 0; s < 4; s++) {
-        ctx.fillRect(16 + s * 4, 3, 2, 34);
-      }
-      ctx.restore();
+      // Ramita de pino y Senyera
+      ctx.fillStyle = '#2e7d32';
+      ctx.beginPath(); ctx.arc(57, -192, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fdd835';
+      ctx.fillRect(58, -202, 16, 10);
+      ctx.fillStyle = '#d32f2f';
+      ctx.fillRect(58, -200, 16, 2);
+      ctx.fillRect(58, -196, 16, 2);
+
       ctx.restore();
 
-      // -----------------------------------------------------------------------
-      // RETRAT DE LA MARTA (Dreta - cara descoberta, clara, somrient i 2 braços)
-      // -----------------------------------------------------------------------
+      // --- GIGANTA 2: LA MARTA (DERECHA, ROSTRO DESPEJADO Y DOS BRAZOS) ---
       ctx.save();
-      ctx.translate(rightCenterX, feetY);
+      ctx.translate(w * 0.66, h * 0.96);
       ctx.scale(scale, scale);
 
-      // Ombra al terra
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+      // Falda floral rosada
+      ctx.fillStyle = '#d88c9a';
       ctx.beginPath();
-      ctx.ellipse(0, 4, 48, 11, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Faldilla rosada amb estampat floral
-      ctx.fillStyle = '#e5a4b4';
-      ctx.beginPath();
-      ctx.moveTo(-25, -102);
-      ctx.lineTo(25, -102);
-      ctx.lineTo(36, -4);
-      ctx.lineTo(-36, -4);
+      ctx.moveTo(-44, 0); ctx.lineTo(-30, -102); ctx.lineTo(30, -102); ctx.lineTo(44, 0);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = '#be185d';
-      for (let fy = -90; fy <= -14; fy += 17) {
-        for (let fx = -21; fx <= 21; fx += 13) {
-          ctx.beginPath();
-          ctx.arc(fx + (fy % 3), fy, 2.7, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      // Delantal de blonda negra
+      ctx.fillStyle = 'rgba(20, 20, 24, 0.86)';
+      ctx.beginPath();
+      ctx.moveTo(-22, -102); ctx.lineTo(22, -102); ctx.lineTo(28, -12); ctx.lineTo(-28, -12);
+      ctx.closePath();
+      ctx.fill();
 
-      // Davantal de blonda negra calada
-      ctx.fillStyle = 'rgba(15, 17, 23, 0.88)';
-      ctx.fillRect(-19, -100, 38, 68);
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 0.85;
-      ctx.strokeRect(-17, -98, 34, 64);
-      for (let by = -90; by <= -38; by += 10) {
-        ctx.beginPath();
-        ctx.moveTo(-16, by);
-        ctx.lineTo(16, by);
-        ctx.stroke();
-      }
+      // Cuerpo / corpiño claro y mantellina negra solo en hombros
+      ctx.fillStyle = '#fff5f7';
+      ctx.beginPath();
+      ctx.moveTo(-24, -144); ctx.lineTo(24, -144); ctx.lineTo(20, -102); ctx.lineTo(-20, -102);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.moveTo(-28, -145); ctx.lineTo(0, -116); ctx.lineTo(28, -145); ctx.lineTo(22, -148); ctx.lineTo(-22, -148);
+      ctx.closePath();
+      ctx.fill();
 
-      // Cosset blanc i mantellina de blonda negra sobre les espatlles
+      // Dos brazos completos (mangas blancas + antebrazos + pañuelo blanco)
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(-28, -136, 9, 0, Math.PI * 2); ctx.arc(28, -136, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#f5cbb0';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-30, -132); ctx.lineTo(-36, -104); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(30, -132); ctx.lineTo(36, -104); ctx.stroke();
+      // Pañuelo blanco en mano
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(-20, -156);
-      ctx.lineTo(20, -156);
-      ctx.lineTo(23, -102);
-      ctx.lineTo(-23, -102);
+      ctx.moveTo(36, -104); ctx.lineTo(46, -86); ctx.lineTo(28, -90);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = '#111318';
+      // Peinado trasero con redecilla (detrás de la cabeza)
+      ctx.fillStyle = '#3b2316';
       ctx.beginPath();
-      ctx.moveTo(-23, -156);
-      ctx.lineTo(23, -156);
-      ctx.lineTo(26, -122);
-      ctx.lineTo(0, -104);
-      ctx.lineTo(-26, -122);
-      ctx.closePath();
+      ctx.arc(0, -166, 21, 0, Math.PI * 2);
       ctx.fill();
 
-      // Ambdós braços clarament dibuixats + mocador blanc a la mà esquerra
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-29, -152, 8, 22);
-      ctx.fillRect(21, -152, 8, 22);
-      ctx.fillStyle = '#f3cbb2';
-      ctx.fillRect(-28, -130, 6.5, 23);
-      ctx.fillRect(22, -130, 6.5, 23);
-
-      // Mocador blanc a la mà esquerra
-      ctx.fillStyle = '#f8fafc';
+      // Rostro luminoso y despejado de la Marta
+      ctx.fillStyle = '#f8d2ba';
       ctx.beginPath();
-      ctx.moveTo(25, -109);
-      ctx.lineTo(36, -89);
-      ctx.lineTo(24, -83);
-      ctx.lineTo(18, -94);
-      ctx.closePath();
+      ctx.arc(0, -164, 17.5, 0, Math.PI * 2);
       ctx.fill();
-
-      // Coll amb cinta negra
-      ctx.fillStyle = '#f3cbb2';
-      ctx.fillRect(-6, -165, 12, 11);
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(-6.5, -160, 13, 3.2);
-
-      // Monjo i redecilla negra darrere del cap (dibuixats ABANS del rostre perquè mai tapin la cara)
-      ctx.fillStyle = '#2c1b14';
+      // Pelo partido en raya en medio solo arriba
+      ctx.fillStyle = '#3b2316';
       ctx.beginPath();
-      ctx.arc(0, -184, 16.5, Math.PI * 0.92, Math.PI * 2.08);
+      ctx.arc(0, -168, 17.8, Math.PI * 1.05, Math.PI * 1.95);
       ctx.fill();
-      ctx.beginPath();
-      ctx.arc(-13.5, -177, 5.2, 0, Math.PI * 2);
-      ctx.arc(13.5, -177, 5.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#111827';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.arc(0, -185, 15.2, Math.PI * 1.08, Math.PI * 1.92);
-      ctx.stroke();
-
-      // Rostre 100% descobert, clar, lluminós i somrient
-      ctx.fillStyle = '#f8d5be';
-      ctx.beginPath();
-      ctx.ellipse(0, -178, 14, 17, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#d4a387';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      // Clenxa suau al front
-      ctx.fillStyle = '#2c1b14';
-      ctx.beginPath();
-      ctx.moveTo(-13.5, -183);
-      ctx.quadraticCurveTo(-7, -193, 0, -190);
-      ctx.quadraticCurveTo(7, -193, 13.5, -183);
-      ctx.quadraticCurveTo(7, -189, 0, -187);
-      ctx.quadraticCurveTo(-7, -189, -13.5, -183);
-      ctx.closePath();
-      ctx.fill();
-
-      // Celles, ulls expressius, nas, galtes rosades i somriure
-      ctx.strokeStyle = '#2c1b14';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(-8.5, -183.5);
-      ctx.quadraticCurveTo(-5.5, -185, -2.5, -183.5);
-      ctx.moveTo(2.5, -183.5);
-      ctx.quadraticCurveTo(5.5, -185, 8.5, -183.5);
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.ellipse(-5.5, -180, 2.7, 1.9, 0, 0, Math.PI * 2);
-      ctx.ellipse(5.5, -180, 2.7, 1.9, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#1e1b18';
-      ctx.beginPath();
-      ctx.arc(-5.5, -180, 1.55, 0, Math.PI * 2);
-      ctx.arc(5.5, -180, 1.55, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#c99376';
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.moveTo(0, -180);
-      ctx.lineTo(-1.2, -174.5);
-      ctx.lineTo(1.2, -174.5);
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(244, 63, 94, 0.38)';
-      ctx.beginPath();
-      ctx.ellipse(-8.2, -174.5, 3.3, 2.1, 0, 0, Math.PI * 2);
-      ctx.ellipse(8.2, -174.5, 3.3, 2.1, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#be123c';
-      ctx.beginPath();
-      ctx.ellipse(0, -169.5, 3.8, 1.8, 0, 0, Math.PI * 2);
-      ctx.fill();
+      // Mejillas sonrosadas, ojos y sonrisa
+      ctx.fillStyle = 'rgba(239, 83, 80, 0.35)';
+      ctx.beginPath(); ctx.arc(-8, -161, 4, 0, Math.PI * 2); ctx.arc(8, -161, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1f1a1c';
+      ctx.beginPath(); ctx.arc(-6, -165, 2.2, 0, Math.PI * 2); ctx.arc(6, -165, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#b71c1c';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, -159, 5, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
 
       ctx.restore();
     }
 
-    // Dibuix immediat i observador de mida perquè la portada mai quedi buida ni retallada
-    drawCoverIllustration();
-    requestAnimationFrame(drawCoverIllustration);
     window.addEventListener('resize', drawCoverIllustration);
-    if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(() => drawCoverIllustration());
-      const cw = document.getElementById('cover-wrapper');
-      if (cw) ro.observe(cw);
+    drawCoverIllustration();
+
+    /* ============================================================
+       2. MOTOR DE AUDIO (GRALLAS + TABAL Y SESIÓN DJ)
+       ============================================================ */
+    let audioCtx = null;
+    let isMuted = false;
+    let musicInterval = null;
+    let musicMode = 'none'; // 'gralla' | 'dj'
+    let noteStep = 0;
+
+    function ensureAudio() {
+      try {
+        if (!audioCtx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) audioCtx = new AC();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {}
     }
 
-    // =========================================================================
-    // 2. SISTEMA D'ÀUDIO WEB AUDIO API: DUES GRALLES HARMONITZADES I TABAL
-    //    + SESSIÓ FESTIVA DE DJ PER A LA CELEBRACIÓ
-    // =========================================================================
-    class GrallaTabalAudioEngine {
-      constructor() {
-        this.ctx = null;
-        this.muted = false;
-        this.playing = false;
-        this.mode = 'cercavila'; // 'cercavila' | 'dj'
-        this.timer = null;
-        this.step = 0;
-      }
-
-      init() {
-        if (!this.ctx) {
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) this.ctx = new AudioCtx();
-        }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      }
-
-      toggleMute() {
-        this.muted = !this.muted;
-        return this.muted;
-      }
-
-      playGrallaVoice(freq, durationSec, isSecondVoice) {
-        if (this.muted || !this.ctx || !freq) return;
-        const t = this.ctx.currentTime;
-
-        const oscMain = this.ctx.createOscillator();
-        const oscHarm = this.ctx.createOscillator();
-        const filter = this.ctx.createBiquadFilter();
-        const gain = this.ctx.createGain();
-
-        oscMain.type = 'sawtooth';
-        oscHarm.type = 'triangle';
-        oscMain.frequency.setValueAtTime(freq, t);
-        oscHarm.frequency.setValueAtTime(freq * 2, t);
-
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(isSecondVoice ? 1150 : 1380, t);
-        filter.Q.setValueAtTime(2.4, t);
-
-        const peak = isSecondVoice ? 0.032 : 0.048;
-        gain.gain.setValueAtTime(0.0008, t);
-        gain.gain.linearRampToValueAtTime(peak, t + 0.025);
-        gain.gain.setValueAtTime(peak * 0.85, t + Math.max(0.04, durationSec - 0.04));
-        gain.gain.exponentialRampToValueAtTime(0.0008, t + durationSec + 0.02);
-
-        oscMain.connect(filter);
-        oscHarm.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        oscMain.start(t);
-        oscHarm.start(t);
-        oscMain.stop(t + durationSec + 0.03);
-        oscHarm.stop(t + durationSec + 0.03);
-      }
-
-      playTabal(kind) {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        if (kind === 'heavy') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(118, t);
-          osc.frequency.exponentialRampToValueAtTime(48, t + 0.16);
-          gain.gain.setValueAtTime(0.001, t);
-          gain.gain.linearRampToValueAtTime(0.11, t + 0.012);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-        } else if (kind === 'roll') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(195, t);
-          osc.frequency.exponentialRampToValueAtTime(110, t + 0.075);
-          gain.gain.setValueAtTime(0.001, t);
-          gain.gain.linearRampToValueAtTime(0.032, t + 0.008);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-        } else {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(168, t);
-          osc.frequency.exponentialRampToValueAtTime(86, t + 0.11);
-          gain.gain.setValueAtTime(0.001, t);
-          gain.gain.linearRampToValueAtTime(0.052, t + 0.01);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-        }
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.2);
-      }
-
-      playDjKick() {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(145, t);
-        osc.frequency.exponentialRampToValueAtTime(42, t + 0.16);
-        gain.gain.setValueAtTime(0.001, t);
-        gain.gain.linearRampToValueAtTime(0.18, t + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.23);
-      }
-
-      playDjHat(openHat) {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const bufferSize = Math.floor(this.ctx.sampleRate * (openHat ? 0.14 : 0.045));
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-        const noise = this.ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const hp = this.ctx.createBiquadFilter();
-        hp.type = 'highpass';
-        hp.frequency.setValueAtTime(6800, t);
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(openHat ? 0.042 : 0.026, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + (openHat ? 0.13 : 0.04));
-
-        noise.connect(hp);
-        hp.connect(gain);
-        gain.connect(this.ctx.destination);
-        noise.start(t);
-      }
-
-      playDjBass(freq, dur) {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const lp = this.ctx.createBiquadFilter();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, t);
-
-        lp.type = 'lowpass';
-        lp.frequency.setValueAtTime(420, t);
-        lp.frequency.exponentialRampToValueAtTime(160, t + dur);
-
-        gain.gain.setValueAtTime(0.001, t);
-        gain.gain.linearRampToValueAtTime(0.085, t + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-
-        osc.connect(lp);
-        lp.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t);
-        osc.stop(t + dur + 0.02);
-      }
-
-      playDjLead(freq, dur) {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const osc1 = this.ctx.createOscillator();
-        const osc2 = this.ctx.createOscillator();
-        const lp = this.ctx.createBiquadFilter();
-        const gain = this.ctx.createGain();
-
-        osc1.type = 'sawtooth';
-        osc1.frequency.setValueAtTime(freq, t);
-        osc2.type = 'square';
-        osc2.frequency.setValueAtTime(freq * 1.004, t);
-
-        lp.type = 'lowpass';
-        lp.frequency.setValueAtTime(2200, t);
-        lp.frequency.exponentialRampToValueAtTime(850, t + dur);
-
-        gain.gain.setValueAtTime(0.001, t);
-        gain.gain.linearRampToValueAtTime(0.042, t + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-
-        osc1.connect(lp);
-        osc2.connect(lp);
-        lp.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc1.start(t);
-        osc2.start(t);
-        osc1.stop(t + dur + 0.02);
-        osc2.stop(t + dur + 0.02);
-      }
-
-      playSfx(type) {
-        if (this.muted || !this.ctx) return;
-        const t = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        if (type === 'pickup') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(587.33, t);
-          osc.frequency.exponentialRampToValueAtTime(880, t + 0.14);
-          gain.gain.setValueAtTime(0.08, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-          osc.start(t);
-          osc.stop(t + 0.17);
-        } else if (type === 'jump') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(220, t);
-          osc.frequency.exponentialRampToValueAtTime(420, t + 0.18);
-          gain.gain.setValueAtTime(0.07, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-          osc.start(t);
-          osc.stop(t + 0.21);
-        } else if (type === 'hit') {
+    function playGrallaNote(freq, dur, time) {
+      if (!audioCtx || isMuted || !freq) return;
+      try {
+        // Dos voces de gralla en tercera/sexta con filtro cálido
+        [1, 1.25].forEach((ratio, idx) => {
+          const osc = audioCtx.createOscillator();
+          const filter = audioCtx.createBiquadFilter();
+          const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, t);
-          osc.frequency.exponentialRampToValueAtTime(55, t + 0.25);
-          gain.gain.setValueAtTime(0.08, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.27);
-          osc.start(t);
-          osc.stop(t + 0.28);
-        } else if (type === 'arch') {
-          [440.0, 554.37, 659.25, 880.0].forEach((freq, idx) => {
-            const o = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            o.type = 'triangle';
-            o.frequency.setValueAtTime(freq, t + idx * 0.06);
-            g.gain.setValueAtTime(0.065, t + idx * 0.06);
-            g.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.06 + 0.35);
-            o.connect(g);
-            g.connect(this.ctx.destination);
-            o.start(t + idx * 0.06);
-            o.stop(t + idx * 0.06 + 0.36);
-          });
-        }
-      }
-
-      start() {
-        this.stop();
-        this.init();
-        this.mode = 'cercavila';
-        this.playing = true;
-        this.step = 0;
-
-        const cercavilaMelody = [
-          { f1: 392.00, f2: 293.66, d: 2 },
-          { f1: 493.88, f2: 392.00, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 1 },
-          { f1: 659.25, f2: 523.25, d: 2 },
-          { f1: 587.33, f2: 493.88, d: 2 },
-
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 1 },
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 493.88, f2: 392.00, d: 1 },
-          { f1: 440.00, f2: 369.99, d: 3 },
-          { f1: 392.00, f2: 293.66, d: 1 },
-
-          { f1: 440.00, f2: 369.99, d: 2 },
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 659.25, f2: 523.25, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 2 },
-          { f1: 493.88, f2: 392.00, d: 2 },
-
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 493.88, f2: 392.00, d: 1 },
-          { f1: 440.00, f2: 369.99, d: 1 },
-          { f1: 369.99, f2: 293.66, d: 1 },
-          { f1: 392.00, f2: 293.66, d: 4 },
-
-          { f1: 587.33, f2: 493.88, d: 2 },
-          { f1: 659.25, f2: 523.25, d: 1 },
-          { f1: 739.99, f2: 587.33, d: 1 },
-          { f1: 783.99, f2: 659.25, d: 2 },
-          { f1: 659.25, f2: 523.25, d: 2 },
-
-          { f1: 587.33, f2: 493.88, d: 2 },
-          { f1: 659.25, f2: 523.25, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 1 },
-          { f1: 523.25, f2: 440.00, d: 2 },
-          { f1: 493.88, f2: 392.00, d: 2 },
-
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 1 },
-          { f1: 659.25, f2: 523.25, d: 1 },
-          { f1: 587.33, f2: 493.88, d: 1 },
-          { f1: 493.88, f2: 392.00, d: 2 },
-          { f1: 440.00, f2: 369.99, d: 2 },
-
-          { f1: 493.88, f2: 392.00, d: 1 },
-          { f1: 523.25, f2: 440.00, d: 1 },
-          { f1: 440.00, f2: 369.99, d: 1 },
-          { f1: 369.99, f2: 293.66, d: 1 },
-          { f1: 392.00, f2: 293.66, d: 4 }
-        ];
-
-        const sixteenthMs = 195;
-        let noteIdx = 0;
-        let hold = 0;
-
-        const tick = () => {
-          if (!this.playing || this.mode !== 'cercavila') return;
-
-          const beatPos = this.step % 8;
-          if (beatPos === 0 || beatPos === 4) {
-            this.playTabal('heavy');
-          } else if (beatPos === 2 || beatPos === 6) {
-            this.playTabal('light');
-          } else if (beatPos === 7) {
-            this.playTabal('roll');
-          }
-
-          if (hold <= 0) {
-            const n = cercavilaMelody[noteIdx];
-            const durSec = (sixteenthMs / 1000) * n.d * 0.9;
-            this.playGrallaVoice(n.f1, durSec, false);
-            if (n.f2) this.playGrallaVoice(n.f2, durSec, true);
-
-            hold = n.d;
-            noteIdx = (noteIdx + 1) % cercavilaMelody.length;
-          }
-
-          hold--;
-          this.step++;
-        };
-
-        tick();
-        this.timer = setInterval(tick, sixteenthMs);
-      }
-
-      startDjSet() {
-        this.stop();
-        this.init();
-        this.mode = 'dj';
-        this.playing = true;
-        this.step = 0;
-
-        const stepMs = 119;
-        const bassPattern = [
-          110.00, 0, 110.00, 220.00, 110.00, 0, 130.81, 146.83,
-          87.31,  0, 87.31,  174.61, 87.31,  0, 110.00, 130.81,
-          130.81, 0, 130.81, 261.63, 130.81, 0, 146.83, 164.81,
-          98.00,  0, 98.00,  196.00, 98.00,  0, 123.47, 146.83
-        ];
-        const leadPattern = [
-          440.00, 0, 523.25, 0, 659.25, 587.33, 523.25, 0,
-          440.00, 0, 349.23, 0, 440.00, 523.25, 587.33, 0,
-          523.25, 0, 659.25, 0, 783.99, 659.25, 587.33, 523.25,
-          587.33, 0, 493.88, 0, 392.00, 493.88, 587.33, 0
-        ];
-
-        const tickDj = () => {
-          if (!this.playing || this.mode !== 'dj') return;
-          const idx = this.step % 32;
-          const beat = this.step % 4;
-
-          if (beat === 0) this.playDjKick();
-          if (beat === 2) this.playDjHat(true);
-          if (beat === 1 || beat === 3) this.playDjHat(false);
-
-          const bf = bassPattern[idx];
-          if (bf > 0) this.playDjBass(bf, (stepMs / 1000) * 1.4);
-
-          const lf = leadPattern[idx];
-          if (lf > 0) this.playDjLead(lf, (stepMs / 1000) * 1.85);
-
-          this.step++;
-        };
-
-        tickDj();
-        this.timer = setInterval(tickDj, stepMs);
-      }
-
-      stop() {
-        this.playing = false;
-        if (this.timer) {
-          clearInterval(this.timer);
-          this.timer = null;
-        }
-      }
+          osc.frequency.setValueAtTime(freq * ratio, time);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1450, time);
+          gain.gain.setValueAtTime(0.001, time);
+          gain.gain.linearRampToValueAtTime(idx === 0 ? 0.055 : 0.035, time + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(time);
+          osc.stop(time + dur + 0.02);
+        });
+      } catch (e) {}
     }
 
-    const audio = new GrallaTabalAudioEngine();
-
-    // =========================================================================
-    // 3. JOYSTICK VIRTUAL ANALÒGIC MULTITÀCTIL REAL + ENTRADA DE TECLAT SUAU
-    // =========================================================================
-    const input = {
-      joyX: 0,
-      joyY: 0,
-      joyActive: false,
-      joyPointerId: null,
-      joyTouchId: null,
-      keys: {
-        left: false,
-        right: false,
-        up: false,
-        down: false
-      }
-    };
-
-    const joyBase = document.getElementById('joystick-base');
-    const joyKnob = document.getElementById('joystick-knob');
-    const MAX_JOY_RADIUS = 38;
-
-    function updateJoystickVisual(nx, ny) {
-      const px = nx * MAX_JOY_RADIUS;
-      const py = ny * MAX_JOY_RADIUS;
-      joyKnob.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+    function playTabalBeat(time, accent) {
+      if (!audioCtx || isMuted) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(accent ? 155 : 120, time);
+        osc.frequency.exponentialRampToValueAtTime(48, time + 0.14);
+        gain.gain.setValueAtTime(accent ? 0.14 : 0.08, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(time);
+        osc.stop(time + 0.16);
+      } catch (e) {}
     }
 
-    function handleJoystickMove(clientX, clientY) {
-      const rect = joyBase.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      let dx = clientX - cx;
-      let dy = clientY - cy;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist > MAX_JOY_RADIUS) {
-        dx = (dx / dist) * MAX_JOY_RADIUS;
-        dy = (dy / dist) * MAX_JOY_RADIUS;
-      }
-
-      const nx = dx / MAX_JOY_RADIUS;
-      const ny = dy / MAX_JOY_RADIUS;
-
-      const deadzone = 0.08;
-      input.joyX = Math.abs(nx) < deadzone ? 0 : (nx - Math.sign(nx) * deadzone) / (1 - deadzone);
-      input.joyY = Math.abs(ny) < deadzone ? 0 : (ny - Math.sign(ny) * deadzone) / (1 - deadzone);
-
-      updateJoystickVisual(nx, ny);
-    }
-
-    function resetJoystick() {
-      input.joyActive = false;
-      input.joyPointerId = null;
-      input.joyTouchId = null;
-      input.joyX = 0;
-      input.joyY = 0;
-      joyKnob.style.transition = 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1)';
-      updateJoystickVisual(0, 0);
-    }
-
-    joyBase.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (input.joyActive) return;
-      input.joyActive = true;
-      input.joyPointerId = e.pointerId;
-      joyKnob.style.transition = 'none';
-      if (joyBase.setPointerCapture) {
-        try { joyBase.setPointerCapture(e.pointerId); } catch (_) {}
-      }
-      handleJoystickMove(e.clientX, e.clientY);
-    }, { passive: false });
-
-    joyBase.addEventListener('pointermove', (e) => {
-      if (!input.joyActive || e.pointerId !== input.joyPointerId) return;
-      e.preventDefault();
-      e.stopPropagation();
-      handleJoystickMove(e.clientX, e.clientY);
-    }, { passive: false });
-
-    joyBase.addEventListener('pointerup', (e) => {
-      if (e.pointerId === input.joyPointerId) {
-        e.preventDefault();
-        resetJoystick();
-      }
-    }, { passive: false });
-
-    joyBase.addEventListener('pointercancel', (e) => {
-      if (e.pointerId === input.joyPointerId) {
-        resetJoystick();
-      }
-    });
-
-    joyBase.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (input.joyTouchId !== null) return;
-      const t = e.changedTouches[0];
-      if (!t) return;
-      input.joyActive = true;
-      input.joyTouchId = t.identifier;
-      joyKnob.style.transition = 'none';
-      handleJoystickMove(t.clientX, t.clientY);
-    }, { passive: false });
-
-    joyBase.addEventListener('touchmove', (e) => {
-      if (input.joyTouchId === null) return;
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === input.joyTouchId) {
-          e.preventDefault();
-          e.stopPropagation();
-          handleJoystickMove(t.clientX, t.clientY);
-          break;
-        }
-      }
-    }, { passive: false });
-
-    function handleTouchEndOrCancel(e) {
-      if (input.joyTouchId === null) return;
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === input.joyTouchId) {
-          e.preventDefault();
-          resetJoystick();
-          break;
-        }
-      }
-    }
-    joyBase.addEventListener('touchend', handleTouchEndOrCancel, { passive: false });
-    joyBase.addEventListener('touchcancel', handleTouchEndOrCancel, { passive: false });
-
-    function bindMultitouchActionButton(btnEl, actionFn) {
-      let lastTriggerAt = 0;
-      const fire = (e) => {
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        const now = performance.now();
-        if (now - lastTriggerAt < 90) return;
-        lastTriggerAt = now;
-        actionFn();
-      };
-
-      btnEl.addEventListener('pointerdown', fire, { passive: false });
-      btnEl.addEventListener('touchstart', fire, { passive: false });
-      btnEl.addEventListener('click', (e) => {
-        if (e.detail !== 0) return;
-        fire(e);
-      });
-    }
-
-    // =========================================================================
-    // 4. MOTOR 3D THREE.JS: COLLBATÓ, MONTSERRAT I ELS GEGANTS
-    //    + SALA DE CELEBRACIÓ AMB CABINA DE DJ I PISTA DE BALL
-    // =========================================================================
-    let worldReady = false;
-    let scene, camera, renderer;
-    let mansuet3D, marta3D;
-    let montserratGroup;
-    let paradeGroup, partyGroup;
-    let partyObjects = null;
-    const STREET_HALF_WIDTH = 4.2;
-    const COURSE_LENGTH = 540;
-    const obstacles = [];
-    const pickups = [];
-    const arches = [];
-    const crowdPeople = [];
-    const confettiParticles = [];
-
-    const game = {
-      mode: 'parade', // 'parade' | 'party'
-      running: false,
-      activeGiant: 'mansuet',
-      facingFront: false,
-      currentYaw: Math.PI,
-      currentRoll: 0,
-      x: 0,
-      vx: 0,
-      y: 0,
-      vy: 0,
-      z: 0,
-      baseSpeed: 18.5,
-      currentSpeed: 18.5,
-      score: 0,
-      items: 0,
-      spinTimer: 0,
-      hurtTimer: 0,
-      walkPhase: 0,
-      time: 0,
-      lastZone: -1
-    };
-
-    function makeCobbleTexture() {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
-      const g = c.getContext('2d');
-      g.fillStyle = '#47434a';
-      g.fillRect(0, 0, 256, 256);
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-          const offset = (row % 2) * 16;
-          const x = (col * 32 + offset) % 256;
-          const y = row * 32;
-          const shade = 68 + ((row * 7 + col * 13) % 24);
-          g.fillStyle = `rgb(${shade + 6}, ${shade + 2}, ${shade + 10})`;
-          g.fillRect(x + 2, y + 2, 28, 28);
-        }
-      }
-      const tex = new THREE.CanvasTexture(c);
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(4, 90);
-      return tex;
-    }
-
-    function makeMansuetSkirtTexture() {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
-      const g = c.getContext('2d');
-      g.fillStyle = '#6b5b3e';
-      g.fillRect(0, 0, 256, 256);
-      for (let i = 0; i < 16; i++) {
-        g.fillStyle = i % 2 === 0 ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.06)';
-        g.fillRect(i * 16, 0, 8, 256);
-      }
-      g.fillStyle = '#cfc09e';
-      g.fillRect(108, 108, 40, 56);
-      g.strokeStyle = '#3f3422';
-      g.lineWidth = 3;
-      g.strokeRect(108, 108, 40, 56);
-      return new THREE.CanvasTexture(c);
-    }
-
-    function makeMartaSkirtTexture() {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
-      const g = c.getContext('2d');
-      g.fillStyle = '#e5a4b4';
-      g.fillRect(0, 0, 256, 256);
-      for (let y = 16; y < 256; y += 28) {
-        for (let x = 16; x < 256; x += 28) {
-          g.fillStyle = '#be185d';
-          g.beginPath();
-          g.arc(x, y, 5, 0, Math.PI * 2);
-          g.fill();
-          g.fillStyle = '#fce7f3';
-          g.beginPath();
-          g.arc(x + 2, y - 2, 2, 0, Math.PI * 2);
-          g.fill();
-        }
-      }
-      g.fillStyle = '#111319';
-      g.fillRect(92, 16, 72, 168);
-      g.strokeStyle = '#94a3b8';
-      g.lineWidth = 2;
-      for (let ly = 26; ly < 180; ly += 14) {
-        g.beginPath();
-        g.moveTo(96, ly);
-        g.lineTo(160, ly);
-        g.stroke();
-      }
-      return new THREE.CanvasTexture(c);
-    }
-
-    function buildMansuet3D() {
-      const root = new THREE.Group();
-
-      const legMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
-      const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
-      const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.1, 0.55, 10), legMat);
-      leftLeg.position.set(-0.22, 0.28, 0);
-      const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.1, 0.55, 10), legMat);
-      rightLeg.position.set(0.22, 0.28, 0);
-      const leftShoe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.1, 0.34), shoeMat);
-      leftShoe.position.set(0, -0.25, 0.05);
-      leftLeg.add(leftShoe);
-      const rightShoe = leftShoe.clone();
-      rightLeg.add(rightShoe);
-      root.add(leftLeg, rightLeg);
-
-      const skirtPivot = new THREE.Group();
-      skirtPivot.position.y = 0.28;
-      root.add(skirtPivot);
-
-      const skirtTex = makeMansuetSkirtTexture();
-      const skirtGeo = new THREE.CylinderGeometry(0.56, 0.82, 2.05, 24, 1, false);
-      skirtGeo.rotateY(-Math.PI / 2);
-      const skirtMesh = new THREE.Mesh(
-        skirtGeo,
-        new THREE.MeshStandardMaterial({ map: skirtTex, roughness: 0.85 })
-      );
-      skirtMesh.position.y = 1.05;
-      skirtMesh.castShadow = true;
-      skirtPivot.add(skirtMesh);
-
-      const upper = new THREE.Group();
-      upper.position.y = 2.05;
-      skirtPivot.add(upper);
-
-      const sash = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.55, 0.57, 0.34, 20),
-        new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.7 })
-      );
-      sash.position.y = 0.16;
-      upper.add(sash);
-
-      const vest = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.48, 0.55, 1.08, 20),
-        new THREE.MeshStandardMaterial({ color: 0x7f1d1d, roughness: 0.65 })
-      );
-      vest.position.y = 0.86;
-      vest.castShadow = true;
-      upper.add(vest);
-
-      const shirt = new THREE.Mesh(
-        new THREE.BoxGeometry(0.32, 0.56, 0.14),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 })
-      );
-      shirt.position.set(0, 1.12, 0.44);
-      upper.add(shirt);
-
-      const tie = new THREE.Mesh(
-        new THREE.BoxGeometry(0.22, 0.08, 0.06),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a })
-      );
-      tie.position.set(0, 1.35, 0.51);
-      upper.add(tie);
-
-      const chainCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0.02, 1.08, 0.51),
-        new THREE.Vector3(-0.22, 0.82, 0.53),
-        new THREE.Vector3(-0.34, 0.55, 0.49)
-      ]);
-      const chain = new THREE.Mesh(
-        new THREE.TubeGeometry(chainCurve, 12, 0.016, 6, false),
-        new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.7, roughness: 0.25 })
-      );
-      upper.add(chain);
-
-      const capeGeo = new THREE.CylinderGeometry(0.54, 0.94, 2.38, 22, 1, true, Math.PI * 0.68, Math.PI * 1.64);
-      const cape = new THREE.Mesh(
-        capeGeo,
-        new THREE.MeshStandardMaterial({ color: 0x111319, roughness: 0.8, side: THREE.DoubleSide })
-      );
-      cape.position.y = 0.28;
-      cape.castShadow = true;
-      upper.add(cape);
-
-      const sleeveMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.7 });
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xe7b897, roughness: 0.55 });
-
-      const leftArm = new THREE.Group();
-      leftArm.position.set(-0.56, 1.28, 0.08);
-      const lSleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.68, 10), sleeveMat);
-      lSleeve.position.y = -0.32;
-      lSleeve.rotation.x = -0.55;
-      const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), skinMat);
-      lHand.position.set(0, -0.58, 0.34);
-      leftArm.add(lSleeve, lHand);
-
-      const rightArm = new THREE.Group();
-      rightArm.position.set(0.56, 1.28, 0.08);
-      const rSleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.68, 10), sleeveMat);
-      rSleeve.position.y = -0.32;
-      rSleeve.rotation.x = -0.45;
-      const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), skinMat);
-      rHand.position.set(0, -0.58, 0.28);
-      rightArm.add(rSleeve, rHand);
-      upper.add(leftArm, rightArm);
-
-      const trabucGroup = new THREE.Group();
-      trabucGroup.position.set(0.05, 0.62, 0.56);
-      trabucGroup.rotation.set(0.08, 0.14, 0.22);
-
-      const stock = new THREE.Mesh(
-        new THREE.BoxGeometry(0.75, 0.15, 0.11),
-        new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.7 })
-      );
-      stock.position.x = -0.35;
-      const barrel = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.075, 0.045, 0.78, 12),
-        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.65, roughness: 0.35 })
-      );
-      barrel.rotation.z = -Math.PI / 2;
-      barrel.position.x = 0.35;
-
-      const pineMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.85 });
-      const pine1 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18, 0), pineMat);
-      pine1.position.set(0.76, 0.04, 0);
-      const pine2 = new THREE.Mesh(new THREE.DodecahedronGeometry(0.14, 0), pineMat);
-      pine2.position.set(0.86, -0.02, 0.05);
-
-      const flagTexC = document.createElement('canvas');
-      flagTexC.width = 64;
-      flagTexC.height = 128;
-      const fg = flagTexC.getContext('2d');
-      fg.fillStyle = '#facc15';
-      fg.fillRect(0, 0, 64, 128);
-      fg.fillStyle = '#dc2626';
-      for (let i = 0; i < 4; i++) fg.fillRect(6 + i * 14, 0, 7, 128);
-      const senyera = new THREE.Mesh(
-        new THREE.BoxGeometry(0.28, 0.68, 0.02),
-        new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(flagTexC), roughness: 0.7 })
-      );
-      senyera.position.set(0.28, -0.34, 0.02);
-
-      trabucGroup.add(stock, barrel, pine1, pine2, senyera);
-      upper.add(trabucGroup);
-
-      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.22, 12), skinMat);
-      neck.position.y = 1.48;
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 18, 18), skinMat);
-      head.scale.set(0.92, 1.12, 0.96);
-      head.position.y = 1.82;
-      head.castShadow = true;
-
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18, roughness: 0.6 });
-      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.032, 8, 8), darkMat);
-      eyeL.position.set(-0.1, 1.85, 0.28);
-      const eyeR = eyeL.clone();
-      eyeR.position.x = 0.1;
-
-      const browL = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.024, 0.03), darkMat);
-      browL.position.set(-0.1, 1.91, 0.28);
-      const browR = browL.clone();
-      browR.position.x = 0.1;
-
-      const nose = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 8), skinMat);
-      nose.rotation.x = Math.PI / 2;
-      nose.position.set(0, 1.80, 0.32);
-
-      const mustache = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.055, 0.06), darkMat);
-      mustache.position.set(0, 1.71, 0.29);
-
-      const barretinaMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.85 });
-      const barretinaBase = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.32, 0.24, 16), barretinaMat);
-      barretinaBase.position.y = 2.08;
-      const barretinaTip = new THREE.Mesh(new THREE.SphereGeometry(0.29, 14, 14), barretinaMat);
-      barretinaTip.scale.set(1.05, 0.72, 1.25);
-      barretinaTip.position.set(0.08, 2.22, -0.06);
-      barretinaTip.rotation.z = -0.32;
-      const barretinaRim = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.325, 0.325, 0.05, 16),
-        new THREE.MeshStandardMaterial({ color: 0x111827 })
-      );
-      barretinaRim.position.y = 1.97;
-
-      upper.add(neck, head, eyeL, eyeR, browL, browR, nose, mustache, barretinaBase, barretinaTip, barretinaRim);
-
-      return { root, skirtPivot, upper, leftLeg, rightLeg, leftArm, rightArm };
-    }
-
-    function buildMarta3D() {
-      const root = new THREE.Group();
-
-      const legMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
-      const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
-      const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.52, 10), legMat);
-      leftLeg.position.set(-0.2, 0.26, 0);
-      const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.52, 10), legMat);
-      rightLeg.position.set(0.2, 0.26, 0);
-      const leftShoe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.09, 0.32), shoeMat);
-      leftShoe.position.set(0, -0.24, 0.05);
-      leftLeg.add(leftShoe);
-      const rightShoe = leftShoe.clone();
-      rightLeg.add(rightShoe);
-      root.add(leftLeg, rightLeg);
-
-      const skirtPivot = new THREE.Group();
-      skirtPivot.position.y = 0.26;
-      root.add(skirtPivot);
-
-      const martaSkirtTex = makeMartaSkirtTexture();
-      const skirtGeo = new THREE.CylinderGeometry(0.46, 0.76, 1.95, 24, 1, false);
-      skirtGeo.rotateY(-Math.PI / 2);
-      const skirtMesh = new THREE.Mesh(
-        skirtGeo,
-        new THREE.MeshStandardMaterial({ map: martaSkirtTex, roughness: 0.8 })
-      );
-      skirtMesh.position.y = 0.98;
-      skirtMesh.castShadow = true;
-      skirtPivot.add(skirtMesh);
-
-      const upper = new THREE.Group();
-      upper.position.y = 1.95;
-      skirtPivot.add(upper);
-
-      const blouse = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.38, 0.45, 0.98, 20),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 })
-      );
-      blouse.position.y = 0.5;
-      blouse.castShadow = true;
-      upper.add(blouse);
-
-      const mantellina = new THREE.Mesh(
-        new THREE.ConeGeometry(0.5, 0.78, 18),
-        new THREE.MeshStandardMaterial({ color: 0x111319, roughness: 0.75 })
-      );
-      mantellina.position.set(0, 0.68, 0.02);
-      mantellina.scale.set(1.05, 1, 0.95);
-      upper.add(mantellina);
-
-      const sleeveMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 });
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xf3cbb2, roughness: 0.55 });
-
-      const rightArm = new THREE.Group();
-      rightArm.position.set(-0.45, 0.9, 0.04);
-      const rPuff = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), sleeveMat);
-      rPuff.position.y = -0.06;
-      const rForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.06, 0.54, 10), skinMat);
-      rForearm.position.set(-0.04, -0.36, 0.06);
-      rForearm.rotation.set(-0.22, 0, -0.14);
-      const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), skinMat);
-      rHand.position.set(-0.08, -0.63, 0.12);
-      rightArm.add(rPuff, rForearm, rHand);
-
-      const leftArm = new THREE.Group();
-      leftArm.position.set(0.45, 0.9, 0.04);
-      const lPuff = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), sleeveMat);
-      lPuff.position.y = -0.06;
-      const lForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.06, 0.54, 10), skinMat);
-      lForearm.position.set(0.04, -0.36, 0.08);
-      lForearm.rotation.set(-0.28, 0, 0.14);
-      const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), skinMat);
-      lHand.position.set(0.08, -0.63, 0.15);
-
-      const hanky = new THREE.Mesh(
-        new THREE.ConeGeometry(0.15, 0.42, 4),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6, side: THREE.DoubleSide })
-      );
-      hanky.position.set(0.1, -0.82, 0.18);
-      hanky.rotation.x = Math.PI;
-      leftArm.add(lPuff, lForearm, lHand, hanky);
-
-      upper.add(rightArm, leftArm);
-
-      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.2, 12), skinMat);
-      neck.position.y = 1.08;
-      const choker = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.142, 0.142, 0.045, 12),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a })
-      );
-      choker.position.y = 1.1;
-
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.29, 18, 18), skinMat);
-      head.scale.set(0.92, 1.1, 0.95);
-      head.position.y = 1.42;
-      head.castShadow = true;
-
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e1b18 });
-      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), darkMat);
-      eyeL.position.set(-0.09, 1.44, 0.26);
-      const eyeR = eyeL.clone();
-      eyeR.position.x = 0.09;
-
-      const blushMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.8 });
-      const blushL = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), blushMat);
-      blushL.scale.set(1, 0.6, 0.3);
-      blushL.position.set(-0.14, 1.37, 0.24);
-      const blushR = blushL.clone();
-      blushR.position.x = 0.14;
-
-      const lips = new THREE.Mesh(
-        new THREE.SphereGeometry(0.036, 8, 8),
-        new THREE.MeshStandardMaterial({ color: 0xbe123c })
-      );
-      lips.scale.set(1.3, 0.6, 0.5);
-      lips.position.set(0, 1.31, 0.27);
-
-      const hairMat = new THREE.MeshStandardMaterial({ color: 0x271a14, roughness: 0.75 });
-      const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.305, 16, 16), hairMat);
-      hairCap.position.set(0, 1.46, -0.04);
-      const bunL = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), hairMat);
-      bunL.position.set(-0.27, 1.39, -0.02);
-      const bunR = bunL.clone();
-      bunR.position.x = 0.27;
-      const backBun = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), hairMat);
-      backBun.position.set(0, 1.4, -0.28);
-
-      upper.add(neck, choker, head, eyeL, eyeR, blushL, blushR, lips, hairCap, bunL, bunR, backBun);
-
-      return { root, skirtPivot, upper, leftLeg, rightLeg, leftArm, rightArm, hanky };
-    }
-
-    function buildMontserratHorizon() {
-      const group = new THREE.Group();
-      const rockMat = new THREE.MeshStandardMaterial({ color: 0x6b5b6e, roughness: 0.92 });
-      const base = new THREE.Mesh(new THREE.BoxGeometry(260, 42, 40), rockMat);
-      base.position.set(0, 18, 0);
-      group.add(base);
-
-      const needleSpecs = [
-        [-95, 58, 18], [-74, 76, 15], [-52, 68, 16], [-32, 92, 14],
-        [-12, 84, 15], [8, 98, 13], [28, 86, 15], [48, 74, 16],
-        [70, 82, 14], [92, 62, 18]
+    function startMusic(mode) {
+      stopMusic();
+      musicMode = mode;
+      ensureAudio();
+      noteStep = 0;
+
+      const grallaMelody = [
+        392, 440, 493.88, 523.25, 587.33, 523.25, 493.88, 440,
+        392, 493.88, 587.33, 659.25, 587.33, 493.88, 440, 0,
+        523.25, 587.33, 659.25, 587.33, 523.25, 493.88, 440, 493.88,
+        523.25, 440, 392, 440, 392, 0, 392, 0
       ];
-      needleSpecs.forEach(([nx, nh, nr]) => {
-        const cone = new THREE.Mesh(new THREE.ConeGeometry(nr, nh, 7), rockMat);
-        cone.position.set(nx, 24 + nh * 0.45, (Math.abs(nx) % 7) - 3);
-        group.add(cone);
+      const djBass = [130.81, 130.81, 164.81, 164.81, 174.61, 174.61, 196.00, 196.00];
+      const djLead = [523.25, 659.25, 783.99, 659.25, 698.46, 880.00, 783.99, 659.25];
+
+      musicInterval = setInterval(() => {
+        if (!audioCtx || isMuted) return;
+        const now = audioCtx.currentTime;
+        if (musicMode === 'gralla') {
+          const f = grallaMelody[noteStep % grallaMelody.length];
+          if (f > 0) playGrallaNote(f, 0.24, now);
+          if (noteStep % 2 === 0) playTabalBeat(now, noteStep % 4 === 0);
+        } else if (musicMode === 'dj') {
+          playTabalBeat(now, true);
+          const b = djBass[noteStep % djBass.length];
+          const l = djLead[noteStep % djLead.length];
+          playGrallaNote(b, 0.18, now);
+          if (noteStep % 2 === 0) playGrallaNote(l, 0.16, now);
+        }
+        noteStep++;
+      }, 240);
+    }
+
+    function stopMusic() {
+      if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+      musicMode = 'none';
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      document.getElementById('btn-mute').textContent = isMuted ? '🔇' : '🔊';
+      document.getElementById('btn-dj-mute').textContent = isMuted ? '🔇' : '🔊';
+    }
+
+    /* ============================================================
+       3. ESCENA 3D (CERCAVILA + SALA CELEBRACIÓN DJ)
+       ============================================================ */
+    let scene, camera, renderer;
+    let gameState = 'cover'; // 'cover' | 'playing' | 'finished' | 'party'
+    let activeGiantIndex = 0; // 0 = Mansuet, 1 = Marta
+    let giants = [];
+    let obstacles = [];
+    let collectibles = [];
+    let crowdPeople = [];
+    let partyObjects = [];
+    let paradeGroup, partyGroup;
+
+    // Física suave del jugador
+    const player = {
+      x: 0, vx: 0,
+      y: 0, vy: 0,
+      z: 0, speed: 0.24,
+      joyX: 0, joyY: 0,
+      facingFront: false,
+      currentRotY: Math.PI,
+      score: 0, items: 0
+    };
+    const TRACK_LENGTH = 420;
+    const keys = {};
+
+    function createGiantMesh(isMarta) {
+      const group = new THREE.Group();
+
+      // Faldón
+      const skirtGeo = new THREE.CylinderGeometry(0.55, 0.92, 1.85, 20);
+      const skirtMat = new THREE.MeshStandardMaterial({
+        color: isMarta ? 0xd88c9a : 0x5c5337, roughness: 0.8
       });
+      const skirt = new THREE.Mesh(skirtGeo, skirtMat);
+      skirt.position.y = 0.92;
+      skirt.castShadow = true;
+      group.add(skirt);
+
+      if (!isMarta) {
+        // Parche rectangular claro de Mansuet
+        const patch = new THREE.Mesh(
+          new THREE.BoxGeometry(0.32, 0.38, 0.06),
+          new THREE.MeshStandardMaterial({ color: 0xc2b68a })
+        );
+        patch.position.set(0.28, 0.72, 0.72);
+        patch.rotation.x = -0.18;
+        group.add(patch);
+      } else {
+        // Delantal negro de Marta
+        const apron = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.57, 0.94, 1.75, 16, 1, false, -0.55, 1.1),
+          new THREE.MeshStandardMaterial({ color: 0x18181b })
+        );
+        apron.position.y = 0.92;
+        group.add(apron);
+      }
+
+      // Torso
+      const torso = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.46, 0.56, 0.95, 16),
+        new THREE.MeshStandardMaterial({ color: isMarta ? 0xfff0f3 : 0x7b1e26 })
+      );
+      torso.position.y = 2.25;
+      group.add(torso);
+
+      if (!isMarta) {
+        // Capa negra de Mansuet
+        const cape = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.52, 0.78, 1.15, 18, 1, false, Math.PI * 0.65, Math.PI * 1.7),
+          new THREE.MeshStandardMaterial({ color: 0x141417, side: THREE.DoubleSide })
+        );
+        cape.position.y = 2.15;
+        group.add(cape);
+      }
+
+      // Cabeza
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.36, 20, 20),
+        new THREE.MeshStandardMaterial({ color: isMarta ? 0xf8d2ba : 0xf0be9a })
+      );
+      head.position.y = 3.05;
+      group.add(head);
+
+      // Ojos (en +Z del modelo)
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), eyeMat);
+      const eyeR = eyeL.clone();
+      eyeL.position.set(-0.12, 3.09, 0.32);
+      eyeR.position.set(0.12, 3.09, 0.32);
+      group.add(eyeL, eyeR);
+
+      if (!isMarta) {
+        // Barretina vermella
+        const hat = new THREE.Mesh(
+          new THREE.ConeGeometry(0.35, 0.65, 16),
+          new THREE.MeshStandardMaterial({ color: 0xc62828 })
+        );
+        hat.position.set(0, 3.55, -0.05);
+        hat.rotation.x = -0.35;
+        group.add(hat);
+      } else {
+        // Moño / redecilla trasera de la Marta
+        const bun = new THREE.Mesh(
+          new THREE.SphereGeometry(0.34, 16, 16),
+          new THREE.MeshStandardMaterial({ color: 0x3b2316 })
+        );
+        bun.position.set(0, 3.08, -0.14);
+        group.add(bun);
+      }
+
+      // Dos brazos articulados para ambos gigantes
+      const armL = new THREE.Group();
+      const armR = new THREE.Group();
+      armL.position.set(-0.56, 2.55, 0);
+      armR.position.set(0.56, 2.55, 0);
+
+      const limbMat = new THREE.MeshStandardMaterial({ color: isMarta ? 0xffffff : 0x18181b });
+      const meshL = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.85, 10), limbMat);
+      meshL.position.y = -0.38;
+      armL.add(meshL);
+
+      const meshR = meshL.clone();
+      armR.add(meshR);
+
+      if (!isMarta) {
+        // Trabuc en brazo derecho
+        const trabuc = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.08, 0.05, 0.95, 10),
+          new THREE.MeshStandardMaterial({ color: 0x4e342e })
+        );
+        trabuc.position.set(0, -0.55, 0.35);
+        trabuc.rotation.x = 0.85;
+        armR.add(trabuc);
+      } else {
+        // Pañuelo blanco en mano izquierda de la Marta
+        const hanky = new THREE.Mesh(
+          new THREE.ConeGeometry(0.18, 0.38, 4),
+          new THREE.MeshStandardMaterial({ color: 0xffffff })
+        );
+        hanky.position.set(0, -0.82, 0.12);
+        armL.add(hanky);
+      }
+
+      group.add(armL, armR);
+      group.userData = { armL, armR };
       return group;
     }
 
-    function buildEnvironment() {
-      const roadTex = makeCobbleTexture();
+    function createPersonMesh(color) {
+      const p = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.22, 0.28, 1.05, 10),
+        new THREE.MeshStandardMaterial({ color })
+      );
+      body.position.y = 0.52;
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.2, 10, 10),
+        new THREE.MeshStandardMaterial({ color: 0xf5cba7 })
+      );
+      head.position.y = 1.25;
+      p.add(body, head);
+      return p;
+    }
+
+    function init3DWorld() {
+      if (renderer) return;
+      const canvas = document.getElementById('game-canvas');
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
+      scene.fog = new THREE.Fog(0x87ceeb, 35, 115);
+
+      camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 200);
+      camera.position.set(0, 5.2, 8.5);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      // Luces
+      const hemi = new THREE.HemisphereLight(0xfff8e7, 0x5d4037, 1.05);
+      scene.add(hemi);
+      const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+      dir.position.set(12, 24, 15);
+      scene.add(dir);
+
+      paradeGroup = new THREE.Group();
+      scene.add(paradeGroup);
+
+      // Calle y aceras
       const road = new THREE.Mesh(
-        new THREE.PlaneGeometry(10.8, COURSE_LENGTH + 90),
-        new THREE.MeshStandardMaterial({ map: roadTex, roughness: 0.88 })
+        new THREE.PlaneGeometry(11, TRACK_LENGTH + 60),
+        new THREE.MeshStandardMaterial({ color: 0x545b64, roughness: 0.9 })
       );
       road.rotation.x = -Math.PI / 2;
-      road.position.set(0, 0, -COURSE_LENGTH / 2 + 15);
-      road.receiveShadow = true;
+      road.position.z = -TRACK_LENGTH / 2 + 10;
       paradeGroup.add(road);
 
-      const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.85 });
-      [-7.3, 7.3].forEach((sx) => {
-        const sw = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.22, COURSE_LENGTH + 90), sidewalkMat);
-        sw.position.set(sx, 0.11, -COURSE_LENGTH / 2 + 15);
-        sw.receiveShadow = true;
-        paradeGroup.add(sw);
+      [-6.8, 6.8].forEach(sx => {
+        const sidewalk = new THREE.Mesh(
+          new THREE.BoxGeometry(2.6, 0.25, TRACK_LENGTH + 60),
+          new THREE.MeshStandardMaterial({ color: 0xd7ccc8 })
+        );
+        sidewalk.position.set(sx, 0.12, -TRACK_LENGTH / 2 + 10);
+        paradeGroup.add(sidewalk);
       });
 
-      const wallColors = [0xfef3c7, 0xfde68a, 0xfed7aa, 0xfecdd3, 0xe0e7ff];
-      for (let z = 12; z > -COURSE_LENGTH - 25; z -= 14) {
-        [-12.3, 12.3].forEach((hx, sideIdx) => {
-          const h = 8.5 + (Math.abs(z + sideIdx * 5) % 4) * 1.4;
-          const color = wallColors[Math.abs(Math.floor(z / 14) + sideIdx) % wallColors.length];
+      // Casas de Collbató y público animando en las aceras
+      const houseColors = [0xfbe9e7, 0xfff8e1, 0xe8f5e9, 0xffe0b2, 0xf3e5f5];
+      const shirtColors = [0xe53935, 0x1e88e5, 0x43a047, 0xfb8c00, 0x8e24aa];
+      for (let z = 0; z > -TRACK_LENGTH; z -= 14) {
+        [-10.5, 10.5].forEach((hx, idx) => {
+          const hHeight = 6 + ((Math.abs(z) + idx * 3) % 4);
           const house = new THREE.Mesh(
-            new THREE.BoxGeometry(6.2, h, 12.6),
-            new THREE.MeshStandardMaterial({ color, roughness: 0.85 })
+            new THREE.BoxGeometry(4.5, hHeight, 11),
+            new THREE.MeshStandardMaterial({ color: houseColors[Math.abs(z + idx) % houseColors.length] })
           );
-          house.position.set(hx, h / 2, z);
-          house.castShadow = true;
-          house.receiveShadow = true;
+          house.position.set(hx, hHeight / 2, z);
           paradeGroup.add(house);
-
-          const balcX = hx > 0 ? hx - 3.35 : hx + 3.35;
-          const balcony = new THREE.Mesh(
-            new THREE.BoxGeometry(0.7, 0.9, 3.2),
-            new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 })
-          );
-          balcony.position.set(balcX, 4.3, z);
-          paradeGroup.add(balcony);
-
-          const bannerColor = (Math.abs(z) / 14) % 2 === 0 ? 0xdc2626 : 0xfacc15;
-          const drape = new THREE.Mesh(
-            new THREE.BoxGeometry(0.12, 1.15, 2.2),
-            new THREE.MeshStandardMaterial({ color: bannerColor, roughness: 0.7 })
-          );
-          drape.position.set(hx > 0 ? balcX - 0.35 : balcX + 0.35, 3.9, z);
-          paradeGroup.add(drape);
-        });
-      }
-
-      const archPositions = [
-        { z: -175 },
-        { z: -355 },
-        { z: -530 }
-      ];
-      archPositions.forEach((ap) => {
-        const archGroup = new THREE.Group();
-        archGroup.position.set(0, 0, ap.z);
-
-        const pillarMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.6 });
-        const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.5, roughness: 0.3 });
-
-        [-5.0, 5.0].forEach((px) => {
-          const p = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 6.4, 12), pillarMat);
-          p.position.set(px, 3.2, 0);
-          archGroup.add(p);
         });
 
-        const topBeam = new THREE.Mesh(new THREE.BoxGeometry(10.8, 1.1, 0.65), pillarMat);
-        topBeam.position.set(0, 6.2, 0);
-        const trim = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.25, 0.72), goldMat);
-        trim.position.set(0, 5.65, 0);
-        archGroup.add(topBeam, trim);
-
-        paradeGroup.add(archGroup);
-        arches.push({ z: ap.z, passed: false, group: archGroup });
-      });
-
-      const shirtPalette = [0x2563eb, 0xdc2626, 0x16a34a, 0xd97706, 0x7c3aed, 0x0d9488];
-      for (let z = -8; z > -COURSE_LENGTH - 10; z -= 6.5) {
-        [-6.4, 6.4].forEach((sideX, idx) => {
-          const isChild = (Math.abs(Math.floor(z)) + idx) % 3 === 0;
-          const personScale = isChild ? 0.68 : 1.0;
-          const person = new THREE.Group();
-          person.position.set(sideX + ((idx === 0 ? -1 : 1) * ((Math.abs(z) % 3) * 0.45)), 0.22, z);
-          person.rotation.y = sideX < 0 ? Math.PI / 2 : -Math.PI / 2;
-          person.scale.setScalar(personScale);
-
-          const bodyColor = shirtPalette[Math.abs(Math.floor(z * 3) + idx) % shirtPalette.length];
-          const torso = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.22, 0.26, 0.95, 10),
-            new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.75 })
-          );
-          torso.position.y = 0.75;
-
-          const head = new THREE.Mesh(
-            new THREE.SphereGeometry(0.19, 10, 10),
-            new THREE.MeshStandardMaterial({ color: 0xf1c29b, roughness: 0.6 })
-          );
-          head.position.y = 1.42;
-
-          const armPivot = new THREE.Group();
-          armPivot.position.set(0.24, 1.12, 0);
-          const arm = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.055, 0.05, 0.52, 8),
-            new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.75 })
-          );
-          arm.position.y = 0.24;
-          const hanky = new THREE.Mesh(
-            new THREE.BoxGeometry(0.22, 0.16, 0.02),
-            new THREE.MeshStandardMaterial({ color: 0xef4444 })
-          );
-          hanky.position.set(0.06, 0.52, 0);
-          armPivot.add(arm, hanky);
-
-          person.add(torso, head, armPivot);
+        // Público en aceras
+        for (let k = 0; k < 2; k++) {
+          const side = k === 0 ? -6.3 : 6.3;
+          const person = createPersonMesh(shirtColors[Math.abs(z + k) % shirtColors.length]);
+          person.position.set(side, 0.25, z - k * 5);
+          person.userData = { baseY: 0.25, phase: Math.random() * 6.28 };
           paradeGroup.add(person);
-          crowdPeople.push({
-            group: person,
-            armPivot,
-            baseY: 0.22,
-            phase: Math.abs(z) * 0.4 + idx
-          });
-        });
-      }
-    }
-
-    function buildCelebrationHall() {
-      const group = new THREE.Group();
-
-      const hallFloor = new THREE.Mesh(
-        new THREE.PlaneGeometry(34, 34),
-        new THREE.MeshStandardMaterial({ color: 0x26171d, roughness: 0.65 })
-      );
-      hallFloor.rotation.x = -Math.PI / 2;
-      hallFloor.receiveShadow = true;
-      group.add(hallFloor);
-
-      const danceTiles = [];
-      const tilePalette = [0xf59e0b, 0xec4899, 0x8b5cf6, 0x06b6d4, 0xef4444];
-      for (let gx = -3; gx <= 3; gx++) {
-        for (let gz = -2; gz <= 3; gz++) {
-          const tileMat = new THREE.MeshStandardMaterial({
-            color: tilePalette[Math.abs(gx * 3 + gz) % tilePalette.length],
-            emissive: tilePalette[Math.abs(gx * 3 + gz) % tilePalette.length],
-            emissiveIntensity: 0.35,
-            roughness: 0.25
-          });
-          const tile = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.06, 1.42), tileMat);
-          tile.position.set(gx * 1.5, 0.03, gz * 1.5);
-          group.add(tile);
-          danceTiles.push({ mat: tileMat, phase: gx * 0.7 + gz * 0.9 });
+          crowdPeople.push(person);
         }
       }
 
-      const wallMat = new THREE.MeshStandardMaterial({ color: 0x3b2329, roughness: 0.85 });
-      const backWall = new THREE.Mesh(new THREE.BoxGeometry(34, 12, 0.8), wallMat);
-      backWall.position.set(0, 6, -12);
-      const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.8, 12, 34), wallMat);
-      leftWall.position.set(-15, 6, 0);
-      const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.8, 12, 34), wallMat);
-      rightWall.position.set(15, 6, 0);
-      const ceiling = new THREE.Mesh(
-        new THREE.PlaneGeometry(34, 34),
-        new THREE.MeshStandardMaterial({ color: 0x160d18, roughness: 0.9 })
+      // Montserrat al fondo de la calle
+      const montserrat = new THREE.Mesh(
+        new THREE.ConeGeometry(34, 38, 7),
+        new THREE.MeshStandardMaterial({ color: 0x6d4c41 })
       );
-      ceiling.rotation.x = Math.PI / 2;
-      ceiling.position.y = 11.5;
-      group.add(backWall, leftWall, rightWall, ceiling);
+      montserrat.position.set(0, 18, -TRACK_LENGTH - 35);
+      paradeGroup.add(montserrat);
 
-      const flagColors = [0xdc2626, 0xfacc15, 0xec4899, 0x38bdf8, 0xffffff];
-      for (let i = -10; i <= 10; i += 1.4) {
-        const flag = new THREE.Mesh(
-          new THREE.ConeGeometry(0.24, 0.45, 3),
-          new THREE.MeshStandardMaterial({ color: flagColors[Math.abs(Math.round(i)) % flagColors.length] })
+      // Arco de meta
+      const arch = new THREE.Mesh(
+        new THREE.TorusGeometry(5.5, 0.35, 10, 24, Math.PI),
+        new THREE.MeshStandardMaterial({ color: 0xffca28 })
+      );
+      arch.position.set(0, 0.2, -TRACK_LENGTH);
+      paradeGroup.add(arch);
+
+      // Obstáculos y coleccionables
+      for (let z = -28; z > -TRACK_LENGTH + 20; z -= 18) {
+        const ox = (Math.random() - 0.5) * 7.2;
+        const fence = new THREE.Mesh(
+          new THREE.BoxGeometry(2.1, 1.05, 0.45),
+          new THREE.MeshStandardMaterial({ color: 0xd32f2f })
         );
-        flag.rotation.x = Math.PI;
-        flag.position.set(i, 8.6 - Math.cos((i / 10) * (Math.PI / 2)) * 1.1, -4.5);
-        group.add(flag);
+        fence.position.set(ox, 0.52, z);
+        paradeGroup.add(fence);
+        obstacles.push(fence);
+
+        const cx = (Math.random() - 0.5) * 7.5;
+        const item = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.45, 0),
+          new THREE.MeshStandardMaterial({ color: 0xffd54f, emissive: 0xff8f00, emissiveIntensity: 0.35 })
+        );
+        item.position.set(cx, 1.35, z - 8);
+        paradeGroup.add(item);
+        collectibles.push(item);
       }
 
+      // Gigantes jugadores
+      giants = [createGiantMesh(false), createGiantMesh(true)];
+      giants[1].visible = false;
+      giants.forEach(g => {
+        g.rotation.y = Math.PI;
+        paradeGroup.add(g);
+      });
+
+      buildPartyScene();
+      animate();
+    }
+
+    function buildPartyScene() {
+      partyGroup = new THREE.Group();
+      partyGroup.visible = false;
+      scene.add(partyGroup);
+
+      // Pista de baile
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(24, 24),
+        new THREE.MeshStandardMaterial({ color: 0x1a1026, roughness: 0.3 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      partyGroup.add(floor);
+
+      // Bola de espejos
       const discoBall = new THREE.Mesh(
-        new THREE.SphereGeometry(0.85, 18, 18),
-        new THREE.MeshStandardMaterial({
-          color: 0xf8fafc,
-          emissive: 0xfde68a,
-          emissiveIntensity: 0.45,
-          metalness: 0.95,
-          roughness: 0.1
-        })
+        new THREE.SphereGeometry(0.9, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.9, roughness: 0.1 })
       );
-      discoBall.position.set(0, 8.4, 0.5);
-      const discoRod = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.04, 0.04, 3.2, 8),
-        new THREE.MeshStandardMaterial({ color: 0x94a3b8 })
-      );
-      discoRod.position.set(0, 10.0, 0.5);
-      group.add(discoBall, discoRod);
+      discoBall.position.set(0, 6.2, -2);
+      partyGroup.add(discoBall);
+      partyObjects.push({ mesh: discoBall, type: 'ball' });
 
-      const stage = new THREE.Mesh(
-        new THREE.BoxGeometry(11, 0.8, 4.2),
-        new THREE.MeshStandardMaterial({ color: 0x1e1b2e, roughness: 0.6 })
-      );
-      stage.position.set(0, 0.4, -8.8);
-      group.add(stage);
-
-      const speakerMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
-      const coneMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.35 });
-      [-4.4, 4.4].forEach((sx) => {
-        const cab = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.8, 1.2), speakerMat);
-        cab.position.set(sx, 2.2, -8.5);
-        const woofer1 = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.1, 16), coneMat);
-        woofer1.rotation.x = Math.PI / 2;
-        woofer1.position.set(sx, 1.6, -7.88);
-        const woofer2 = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.1, 16), coneMat);
-        woofer2.rotation.x = Math.PI / 2;
-        woofer2.position.set(sx, 2.75, -7.88);
-        group.add(cab, woofer1, woofer2);
-      });
-
+      // Cabina DJ y platos giratorios
       const booth = new THREE.Mesh(
-        new THREE.BoxGeometry(4.4, 1.15, 1.35),
-        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
+        new THREE.BoxGeometry(4.4, 1.25, 1.4),
+        new THREE.MeshStandardMaterial({ color: 0x2b124c })
       );
-      booth.position.set(0, 1.38, -8.1);
-      const ledFront = new THREE.Mesh(
-        new THREE.BoxGeometry(4.1, 0.68, 0.08),
-        new THREE.MeshStandardMaterial({
-          color: 0xec4899,
-          emissive: 0xd946ef,
-          emissiveIntensity: 0.75
-        })
-      );
-      ledFront.position.set(0, 1.38, -7.41);
-      group.add(booth, ledFront);
+      booth.position.set(0, 0.62, -5.5);
+      partyGroup.add(booth);
 
-      const turntableLeft = new THREE.Group();
-      turntableLeft.position.set(-1.15, 1.98, -8.1);
-      const baseL = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.1, 0.8), new THREE.MeshStandardMaterial({ color: 0x334155 }));
-      const discL = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.03, 20), new THREE.MeshStandardMaterial({ color: 0x090d16 }));
-      discL.position.y = 0.06;
-      const labelL = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.035, 14), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
-      labelL.position.y = 0.062;
-      const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.04, 0.04), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
-      stripeL.position.set(0.16, 0.065, 0);
-      discL.add(labelL, stripeL);
-      turntableLeft.add(baseL, discL);
-
-      const turntableRight = new THREE.Group();
-      turntableRight.position.set(1.15, 1.98, -8.1);
-      const baseR = baseL.clone();
-      const discR = discL.clone();
-      turntableRight.add(baseR, discR);
-
-      const mixer = new THREE.Mesh(
-        new THREE.BoxGeometry(0.9, 0.12, 0.78),
-        new THREE.MeshStandardMaterial({ color: 0x1e293b })
-      );
-      mixer.position.set(0, 1.99, -8.1);
-      group.add(turntableLeft, turntableRight, mixer);
-
-      const djGroup = new THREE.Group();
-      djGroup.position.set(0, 0.8, -8.85);
-
-      const djTorso = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.32, 0.36, 1.15, 12),
-        new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 })
-      );
-      djTorso.position.y = 1.1;
-
-      const djHead = new THREE.Mesh(
-        new THREE.SphereGeometry(0.26, 14, 14),
-        new THREE.MeshStandardMaterial({ color: 0xf1c29b, roughness: 0.55 })
-      );
-      djHead.position.y = 1.92;
-
-      const djCap = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.25, 0.27, 0.18, 12),
-        new THREE.MeshStandardMaterial({ color: 0x111827 })
-      );
-      djCap.position.y = 2.08;
-
-      const hpBand = new THREE.Mesh(
-        new THREE.TorusGeometry(0.28, 0.03, 8, 16, Math.PI),
-        new THREE.MeshStandardMaterial({ color: 0xf59e0b })
-      );
-      hpBand.position.y = 1.95;
-      const cupL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 12), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
-      cupL.rotation.z = Math.PI / 2;
-      cupL.position.set(-0.28, 1.92, 0);
-      const cupR = cupL.clone();
-      cupR.position.x = 0.28;
-
-      const djArmL = new THREE.Group();
-      djArmL.position.set(-0.4, 1.55, 0);
-      const armMeshL = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.07, 0.72, 10),
-        new THREE.MeshStandardMaterial({ color: 0x7c3aed })
-      );
-      armMeshL.position.set(-0.1, -0.26, 0.25);
-      armMeshL.rotation.x = -0.85;
-      djArmL.add(armMeshL);
-
-      const djArmR = new THREE.Group();
-      djArmR.position.set(0.4, 1.55, 0);
-      const armMeshR = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.07, 0.72, 10),
-        new THREE.MeshStandardMaterial({ color: 0x7c3aed })
-      );
-      armMeshR.position.set(0.1, 0.24, 0.18);
-      armMeshR.rotation.x = -2.35;
-      djArmR.add(armMeshR);
-
-      djGroup.add(djTorso, djHead, djCap, hpBand, cupL, cupR, djArmL, djArmR);
-      group.add(djGroup);
-
-      const beams = [];
-      const beamSpecs = [
-        { x: -5.5, color: 0xec4899 },
-        { x: 0, color: 0xfbbf24 },
-        { x: 5.5, color: 0x38bdf8 }
-      ];
-      beamSpecs.forEach((bs, idx) => {
-        const beamPivot = new THREE.Group();
-        beamPivot.position.set(bs.x, 10.6, -5.5);
-        const cone = new THREE.Mesh(
-          new THREE.ConeGeometry(2.4, 12.5, 16, 1, true),
-          new THREE.MeshBasicMaterial({
-            color: bs.color,
-            transparent: true,
-            opacity: 0.16,
-            side: THREE.DoubleSide,
-            depthWrite: false
-          })
+      [-1.1, 1.1].forEach(px => {
+        const vinyl = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.45, 0.45, 0.06, 20),
+          new THREE.MeshStandardMaterial({ color: 0x111111 })
         );
-        cone.position.y = -6.2;
-        beamPivot.add(cone);
-        group.add(beamPivot);
-        beams.push({ pivot: beamPivot, phase: idx * 2.1 });
+        vinyl.position.set(px, 1.28, -5.4);
+        partyGroup.add(vinyl);
+        partyObjects.push({ mesh: vinyl, type: 'vinyl' });
       });
 
-      const dancers = [];
-      const dancerCoords = [
-        [-4.2, -2.5], [-4.8, 0.8], [-3.8, 3.2], [-2.2, 4.2],
-        [4.2, -2.5],  [4.8, 0.8],  [3.8, 3.2],  [2.2, 4.2],
-        [-3.2, -4.6], [3.2, -4.6], [-5.5, -1.2], [5.5, -1.2]
-      ];
-      const clothPalette = [0xef4444, 0x3b82f6, 0x10b981, 0xf59e0b, 0xec4899, 0x8b5cf6];
+      // DJ pinchando con auriculares
+      const dj = createPersonMesh(0xe040fb);
+      dj.position.set(0, 0.4, -6.3);
+      partyGroup.add(dj);
+      partyObjects.push({ mesh: dj, type: 'dj' });
 
-      dancerCoords.forEach(([dx, dz], idx) => {
-        const isChild = idx % 3 === 1;
-        const dGroup = new THREE.Group();
-        dGroup.position.set(dx, 0, dz);
-        dGroup.scale.setScalar(isChild ? 0.7 : 1.0);
-        dGroup.lookAt(0, 0, 0.5);
+      // Mansuet y Marta bailando juntos en el centro
+      const pMansuet = createGiantMesh(false);
+      const pMarta = createGiantMesh(true);
+      pMansuet.position.set(-1.5, 0, -1.2);
+      pMarta.position.set(1.5, 0, -1.2);
+      partyGroup.add(pMansuet, pMarta);
+      partyObjects.push({ mesh: pMansuet, type: 'giant', dir: 1 });
+      partyObjects.push({ mesh: pMarta, type: 'giant', dir: -1 });
 
-        const col = clothPalette[idx % clothPalette.length];
-        const torso = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.22, 0.26, 0.96, 10),
-          new THREE.MeshStandardMaterial({ color: col, roughness: 0.7 })
-        );
-        torso.position.y = 0.76;
-
-        const head = new THREE.Mesh(
-          new THREE.SphereGeometry(0.19, 10, 10),
-          new THREE.MeshStandardMaterial({ color: 0xf1c29b, roughness: 0.6 })
-        );
-        head.position.y = 1.44;
-
-        const armL = new THREE.Group();
-        armL.position.set(-0.26, 1.15, 0);
-        const aMeshL = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.055, 0.05, 0.52, 8),
-          new THREE.MeshStandardMaterial({ color: col })
-        );
-        aMeshL.position.set(-0.08, 0.22, 0.08);
-        aMeshL.rotation.z = 0.45;
-        armL.add(aMeshL);
-
-        const armR = new THREE.Group();
-        armR.position.set(0.26, 1.15, 0);
-        const aMeshR = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.055, 0.05, 0.52, 8),
-          new THREE.MeshStandardMaterial({ color: col })
-        );
-        aMeshR.position.set(0.08, 0.22, 0.08);
-        aMeshR.rotation.z = -0.45;
-        armR.add(aMeshR);
-
-        dGroup.add(torso, head, armL, armR);
-        group.add(dGroup);
-        dancers.push({
-          group: dGroup,
-          armL,
-          armR,
-          baseX: dx,
-          baseZ: dz,
-          phase: idx * 0.65
-        });
-      });
-
-      return {
-        group,
-        discoBall,
-        discL,
-        discR,
-        djGroup,
-        djArmL,
-        djArmR,
-        ledFront,
-        danceTiles,
-        beams,
-        dancers
-      };
+      // Gente bailando alrededor
+      const colors = [0xff4081, 0x00e5ff, 0xffea00, 0x76ff03, 0xff9100];
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const dancer = createPersonMesh(colors[i % colors.length]);
+        dancer.position.set(Math.cos(angle) * 5.2, 0, -1.5 + Math.sin(angle) * 4.2);
+        partyGroup.add(dancer);
+        partyObjects.push({ mesh: dancer, type: 'dancer', phase: i });
+      }
     }
 
-    function populateCourse() {
-      obstacles.forEach((o) => paradeGroup.remove(o.mesh));
-      pickups.forEach((p) => paradeGroup.remove(p.mesh));
-      obstacles.length = 0;
-      pickups.length = 0;
-      arches.forEach((a) => { a.passed = false; });
+    function resetParade() {
+      player.x = 0; player.vx = 0;
+      player.y = 0; player.vy = 0;
+      player.z = 0;
+      player.facingFront = false;
+      player.currentRotY = Math.PI;
+      player.score = 0; player.items = 0;
+      collectibles.forEach(c => { c.visible = true; });
+      paradeGroup.visible = true;
+      partyGroup.visible = false;
+      scene.background = new THREE.Color(0x87ceeb);
+      scene.fog = new THREE.Fog(0x87ceeb, 35, 115);
+    }
 
-      const fenceWoodMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.75 });
-      const stripeMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.6 });
-      const benchMat = new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.85 });
-      const planterMat = new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.8 });
-      const flowerMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.8 });
+    function startParadeGame() {
+      try {
+        const cover = document.getElementById('cover-screen');
+        cover.style.display = 'none';
+        document.getElementById('finish-modal').style.display = 'none';
+        document.getElementById('dj-hud').style.display = 'none';
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('controls-layer').style.display = 'flex';
 
-      const noteMat = new THREE.MeshStandardMaterial({
-        color: 0xfbbf24,
-        emissive: 0xd97706,
-        emissiveIntensity: 0.45,
-        metalness: 0.6,
-        roughness: 0.25
-      });
-      const scarfMat = new THREE.MeshStandardMaterial({
-        color: 0xef4444,
-        emissive: 0x991b1b,
-        emissiveIntensity: 0.35,
-        roughness: 0.6
-      });
-
-      for (let z = -34; z > -COURSE_LENGTH + 25; z -= 21) {
-        if (arches.some((a) => Math.abs(a.z - z) < 12)) continue;
-
-        const obsX = (Math.random() * 2 - 1) * 3.1;
-        const kindRoll = Math.random();
-        const obsGroup = new THREE.Group();
-        obsGroup.position.set(obsX, 0, z);
-        let halfW = 0.9;
-
-        if (kindRoll < 0.36) {
-          halfW = 0.88;
-          const seat = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.14, 0.65), benchMat);
-          seat.position.y = 0.52;
-          const back = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.45, 0.12), benchMat);
-          back.position.set(0, 0.8, -0.26);
-          const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.52, 0.6), benchMat);
-          leg1.position.set(-0.7, 0.26, 0);
-          const leg2 = leg1.clone();
-          leg2.position.x = 0.7;
-          obsGroup.add(seat, back, leg1, leg2);
-        } else if (kindRoll < 0.72) {
-          halfW = 0.92;
-          const bar1 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.22, 0.14), fenceWoodMat);
-          bar1.position.y = 0.78;
-          const bar2 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.18, 0.14), stripeMat);
-          bar2.position.y = 0.45;
-          const postL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.95, 0.24), fenceWoodMat);
-          postL.position.set(-0.82, 0.47, 0);
-          const postR = postL.clone();
-          postR.position.x = 0.82;
-          obsGroup.add(bar1, bar2, postL, postR);
-        } else {
-          halfW = 0.65;
-          const pot = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.58, 0.7), planterMat);
-          pot.position.y = 0.29;
-          const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.45, 1), flowerMat);
-          bush.scale.set(1.25, 0.75, 0.8);
-          bush.position.y = 0.68;
-          obsGroup.add(pot, bush);
+        if (!renderer) init3DWorld();
+        if (renderer) {
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
         }
-
-        paradeGroup.add(obsGroup);
-        obstacles.push({ x: obsX, halfW, z, mesh: obsGroup, hit: false });
-
-        let pickX = obsX > 0 ? obsX - 2.6 : obsX + 2.6;
-        pickX = Math.max(-3.6, Math.min(3.6, pickX));
-        const isScarf = Math.random() > 0.55;
-        const pickGroup = new THREE.Group();
-        pickGroup.position.set(pickX, 1.35, z - 4);
-
-        if (isScarf) {
-          const scarf = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.65, 4), scarfMat);
-          scarf.rotation.x = Math.PI;
-          pickGroup.add(scarf);
-        } else {
-          const headNote = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), noteMat);
-          headNote.position.set(-0.08, -0.15, 0);
-          const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.68, 8), noteMat);
-          stem.position.set(0.1, 0.16, 0);
-          const flag = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.05), noteMat);
-          flag.position.set(0.22, 0.44, 0);
-          pickGroup.add(headNote, stem, flag);
-        }
-
-        paradeGroup.add(pickGroup);
-        pickups.push({ x: pickX, z: z - 4, mesh: pickGroup, collected: false, isScarf });
+        resetParade();
+        gameState = 'playing';
+      } catch (err) {
+        console.error(err);
       }
-    }
-
-    function spawnConfettiBurst(x, y, z, count) {
-      const colors = [0xfacc15, 0xdc2626, 0xffffff, 0xf59e0b];
-      for (let i = 0; i < count; i++) {
-        const piece = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.18, 0.12),
-          new THREE.MeshBasicMaterial({
-            color: colors[i % colors.length],
-            side: THREE.DoubleSide
-          })
-        );
-        piece.position.set(x, y + 2.4, z);
-        scene.add(piece);
-        confettiParticles.push({
-          mesh: piece,
-          vx: (Math.random() - 0.5) * 7,
-          vy: 3 + Math.random() * 5.5,
-          vz: (Math.random() - 0.5) * 7,
-          life: 1.4
-        });
-      }
-    }
-
-    // =========================================================================
-    // 5. ACTUALITZACIÓ D'INTERFÍCIE I CONTROLS
-    // =========================================================================
-    const hudEl = document.getElementById('hud');
-    const touchEl = document.getElementById('touch-controls');
-    const startScreenEl = document.getElementById('start-screen');
-    const endScreenEl = document.getElementById('end-screen');
-    const partyHudEl = document.getElementById('party-hud');
-    const toastEl = document.getElementById('banner-toast');
-    let toastTimeout = null;
-
-    function showBanner(text) {
-      toastEl.textContent = text;
-      toastEl.style.opacity = '1';
-      if (toastTimeout) clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
-        toastEl.style.opacity = '0';
-      }, 2400);
-    }
-
-    function updateGiantVisibility() {
-      if (!mansuet3D || !marta3D) return;
-      const isMansuet = game.activeGiant === 'mansuet';
-      mansuet3D.root.visible = isMansuet;
-      marta3D.root.visible = !isMansuet;
-      document.getElementById('hud-giant-name').textContent = isMansuet ? 'En Mansuet' : 'La Marta';
-      document.getElementById('btn-switch-label').textContent = isMansuet ? 'La Marta' : 'En Mansuet';
-    }
-
-    function updateFaceButtonUI() {
-      const btnFace = document.getElementById('btn-face');
-      const label = document.getElementById('btn-face-label');
-      if (game.facingFront) {
-        label.textContent = 'NORMAL';
-        btnFace.classList.add('bg-amber-500/35', 'border-amber-300');
-      } else {
-        label.textContent = 'CARA';
-        btnFace.classList.remove('bg-amber-500/35', 'border-amber-300');
-      }
-    }
-
-    function toggleGiantFaceView() {
-      if (!game.running) return;
-      game.facingFront = !game.facingFront;
-      updateFaceButtonUI();
-      const giantLabel = game.activeGiant === 'mansuet' ? 'en Mansuet' : 'la Marta';
-      showBanner(
-        game.facingFront
-          ? `Vista frontal: mira la cara d'${giantLabel}!`
-          : 'Vista de cercavila recuperada'
-      );
-    }
-
-    function jumpGiant() {
-      if (!game.running) return;
-      if (game.y <= 0.02) {
-        game.vy = 11.8;
-        audio.playSfx('jump');
-      }
-    }
-
-    function switchGiant() {
-      if (!game.running) return;
-      game.activeGiant = game.activeGiant === 'mansuet' ? 'marta' : 'mansuet';
-      updateGiantVisibility();
-      spawnConfettiBurst(game.x, game.y, game.z, 18);
-      audio.playSfx('pickup');
-    }
-
-    function finishCercavila() {
-      game.running = false;
-      resetJoystick();
-      audio.playSfx('arch');
-      spawnConfettiBurst(game.x, game.y, game.z, 45);
-      document.getElementById('final-score').textContent = Math.floor(game.score);
-      document.getElementById('final-items').textContent = game.items;
-      hudEl.classList.add('hidden');
-      touchEl.classList.add('hidden');
-      partyHudEl.classList.add('hidden');
-      endScreenEl.classList.remove('hidden');
+      startMusic('gralla');
     }
 
     function enterCelebration() {
-      if (!worldReady && window.THREE) {
-        window.__init3DWorld();
-      }
-      if (!worldReady) return;
-
-      game.mode = 'party';
-      game.running = false;
-      resetJoystick();
-
+      document.getElementById('finish-modal').style.display = 'none';
+      document.getElementById('hud').style.display = 'none';
+      document.getElementById('controls-layer').style.display = 'none';
+      document.getElementById('dj-hud').style.display = 'flex';
       paradeGroup.visible = false;
-      montserratGroup.visible = false;
       partyGroup.visible = true;
-
-      scene.background = new THREE.Color(0x160d18);
-      scene.fog = new THREE.FogExp2(0x160d18, 0.016);
-
-      mansuet3D.root.visible = true;
-      marta3D.root.visible = true;
-      mansuet3D.root.position.set(-1.35, 0, 0.4);
-      marta3D.root.position.set(1.35, 0, 0.4);
-      mansuet3D.root.rotation.set(0, 0.25, 0);
-      marta3D.root.rotation.set(0, -0.25, 0);
-
-      endScreenEl.classList.add('hidden');
-      hudEl.classList.add('hidden');
-      touchEl.classList.add('hidden');
-      partyHudEl.classList.remove('hidden');
-
-      document.getElementById('party-sound-on').classList.toggle('hidden', audio.muted);
-      document.getElementById('party-sound-off').classList.toggle('hidden', !audio.muted);
-      audio.startDjSet();
-
-      spawnConfettiBurst(0, 0.5, 0.4, 48);
+      scene.background = new THREE.Color(0x120724);
+      scene.fog = new THREE.Fog(0x120724, 15, 45);
+      camera.position.set(0, 4.4, 7.2);
+      camera.lookAt(0, 2.0, -2.5);
+      gameState = 'party';
+      startMusic('dj');
     }
 
-    function startGame() {
-      if (!worldReady && window.THREE) {
-        window.__init3DWorld();
+    function triggerJump() {
+      if (gameState === 'playing' && player.y <= 0.02) {
+        player.vy = 0.34;
       }
-      if (!worldReady) {
-        showBanner('Carregant escenari 3D...');
-        return;
-      }
-
-      game.mode = 'parade';
-      game.running = true;
-      game.activeGiant = 'mansuet';
-      game.facingFront = false;
-      game.currentYaw = Math.PI;
-      game.currentRoll = 0;
-      game.x = 0;
-      game.vx = 0;
-      game.y = 0;
-      game.vy = 0;
-      game.z = 0;
-      game.baseSpeed = 18.5;
-      game.currentSpeed = 18.5;
-      game.score = 0;
-      game.items = 0;
-      game.spinTimer = 0;
-      game.hurtTimer = 0;
-      game.walkPhase = 0;
-      game.lastZone = -1;
-
-      paradeGroup.visible = true;
-      montserratGroup.visible = true;
-      partyGroup.visible = false;
-      scene.background = new THREE.Color(0xd97742);
-      scene.fog = new THREE.FogExp2(0xd97742, 0.0085);
-
-      mansuet3D.root.position.set(0, 0, 0);
-      marta3D.root.position.set(0, 0, 0);
-
-      resetJoystick();
-      updateGiantVisibility();
-      updateFaceButtonUI();
-      populateCourse();
-
-      startScreenEl.classList.add('hidden');
-      endScreenEl.classList.add('hidden');
-      partyHudEl.classList.add('hidden');
-      hudEl.classList.remove('hidden');
-      touchEl.classList.remove('hidden');
-
-      document.getElementById('icon-sound-on').classList.toggle('hidden', audio.muted);
-      document.getElementById('icon-sound-off').classList.toggle('hidden', !audio.muted);
-
-      audio.start();
-      showBanner('1. Nucli Antic de Collbató');
     }
+
+    function toggleFaceView() {
+      player.facingFront = !player.facingFront;
+      document.getElementById('btn-face').classList.toggle('active', player.facingFront);
+    }
+
+    function switchGiant() {
+      activeGiantIndex = 1 - activeGiantIndex;
+      giants[0].visible = activeGiantIndex === 0;
+      giants[1].visible = activeGiantIndex === 1;
+      document.getElementById('hud-giant-name').textContent = activeGiantIndex === 0 ? 'En Mansuet' : 'La Marta';
+    }
+
+    /* ============================================================
+       4. CONTROLES MULTITÁCTILES INDEPENDIENTES + TECLADO
+       ============================================================ */
+    const joyZone = document.getElementById('joystick-zone');
+    const joyKnob = document.getElementById('joystick-knob');
+    let joyPointerId = null;
+
+    function updateJoystick(clientX, clientY) {
+      const rect = joyZone.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const maxR = rect.width * 0.34;
+      let dx = clientX - cx;
+      let dy = clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      if (dist > maxR) {
+        dx = (dx / dist) * maxR;
+        dy = (dy / dist) * maxR;
+      }
+      joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+      player.joyX = dx / maxR;
+      player.joyY = dy / maxR;
+    }
+
+    function resetJoystick() {
+      joyPointerId = null;
+      joyKnob.style.transform = 'translate(0px, 0px)';
+      player.joyX = 0;
+      player.joyY = 0;
+    }
+
+    joyZone.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (joyPointerId === null) {
+        joyPointerId = e.pointerId;
+        joyZone.setPointerCapture(e.pointerId);
+        updateJoystick(e.clientX, e.clientY);
+      }
+    });
+    joyZone.addEventListener('pointermove', (e) => {
+      if (e.pointerId === joyPointerId) {
+        e.preventDefault();
+        updateJoystick(e.clientX, e.clientY);
+      }
+    });
+    joyZone.addEventListener('pointerup', (e) => {
+      if (e.pointerId === joyPointerId) resetJoystick();
+    });
+    joyZone.addEventListener('pointercancel', (e) => {
+      if (e.pointerId === joyPointerId) resetJoystick();
+    });
+
+    // Botones con respuesta inmediata multitáctil
+    function bindInstantButton(id, fn) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fn();
+      });
+    }
+
+    // Botón de inicio de portada blindado
+    const startBtn = document.getElementById('btn-start');
+    let startingLock = false;
+    function handleStart(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (startingLock) return;
+      startingLock = true;
+      setTimeout(() => { startingLock = false; }, 400);
+      startParadeGame();
+    }
+    startBtn.addEventListener('click', handleStart);
+    startBtn.addEventListener('touchend', handleStart, { passive: false });
+    startBtn.addEventListener('pointerup', handleStart);
+
+    bindInstantButton('btn-jump', triggerJump);
+    bindInstantButton('btn-face', toggleFaceView);
+    bindInstantButton('btn-switch', switchGiant);
+    bindInstantButton('btn-mute', toggleMute);
+    bindInstantButton('btn-dj-mute', toggleMute);
+    bindInstantButton('btn-go-party', enterCelebration);
+    bindInstantButton('btn-restart', startParadeGame);
+    bindInstantButton('btn-back-parade', startParadeGame);
 
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
-        input.keys.left = true;
-      } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
-        input.keys.right = true;
-      } else if (e.code === 'ArrowUp' || e.code === 'KeyW') {
-        input.keys.up = true;
-      } else if (e.code === 'ArrowDown' || e.code === 'KeyS') {
-        input.keys.down = true;
-      } else if (e.code === 'Space') {
-        if (game.running) {
-          e.preventDefault();
-          jumpGiant();
-        }
-      } else if (e.code === 'KeyQ') {
-        switchGiant();
-      } else if (e.code === 'KeyV') {
-        toggleGiantFaceView();
+      keys[e.code] = true;
+      if (e.code === 'Space') { e.preventDefault(); triggerJump(); }
+      if (e.code === 'KeyV') toggleFaceView();
+      if (e.code === 'KeyQ') switchGiant();
+    });
+    window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+    window.addEventListener('resize', () => {
+      if (renderer && camera) {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
       }
     });
 
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA') input.keys.left = false;
-      if (e.code === 'ArrowRight' || e.code === 'KeyD') input.keys.right = false;
-      if (e.code === 'ArrowUp' || e.code === 'KeyW') input.keys.up = false;
-      if (e.code === 'ArrowDown' || e.code === 'KeyS') input.keys.down = false;
-    });
-
-    document.getElementById('btn-start').addEventListener('click', startGame);
-    document.getElementById('btn-restart').addEventListener('click', startGame);
-    document.getElementById('btn-celebration').addEventListener('click', enterCelebration);
-    document.getElementById('btn-party-back').addEventListener('click', startGame);
-    bindMultitouchActionButton(document.getElementById('btn-jump'), jumpGiant);
-    bindMultitouchActionButton(document.getElementById('btn-switch'), switchGiant);
-    bindMultitouchActionButton(document.getElementById('btn-face'), toggleGiantFaceView);
-
-    function handleGlobalMuteToggle() {
-      const muted = audio.toggleMute();
-      document.getElementById('icon-sound-on').classList.toggle('hidden', muted);
-      document.getElementById('icon-sound-off').classList.toggle('hidden', !muted);
-      document.getElementById('party-sound-on').classList.toggle('hidden', muted);
-      document.getElementById('party-sound-off').classList.toggle('hidden', !muted);
-    }
-
-    document.getElementById('btn-mute').addEventListener('click', handleGlobalMuteToggle);
-    document.getElementById('btn-party-mute').addEventListener('click', handleGlobalMuteToggle);
-
-    // =========================================================================
-    // 6. BUCLE PRINCIPAL D'ANIMACIÓ I INICIALITZACIÓ 3D
-    // =========================================================================
-    let lastTime = 0;
-
-    function animate(now) {
+    /* ============================================================
+       5. BUCLE DE ANIMACIÓN PRINCIPAL
+       ============================================================ */
+    let clock = 0;
+    function animate() {
       requestAnimationFrame(animate);
-      if (!worldReady) return;
+      clock += 0.05;
+      if (!renderer || !scene || !camera) return;
 
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-      game.time += dt;
+      if (gameState === 'playing') {
+        // Entrada combinada joystick + teclado
+        let inputX = player.joyX;
+        let inputY = player.joyY;
+        if (keys['ArrowLeft'] || keys['KeyA']) inputX -= 1;
+        if (keys['ArrowRight'] || keys['KeyD']) inputX += 1;
+        if (keys['ArrowUp'] || keys['KeyW']) inputY -= 1;
+        if (keys['ArrowDown'] || keys['KeyS']) inputY += 1;
 
-      if (game.mode === 'party' && partyObjects) {
-        const beat = game.time * 6.6;
+        inputX = Math.max(-1, Math.min(1, inputX));
+        inputY = Math.max(-1, Math.min(1, inputY));
 
-        partyObjects.discoBall.rotation.y += dt * 1.1;
-        partyObjects.discL.rotation.y += dt * 5.2;
-        partyObjects.discR.rotation.y -= dt * 5.2;
+        // Movimiento lateral suave con inercia
+        const targetVx = inputX * 0.16;
+        player.vx += (targetVx - player.vx) * 0.18;
+        player.x = Math.max(-4.3, Math.min(4.3, player.x + player.vx));
 
-        partyObjects.djGroup.position.y = 0.8 + Math.abs(Math.sin(beat)) * 0.08;
-        partyObjects.djArmL.rotation.z = Math.sin(beat * 2) * 0.25;
-        partyObjects.djArmR.rotation.z = Math.cos(beat) * 0.35;
-        partyObjects.ledFront.material.emissiveIntensity = 0.45 + Math.abs(Math.sin(beat)) * 0.55;
+        // Avance continuo regulable con joystick
+        const pace = 0.24 * (1 - inputY * 0.45);
+        player.z -= Math.max(0.08, pace);
 
-        for (let i = 0; i < partyObjects.dan
+        // Salto con gravedad
+        player.y += player.vy;
+        if (player.y > 0) {
+          player.vy -= 0.018;
+        } else {
+          player.y = 0;
+          player.vy = 0;
+        }
+
+        const g = giants[activeGiantIndex];
+        g.position.set(player.x, player.y + Math.abs(Math.sin(clock * 1.4)) * 0.12, player.z);
+        g.rotation.z = -player.vx * 1.1 + Math.sin(clock * 1.2) * 0.04;
+
+        // Giro suave para ver la cara
+        const targetRotY = player.facingFront ? 0 : Math.PI;
+        player.currentRotY += (targetRotY - player.currentRotY) * 0.14;
+        g.rotation.y = player.currentRotY;
+
+        // Balanceo de brazos
+        if (g.userData.armL && g.userData.armR) {
+          g.userData.armL.rotation.x = Math.sin(clock * 1.5) * 0.35;
+          g.userData.armR.rotation.x = -Math.sin(clock * 1.5) * 0.35;
+        }
+
+        // Público animando
+        crowdPeople.forEach(p => {
+          p.position.y = p.userData.baseY + Math.abs(Math.sin(clock * 1.8 + p.userData.phase)) * 0.18;
+        });
+
+        // Colisiones
+        collectibles.forEach(c => {
+          if (!c.visible) return;
+          c.rotation.y += 0.06;
+          if (Math.abs(c.position.z - player.z) < 1.3 && Math.abs(c.position.x - player.x) < 1.2) {
+            c.visible = false;
+            player.items++;
+            player.score += 50;
+          }
+        });
+
+        obstacles.forEach(o => {
+          if (Math.abs(o.position.z - player.z) < 0.9 && Math.abs(o.position.x - player.x) < 1.1 && player.y < 0.75) {
+            player.z += 1.4;
+            player.score = Math.max(0, player.score - 20);
+          }
+        });
+
+        // Cámara suave
+        const camZ = player.facingFront ? player.z - 6.8 : player.z + 8.5;
+        const camY = player.facingFront ? 3.8 : 5.2;
+        camera.position.x += (player.x * 0.55 - camera.position.x) * 0.12;
+        camera.position.y += (camY - camera.position.y) * 0.12;
+        camera.position.z += (camZ - camera.position.z) * 0.18;
+        camera.lookAt(player.x * 0.4, 2.3, player.z - (player.facingFront ? 0 : 4));
+
+        // Progreso y HUD
+        const pct = Math.min(100, Math.max(0, Math.round((Math.abs(player.z) / TRACK_LENGTH) * 100)));
+        player.score += 0.2;
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('hud-pct').textContent = pct + '%';
+        document.getElementById('hud-items').textContent = player.items;
+        document.getElementById('hud-score').textContent = Math.floor(player.score);
+
+        const zoneEl = document.getElementById('hud-zone');
+        if (pct < 34) zoneEl.textContent = '1. Nucli Antic';
+        else if (pct < 68) zoneEl.textContent = '2. Carrer de les Coves';
+        else zoneEl.textContent = "3. Plaça de l'Església";
+
+        // Llegada a meta
+        if (pct >= 100) {
+          gameState = 'finished';
+          document.getElementById('controls-layer').style.display = 'none';
+          document.getElementById('final-score').textContent = Math.floor(player.score);
+          document.getElementById('final-items').textContent = player.items;
+          document.getElementById('finish-modal').style.display = 'flex';
+        }
+      } else if (gameState === 'party') {
+        partyObjects.forEach(obj => {
+          if (obj.type === 'ball' || obj.type === 'vinyl') {
+            obj.mesh.rotation.y += 0.08;
+          } else if (obj.type === 'dj') {
+            obj.mesh.position.y = 0.4 + Math.abs(Math.sin(clock * 2.5)) * 0.15;
+          } else if (obj.type === 'giant') {
+            obj.mesh.rotation.y += 0.04 * obj.dir;
+            obj.mesh.position.y = Math.abs(Math.sin(clock * 2)) * 0.22;
+            if (obj.mesh.userData.armL) {
+              obj.mesh.userData.armL.rotation.x = Math.sin(clock * 2.5) * 0.5;
+              obj.mesh.userData.armR.rotation.x = -Math.sin(clock * 2.5) * 0.5;
+            }
+          } else if (obj.type === 'dancer') {
+            obj.mesh.position.y = Math.abs(Math.sin(clock * 2.4 + obj.phase)) * 0.28;
+          }
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+</html>
